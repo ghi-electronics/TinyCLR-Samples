@@ -10,6 +10,32 @@ namespace SeeedGrove {
         public static void Main() {
             // Add a slash (/) before the (/ *) to uncomment a block
             //==============================
+            //*FourDigitDisplay
+
+            FourDigitDisplay fourDigitDisplay = new FourDigitDisplay(16+8, 16+9);
+
+            fourDigitDisplay.Display(FourDigitDisplay.Digit.First, FourDigitDisplay.Blank);
+            fourDigitDisplay.Display(FourDigitDisplay.Digit.Second, 8);
+            fourDigitDisplay.Display(FourDigitDisplay.Digit.Third, 8);
+            fourDigitDisplay.Display(FourDigitDisplay.Digit.Fourth, FourDigitDisplay.Blank);
+            Thread.Sleep(2000);
+            fourDigitDisplay.SetBrightness(FourDigitDisplay.Brightness.Pw14);
+            fourDigitDisplay.Display(FourDigitDisplay.Blank, 1, 2, 3);
+            Thread.Sleep(2000);
+            fourDigitDisplay.SetPoint(true);
+            fourDigitDisplay.SetBrightness(FourDigitDisplay.Brightness.Pw01);
+            while (true)
+            {
+                var dt = DateTime.Now;
+                fourDigitDisplay.Display(
+                    dt.Minute / 10,
+                    dt.Minute % 10,
+                    dt.Second / 10,
+                    dt.Second % 10
+                    );
+                Thread.Sleep(100);
+            }//*/
+            //==============================
             /*Relay
             
             Relay relay = new Relay(FEZ.GpioPin.D6);

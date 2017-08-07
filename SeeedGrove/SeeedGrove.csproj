@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="Button.cs" />
     <Compile Include="Buzzer.cs" />
+    <Compile Include="FourDigitDisplay.cs" />
     <Compile Include="LcdRgbBacklight.cs" />
     <Compile Include="LedSocket.cs" />
     <Compile Include="LightSensor.cs" />
