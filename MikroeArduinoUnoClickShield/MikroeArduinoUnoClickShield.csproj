@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EF04579F-62DF-4042-80C7-915FF539122D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ClickLedRing</RootNamespace>
-    <AssemblyName>ClickLedRing</AssemblyName>
+    <RootNamespace>MikroeArduinoUnoClickShield</RootNamespace>
+    <AssemblyName>MikroeArduinoUnoClickShield</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -38,7 +38,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
