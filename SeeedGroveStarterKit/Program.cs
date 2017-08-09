@@ -5,13 +5,13 @@ using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Pins;
 using System.Diagnostics;
 
-namespace SeeedGrove {
+namespace SeeedGroveStarterKit {
     public class Program {
         public static void Main() {
             // Add a slash (/) before the (/ *) to uncomment a block
             //==============================
             /*Relay
-            
+
             Relay relay = new Relay(FEZ.GpioPin.D6);
             while (true)
             {
@@ -94,7 +94,7 @@ namespace SeeedGrove {
             TouchSensor touch = new TouchSensor(FEZ.GpioPin.D7);
               if (touch.IsTouched())
                     Debug.WriteLine("Not using Events");
-            
+
             //touch.Touched += Btn_ButtonPressed;
             touch.Untouched += Touch_Untouched;
             Thread.Sleep(-1);//*/

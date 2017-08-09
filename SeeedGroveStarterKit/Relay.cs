@@ -1,22 +1,17 @@
 ﻿using GHIElectronics.TinyCLR.Devices.Gpio;
 
-namespace SeeedGrove
-{
-    public class Relay
-    {
+namespace SeeedGroveStarterKit {
+    public class Relay {
         GpioPin Pin;
-        public Relay(int GpioPinNumber)
-        {
+        public Relay(int GpioPinNumber) {
             Pin = GpioController.GetDefault().OpenPin(GpioPinNumber);
             Pin.Write(GpioPinValue.Low);
             Pin.SetDriveMode(GpioPinDriveMode.Output);
         }
-        public void TurnOn()
-        {
+        public void TurnOn() {
             Pin.Write(GpioPinValue.High);
         }
-        public void TurnOff()
-        {
+        public void TurnOff() {
             Pin.Write(GpioPinValue.Low);
         }
     }

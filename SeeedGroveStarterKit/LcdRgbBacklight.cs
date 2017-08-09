@@ -2,10 +2,8 @@
 using System.Threading;
 using GHIElectronics.TinyCLR.Pins;
 
-namespace SeeedGrove
-{
-    public class LcdRgbBacklight
-    {
+namespace SeeedGroveStarterKit {
+    public class LcdRgbBacklight {
         private I2cDevice DisplayDevice;
         private I2cDevice BacklightDevice;
 
@@ -39,8 +37,7 @@ namespace SeeedGrove
         private byte REG_MODE2 = 0x01;
         private byte REG_OUTPUT = 0x08;
 
-        public LcdRgbBacklight()
-        {
+        public LcdRgbBacklight() {
             var settings = new I2cConnectionSettings((0x7c >> 1));
             settings.BusSpeed = I2cBusSpeed.FastMode;
 
@@ -60,16 +57,14 @@ namespace SeeedGrove
             byte dotsize = 0;
 
 
-            if (lines > 1)
-            {
+            if (lines > 1) {
                 _displayfunction |= 0x08;// LCD_2LINE;
             }
             _numlines = lines;
             _currline = 0;
 
             // for some 1 line displays you can select a 10 pixel high font
-            if ((dotsize != 0) && (lines == 1))
-            {
+            if ((dotsize != 0) && (lines == 1)) {
                 _displayfunction |= 0x04;// LCD_5x10DOTS;
             }
 
@@ -151,47 +146,41 @@ namespace SeeedGrove
         }*/
 
         // send command
-        private void command(byte value)
-        {
+        private void command(byte value) {
             byte[] dta = new byte[2] { 0x80, value };
             DisplayDevice.Write(dta);
             //i2c_send_byteS(dta, 2);
         }
 
         // send data
-        private void write(byte value)
-        {
+        private void write(byte value) {
 
             byte[] dta = new byte[2] { 0x40, value };
             //i2c_send_byteS(dta, 2);
             DisplayDevice.Write(dta);
             //return 1; // assume sucess
         }
-        
+
         /********** high level commands, for the user! */
 
-        public void Write(string s)
-        {
+        public void Write(string s) {
 
             for (int i = 0; i < s.Length; i++)
                 write((byte)s[i]);
         }
-        public void Clear()
-        {
+        public void Clear() {
             command(LCD_CLEARDISPLAY);        // clear display, set cursor position to zero
             //delayMicroseconds(2000);          // this command takes a long time!
             Thread.Sleep(2);
         }
 
-        public void GoHome()
-        {
+        public void GoHome() {
             command(LCD_RETURNHOME);        // set cursor position to zero
             //delayMicroseconds(2000);        // this command takes a long time!
             Thread.Sleep(2);
         }
 
-        public  void SetCursor(byte col, byte row)
-        {
+        public void SetCursor(byte col, byte row) {
 
             col = (byte)(row == 0 ? (col | 0x80) : (col | 0xc0));
             command(col);
@@ -203,8 +192,7 @@ namespace SeeedGrove
         }
 
         // Turn the display on/off (quickly)
-        public void EnableDisplay(bool on)
-        {
+        public void EnableDisplay(bool on) {
             if (on)
                 _displaycontrol |= LCD_DISPLAYON;
             else
@@ -216,8 +204,7 @@ namespace SeeedGrove
         // =============================================================================
 
         // Control the backlight LED blinking
-        private void WriteBacklightReg(byte addr, byte data)
-        {
+        private void WriteBacklightReg(byte addr, byte data) {
             byte[] wb = new byte[2];
             wb[0] = addr;
             wb[1] = data;
@@ -228,27 +215,23 @@ namespace SeeedGrove
 
         }
 
-        public void BlinkBacklight(bool on)
-        {
+        public void BlinkBacklight(bool on) {
             // blink period in seconds = (<reg 7> + 1) / 24
             // on/off ratio = <reg 6> / 256
-            if (on)
-            {
+            if (on) {
                 WriteBacklightReg(0x07, 0x17);  // blink every second
                 WriteBacklightReg(0x06, 0x7f);  // half on, half off
             }
-            else
-            {
+            else {
                 WriteBacklightReg(0x07, 0x00);
                 WriteBacklightReg(0x06, 0xff);
             }
         }
-        public void SetBacklightRGB(byte r, byte g, byte b)
-        {
+        public void SetBacklightRGB(byte r, byte g, byte b) {
 
-            byte REG_RED = 0x04;    // pwm2 
-            byte REG_GREEN = 0x03;      // pwm1 
-            byte REG_BLUE = 0x02;      // pwm0 
+            byte REG_RED = 0x04;    // pwm2
+            byte REG_GREEN = 0x03;      // pwm1
+            byte REG_BLUE = 0x02;      // pwm0
 
             WriteBacklightReg(REG_RED, r);
             WriteBacklightReg(REG_GREEN, g);

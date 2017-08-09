@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{482A05A3-F27D-4FD8-BA2A-7DC989714C70}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SeeedGrove</RootNamespace>
-    <AssemblyName>SeeedGrove</AssemblyName>
+    <RootNamespace>SeeedGroveStarterKit</RootNamespace>
+    <AssemblyName>SeeedGroveStarterKit</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -43,7 +43,6 @@
     <Compile Include="LedSocket.cs" />
     <Compile Include="LightSensor.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Relay.cs" />
     <Compile Include="RotaryAngleSensor.cs" />
     <Compile Include="ServoMotor.cs" />

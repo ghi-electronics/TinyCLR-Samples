@@ -1,40 +1,34 @@
 ﻿using GHIElectronics.TinyCLR.Devices.Gpio;
 
-namespace SeeedGrove
-{
-    public class TouchSensor
-    {
+namespace SeeedGroveStarterKit {
+    public class Button {
         GpioPin Pin;
-        public TouchSensor(int PinNumber)
-        {
-            Pin = GpioController.GetDefault().OpenPin(PinNumber);
+
+        public Button(int GpioPinNumber) {
+            Pin = GpioController.GetDefault().OpenPin(GpioPinNumber);
             Pin.Write(GpioPinValue.Low);
             Pin.SetDriveMode(GpioPinDriveMode.Input);
             Pin.ValueChanged += Pin_ValueChanged;
         }
-        
-        public bool IsTouched()
-        {
+
+        public bool IsPressed() {
             return Pin.Read() == GpioPinValue.High;
         }
-
-
         /// <summary>
         /// The signature of button events.
         /// </summary>
-        public delegate void TouchEventHandler();
+        public delegate void ButtonEventHandler();
 
         /// <summary>
         /// The event raised when a button is released.
         /// </summary>
-        public event TouchEventHandler Touched;
-        public event TouchEventHandler Untouched;
-        private void Pin_ValueChanged(object sender, GpioPinValueChangedEventArgs e)
-        {
+        public event ButtonEventHandler ButtonReleased;
+        public event ButtonEventHandler ButtonPressed;
+        private void Pin_ValueChanged(object sender, GpioPinValueChangedEventArgs e) {
             if (e.Edge == GpioPinEdge.RisingEdge)
-                Touched?.Invoke();
+                ButtonPressed?.Invoke();
             else
-                Untouched?.Invoke();
+                ButtonReleased?.Invoke();
         }
 
     }
