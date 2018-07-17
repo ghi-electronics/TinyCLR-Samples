@@ -27,7 +27,7 @@ namespace Polulou.Zumo
             button.SetDriveMode(GpioPinDriveMode.InputPullUp);
 
             PwmController pwm = PwmController.FromId(FEZ.PwmPin.Controller3.Id);
-            pwm.SetDesiredFrequency( 4 * 1000);
+            pwm.SetDesiredFrequency(4 * 1000);
             Buzzer = pwm.OpenPin(FEZ.PwmPin.Controller3.D6); // D3 or D6
             Buzzer.Stop();
             Buzzer.SetActiveDutyCyclePercentage(0.5);
@@ -45,7 +45,7 @@ namespace Polulou.Zumo
             {
                 var settings = new I2cConnectionSettings(0x6B);//1101011b SA is high
                 settings.BusSpeed = I2cBusSpeed.StandardMode;
-
+                settings.SharingMode = I2cSharingMode.Shared;
                 //string aqs = I2cDevice.GetDeviceSelector("I2C1");
                 device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
 
@@ -107,6 +107,7 @@ namespace Polulou.Zumo
             {
                 var settings = new I2cConnectionSettings(0x1D);//0011101b SA is high
                 settings.BusSpeed = I2cBusSpeed.StandardMode;
+                settings.SharingMode = I2cSharingMode.Shared;
 
                 //string aqs = I2cDevice.GetDeviceSelector("I2C1");
                 device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
@@ -171,7 +172,7 @@ namespace Polulou.Zumo
 
                 return (short)temp;
             }
-          
+
         }
         public static class Reflectors
         {
