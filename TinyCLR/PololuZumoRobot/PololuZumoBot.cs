@@ -46,6 +46,7 @@ namespace Polulou.Zumo
                 var settings = new I2cConnectionSettings(0x6B);//1101011b SA is high
                 settings.BusSpeed = I2cBusSpeed.StandardMode;
                 settings.SharingMode = I2cSharingMode.Shared;
+
                 //string aqs = I2cDevice.GetDeviceSelector("I2C1");
                 device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
 
