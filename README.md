@@ -1,5 +1,3 @@
-# FEZ Shields
+# TinyCLR Demos
 
-This repository has a few small projects that show you how to use some shields with any Arduino-pinout compatible board, including our FEZ, with TinyCLR.
-
-Find more info on our [docs](http://docs.ghielectronics.com/hardware/fez/shields/shields.html)
+This repository has various demos that show using various parts of TinyCLR, including various shields for the [FEZ](http://docs.ghielectronics.com/hardware/fez/shields/shields.html).
