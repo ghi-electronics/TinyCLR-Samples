@@ -20,7 +20,7 @@ namespace AdafruitDisplayShield {
             var spi1Controller = SpiController.FromName(FEZ.SpiBus.Spi1);
             var gpioController = GpioController.GetDefault();
 
-            var st7735 = new ST7735Controller(spi1Controller.GetDevice(ST7735Controller.GetConnectionSettings(FEZ.GpioPin.D10)), gpioController.OpenPin(FEZ.GpioPin.D8));
+            var st7735 = new ST7735Controller(spi1Controller.GetDevice(ST7735Controller.GetConnectionSettings(SpiChipSelectType.Gpio, FEZ.GpioPin.D10)), gpioController.OpenPin(FEZ.GpioPin.D8));
             st7735.SetDataAccessControl(false, false, false, false);
             st7735.SetDrawWindow(0, 40);
 
