@@ -78,7 +78,7 @@ namespace Polulou.Zumo
                 int h = ReadRegister(address + 1);
 
 
-                int temp = (h << 8);
+                var temp = (h << 8);
                 temp |= l;
 
                 return (short)temp;
@@ -136,7 +136,7 @@ namespace Polulou.Zumo
                 int h = ReadRegister(address + 1);
 
 
-                int temp = (h << 8);
+                var temp = (h << 8);
                 temp |= l;
 
                 return (short)temp;
@@ -155,7 +155,7 @@ namespace Polulou.Zumo
                 // there is no explanation in datasheet on what the value means except is is 2s complement!
                 // plus it says the data is 12 bits but I am seeing 16bits!
                 // I am reading -18 and raising teh tempo changes the results
-                int temp = (temph << 8);
+                var temp = (temph << 8);
                 temp |= templ;
 
                 return (short)temp;
@@ -169,7 +169,7 @@ namespace Polulou.Zumo
 
             static Reflectors()
             {
-                GpioController GPIO = GpioController.GetDefault();
+                var GPIO = GpioController.GetDefault();
                 pin = new GpioPin[6]
                     {
                         GPIO.OpenPin(FEZ.GpioPin.D4),
@@ -195,7 +195,7 @@ namespace Polulou.Zumo
                 pin[reflector].SetDriveMode(GpioPinDriveMode.Output);
                 pin[reflector].Write(GpioPinValue.High);
                 Thread.Sleep(0);
-                DateTime time = DateTime.Now;
+                var time = DateTime.Now;
                 pin[reflector].SetDriveMode(GpioPinDriveMode.Input);
                 while (pin[reflector].Read() == GpioPinValue.High)
                     Thread.Sleep(0);
@@ -203,6 +203,7 @@ namespace Polulou.Zumo
                 return DateTime.Now.Ticks - time.Ticks;
             }
         }
+
         public static class Motors
         {
             private static PwmController PWM = PwmController.FromId(FEZ.PwmPin.Controller3.Id);
