@@ -26,7 +26,7 @@ namespace Polulou.Zumo
             button = GpioController.GetDefault().OpenPin(FEZ.GpioPin.D12);
             button.SetDriveMode(GpioPinDriveMode.InputPullUp);
 
-            PwmController pwm = PwmController.FromId(FEZ.PwmChannel.Controller3.Id);
+            PwmController pwm = PwmController.FromName(FEZ.PwmChannel.Controller3.Id);
             pwm.SetDesiredFrequency(4 * 1000);
             Buzzer = pwm.OpenPin(FEZ.PwmPin.Controller3.D6); // D3 or D6
             Buzzer.Stop();
@@ -206,7 +206,7 @@ namespace Polulou.Zumo
 
         public static class Motors
         {
-            private static PwmController PWM = PwmController.FromId(FEZ.PwmChannel.Controller3.Id);
+            private static PwmController PWM = PwmController.FromName(FEZ.PwmChannel.Controller3.Id);
             private static PwmChannel M1PWM, M2PWM;
             private static GpioPin M1DIR, M2DIR;
 
