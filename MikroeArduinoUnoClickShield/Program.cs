@@ -6,7 +6,9 @@ using System.Threading;
 namespace MikroeArduinoUnoClickShield {
     public class Program {
         public static void Main() {
-            var spiSettings = new SpiConnectionSettings(FEZ.GpioPin.D10) {
+            var spiSettings = new SpiConnectionSettings() {
+                ChipSelectType = SpiChipSelectType.Gpio,
+                ChipSelectLine = FEZ.GpioPin.D10,
                 ClockFrequency = 12_000_000,
                 DataBitLength = 8,
                 Mode = SpiMode.Mode0
