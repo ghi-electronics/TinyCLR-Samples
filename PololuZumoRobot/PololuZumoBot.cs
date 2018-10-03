@@ -43,9 +43,9 @@ namespace Polulou.Zumo
 
             static Gyroscope()
             {
-                var settings = new I2cConnectionSettings(0x6B);//1101011b SA is high
-                settings.BusSpeed = I2cBusSpeed.StandardMode;
-                settings.SharingMode = I2cSharingMode.Shared;
+                var settings = new I2cConnectionSettings(0x6B) {//1101011b SA is high
+                    BusSpeed = I2cBusSpeed.StandardMode,
+                };
 
                 //string aqs = I2cDevice.GetDeviceSelector("I2C1");
                 device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
