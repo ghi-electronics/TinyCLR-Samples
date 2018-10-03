@@ -99,9 +99,10 @@ namespace Polulou.Zumo
 
             static Accelerometer()
             {
-                var settings = new I2cConnectionSettings(0x1D);//0011101b SA is high
-                settings.BusSpeed = I2cBusSpeed.StandardMode;
-                settings.SharingMode = I2cSharingMode.Shared;
+                var settings = new I2cConnectionSettings(0x1D) { //0011101b SA is high
+                    BusSpeed = I2cBusSpeed.StandardMode,
+                    SharingMode = I2cSharingMode.Shared
+                };
 
                 //string aqs = I2cDevice.GetDeviceSelector("I2C1");
                 device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
