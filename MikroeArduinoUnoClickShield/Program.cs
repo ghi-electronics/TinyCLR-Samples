@@ -6,7 +6,9 @@ using System.Threading;
 namespace MikroeArduinoUnoClickShield {
     public class Program {
         public static void Main() {
-            var spiSettings = new SpiConnectionSettings(FEZ.GpioPin.D10) {
+            var spiSettings = new SpiConnectionSettings() {
+                ChipSelectType = SpiChipSelectType.Gpio,
+                ChipSelectLine = FEZ.GpioPin.D10,
                 ClockFrequency = 12_000_000,
                 DataBitLength = 8,
                 Mode = SpiMode.Mode0
@@ -14,7 +16,7 @@ namespace MikroeArduinoUnoClickShield {
 
             var gpioController = GpioController.GetDefault();
             var mr = gpioController.OpenPin(FEZ.GpioPin.A3);
-            var spi = SpiDevice.FromId(FEZ.SpiBus.Spi1, spiSettings);
+            var spi = SpiController.FromName(FEZ.SpiBus.Spi1).GetDevice(spiSettings);
 
             mr.SetDriveMode(GpioPinDriveMode.Output);
             mr.Write(GpioPinValue.High);
