@@ -16,7 +16,7 @@ namespace Polulou.Zumo
         private static GpioPin led;
         private static GpioPin button;
         private static AdcChannel voltage;
-        private static PwmPin Buzzer;
+        private static PwmChannel Buzzer;
 
         static ZumoBot()
         {
@@ -26,9 +26,9 @@ namespace Polulou.Zumo
             button = GpioController.GetDefault().OpenPin(FEZ.GpioPin.D12);
             button.SetDriveMode(GpioPinDriveMode.InputPullUp);
 
-            PwmController pwm = PwmController.FromId(FEZ.PwmPin.Controller3.Id);
+            var pwm = PwmController.FromName(FEZ.PwmChannel.Controller3.Id);
             pwm.SetDesiredFrequency(4 * 1000);
-            Buzzer = pwm.OpenPin(FEZ.PwmPin.Controller3.D6); // D3 or D6
+            Buzzer = pwm.OpenChannel(FEZ.PwmChannel.Controller3.D6); // D3 or D6
             Buzzer.Stop();
             Buzzer.SetActiveDutyCyclePercentage(0.5);
 
@@ -43,12 +43,11 @@ namespace Polulou.Zumo
 
             static Gyroscope()
             {
-                var settings = new I2cConnectionSettings(0x6B);//1101011b SA is high
-                settings.BusSpeed = I2cBusSpeed.StandardMode;
-                settings.SharingMode = I2cSharingMode.Shared;
+                var settings = new I2cConnectionSettings(0x6B) {//1101011b SA is high
+                    BusSpeed = I2cBusSpeed.StandardMode,
+                };
 
-                //string aqs = I2cDevice.GetDeviceSelector("I2C1");
-                device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
+                device = I2cController.FromName(FEZ.I2cBus.I2c1).GetDevice(settings);
 
                 ReadRegister(0x0f);// first read is not working
 
@@ -78,23 +77,16 @@ namespace Polulou.Zumo
                 int h = ReadRegister(address + 1);
 
 
-                int temp = (h << 8);
+                var temp = (h << 8);
                 temp |= l;
 
                 return (short)temp;
             }
-            public static short ReadX()
-            {
-                return Read2Complement16bit(0x28);
-            }
-            public static short ReadY()
-            {
-                return Read2Complement16bit(0x2A);
-            }
-            public static short ReadZ()
-            {
-                return Read2Complement16bit(0x2C);
-            }
+            public static short ReadX() => Read2Complement16bit(0x28);
+
+            public static short ReadY() => Read2Complement16bit(0x2A);
+
+            public static short ReadZ() => Read2Complement16bit(0x2C);
 
         }
         public static class Accelerometer
@@ -106,12 +98,11 @@ namespace Polulou.Zumo
 
             static Accelerometer()
             {
-                var settings = new I2cConnectionSettings(0x1D);//0011101b SA is high
-                settings.BusSpeed = I2cBusSpeed.StandardMode;
-                settings.SharingMode = I2cSharingMode.Shared;
+                var settings = new I2cConnectionSettings(0x1D) { //0011101b SA is high
+                    BusSpeed = I2cBusSpeed.StandardMode,
+                };
 
-                //string aqs = I2cDevice.GetDeviceSelector("I2C1");
-                device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
+                device = I2cController.FromName(FEZ.I2cBus.I2c1).GetDevice(settings);
 
                 ReadRegister(0x0f);// first read is not working right!!!
 
@@ -132,7 +123,6 @@ namespace Polulou.Zumo
             private static byte ReadRegister(int register)
             {
                 buffer1[0] = (byte)register;
-                //byte[] b = new byte[1];
                 device.WriteRead(buffer1, buffer1);
 
                 return buffer1[0];
@@ -143,23 +133,17 @@ namespace Polulou.Zumo
                 int h = ReadRegister(address + 1);
 
 
-                int temp = (h << 8);
+                var temp = (h << 8);
                 temp |= l;
 
                 return (short)temp;
             }
-            public static short ReadX()
-            {
-                return Read2Complement16bit(0x28);
-            }
-            public static short ReadY()
-            {
-                return Read2Complement16bit(0x2A);
-            }
-            public static short ReadZ()
-            {
-                return Read2Complement16bit(0x2C);
-            }
+            public static short ReadX() => Read2Complement16bit(0x28);
+
+            public static short ReadY() => Read2Complement16bit(0x2A);
+
+            public static short ReadZ() => Read2Complement16bit(0x2C);
+
             public static short ReadTemperature()
             {
                 int templ = ReadRegister(0x05);
@@ -168,7 +152,7 @@ namespace Polulou.Zumo
                 // there is no explanation in datasheet on what the value means except is is 2s complement!
                 // plus it says the data is 12 bits but I am seeing 16bits!
                 // I am reading -18 and raising teh tempo changes the results
-                int temp = (temph << 8);
+                var temp = (temph << 8);
                 temp |= templ;
 
                 return (short)temp;
@@ -182,7 +166,7 @@ namespace Polulou.Zumo
 
             static Reflectors()
             {
-                GpioController GPIO = GpioController.GetDefault();
+                var GPIO = GpioController.GetDefault();
                 pin = new GpioPin[6]
                     {
                         GPIO.OpenPin(FEZ.GpioPin.D4),
@@ -208,7 +192,7 @@ namespace Polulou.Zumo
                 pin[reflector].SetDriveMode(GpioPinDriveMode.Output);
                 pin[reflector].Write(GpioPinValue.High);
                 Thread.Sleep(0);
-                DateTime time = DateTime.Now;
+                var time = DateTime.Now;
                 pin[reflector].SetDriveMode(GpioPinDriveMode.Input);
                 while (pin[reflector].Read() == GpioPinValue.High)
                     Thread.Sleep(0);
@@ -216,22 +200,23 @@ namespace Polulou.Zumo
                 return DateTime.Now.Ticks - time.Ticks;
             }
         }
+
         public static class Motors
         {
-            private static PwmController PWM = PwmController.FromId(FEZ.PwmPin.Controller3.Id);
-            private static PwmPin M1PWM, M2PWM;
+            private static PwmController PWM = PwmController.FromName(FEZ.PwmChannel.Controller3.Id);
+            private static PwmChannel M1PWM, M2PWM;
             private static GpioPin M1DIR, M2DIR;
 
             static Motors()
             {
                 PWM.SetDesiredFrequency(6000);
 
-                M1PWM = PWM.OpenPin(FEZ.PwmPin.Controller3.D9);
+                M1PWM = PWM.OpenChannel(FEZ.PwmChannel.Controller3.D9);
                 M1PWM.Stop();
                 M1PWM.SetActiveDutyCyclePercentage(0.1);
                 M1PWM.Start();
 
-                M2PWM = PWM.OpenPin(FEZ.PwmPin.Controller3.D10);
+                M2PWM = PWM.OpenChannel(FEZ.PwmChannel.Controller3.D10);
                 M2PWM.Stop();
                 M2PWM.SetActiveDutyCyclePercentage(0.1);
                 M2PWM.Start();
@@ -245,28 +230,16 @@ namespace Polulou.Zumo
                 M2DIR.SetDriveMode(GpioPinDriveMode.Output);
             }
 
-            public static void MoveForward()
-            {
-                Move(80, 80);
-            }
+            public static void MoveForward() => Move(80, 80);
 
-            public static void MoveBackward()
-            {
-                Move(-80, -80);
-            }
+            public static void MoveBackward() => Move(-80, -80);
 
-            public static void TurnRight()
-            {
-                Move(50, -50);
-            }
-            public static void TurnLeft()
-            {
-                Move(-50, 50);
-            }
-            public static void Stop()
-            {
-                Move(0, 0);
-            }
+            public static void TurnRight() => Move(50, -50);
+
+            public static void TurnLeft() => Move(-50, 50);
+
+            public static void Stop() => Move(0, 0);
+
             public static void Move(double LeftSpeed, double RightSpeed)
             {
                 if (RightSpeed < 0)
@@ -291,18 +264,12 @@ namespace Polulou.Zumo
             Buzzer.Stop();
         }
 
-        public static void Beep()
-        {
-            Beep(10);
-        }
-        public static bool ButtonIsPressed()
-        {
-            return button.Read() == GpioPinValue.Low;
-        }
-        public static double BatteryVoltage()
-        {
-            return voltage.ReadRatio() * 3.3 / 0.6;
-        }
+        public static void Beep() => Beep(10);
+
+        public static bool ButtonIsPressed() => button.Read() == GpioPinValue.Low;
+
+        public static double BatteryVoltage() => voltage.ReadRatio() * 3.3 / 0.6;
+
         public static void SetLed(bool on)
         {
             if (on)
