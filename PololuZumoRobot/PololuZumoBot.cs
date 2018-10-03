@@ -16,7 +16,7 @@ namespace Polulou.Zumo
         private static GpioPin led;
         private static GpioPin button;
         private static AdcChannel voltage;
-        private static PwmPin Buzzer;
+        private static PwmChannel Buzzer;
 
         static ZumoBot()
         {
@@ -207,7 +207,7 @@ namespace Polulou.Zumo
         public static class Motors
         {
             private static PwmController PWM = PwmController.FromId(FEZ.PwmPin.Controller3.Id);
-            private static PwmPin M1PWM, M2PWM;
+            private static PwmChannel M1PWM, M2PWM;
             private static GpioPin M1DIR, M2DIR;
 
             static Motors()
