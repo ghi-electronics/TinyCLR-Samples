@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\GHIElectronics.TinyCLR.Core.0.7.0\build\net452\GHIElectronics.TinyCLR.Core.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Core.0.7.0\build\net452\GHIElectronics.TinyCLR.Core.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Core.1.0.0-preview2\build\net452\GHIElectronics.TinyCLR.Core.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Core.1.0.0-preview2\build\net452\GHIElectronics.TinyCLR.Core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -42,11 +42,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="GHIElectronics.TinyCLR.Devices, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.0.7.0\lib\net452\GHIElectronics.TinyCLR.Devices.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Gpio, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.1.0.0-preview2\lib\net452\GHIElectronics.TinyCLR.Devices.Gpio.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Pins.0.7.0\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Spi, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Spi.1.0.0-preview2\lib\net452\GHIElectronics.TinyCLR.Devices.Spi.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Native, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Native.1.0.0-preview2\lib\net452\GHIElectronics.TinyCLR.Native.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Pins.1.0.0-preview2\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -54,6 +60,6 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Core.0.7.0\build\net452\GHIElectronics.TinyCLR.Core.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Core.0.7.0\build\net452\GHIElectronics.TinyCLR.Core.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Core.1.0.0-preview2\build\net452\GHIElectronics.TinyCLR.Core.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Core.1.0.0-preview2\build\net452\GHIElectronics.TinyCLR.Core.props'))" />
   </Target>
 </Project>
