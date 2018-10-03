@@ -16,7 +16,7 @@ namespace MikroeArduinoUnoClickShield {
 
             var gpioController = GpioController.GetDefault();
             var mr = gpioController.OpenPin(FEZ.GpioPin.A3);
-            var spi = SpiDevice.FromId(FEZ.SpiBus.Spi1, spiSettings);
+            var spi = SpiController.FromName(FEZ.SpiBus.Spi1).GetDevice(spiSettings);
 
             mr.SetDriveMode(GpioPinDriveMode.Output);
             mr.Write(GpioPinValue.High);
