@@ -28,7 +28,7 @@ namespace Polulou.Zumo
 
             var pwm = PwmController.FromName(FEZ.PwmChannel.Controller3.Id);
             pwm.SetDesiredFrequency(4 * 1000);
-            Buzzer = pwm.OpenPin(FEZ.PwmPin.Controller3.D6); // D3 or D6
+            Buzzer = pwm.OpenPin(FEZ.PwmChannel.Controller3.D6); // D3 or D6
             Buzzer.Stop();
             Buzzer.SetActiveDutyCyclePercentage(0.5);
 
@@ -214,12 +214,12 @@ namespace Polulou.Zumo
             {
                 PWM.SetDesiredFrequency(6000);
 
-                M1PWM = PWM.OpenPin(FEZ.PwmPin.Controller3.D9);
+                M1PWM = PWM.OpenPin(FEZ.PwmChannel.Controller3.D9);
                 M1PWM.Stop();
                 M1PWM.SetActiveDutyCyclePercentage(0.1);
                 M1PWM.Start();
 
-                M2PWM = PWM.OpenPin(FEZ.PwmPin.Controller3.D10);
+                M2PWM = PWM.OpenPin(FEZ.PwmChannel.Controller3.D10);
                 M2PWM.Stop();
                 M2PWM.SetActiveDutyCyclePercentage(0.1);
                 M2PWM.Start();
