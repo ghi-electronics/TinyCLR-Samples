@@ -83,18 +83,11 @@ namespace Polulou.Zumo
 
                 return (short)temp;
             }
-            public static short ReadX()
-            {
-                return Read2Complement16bit(0x28);
-            }
-            public static short ReadY()
-            {
-                return Read2Complement16bit(0x2A);
-            }
-            public static short ReadZ()
-            {
-                return Read2Complement16bit(0x2C);
-            }
+            public static short ReadX() => Read2Complement16bit(0x28);
+
+            public static short ReadY() => Read2Complement16bit(0x2A);
+
+            public static short ReadZ() => Read2Complement16bit(0x2C);
 
         }
         public static class Accelerometer
@@ -148,18 +141,12 @@ namespace Polulou.Zumo
 
                 return (short)temp;
             }
-            public static short ReadX()
-            {
-                return Read2Complement16bit(0x28);
-            }
-            public static short ReadY()
-            {
-                return Read2Complement16bit(0x2A);
-            }
-            public static short ReadZ()
-            {
-                return Read2Complement16bit(0x2C);
-            }
+            public static short ReadX() => Read2Complement16bit(0x28);
+
+            public static short ReadY() => Read2Complement16bit(0x2A);
+
+            public static short ReadZ() => Read2Complement16bit(0x2C);
+
             public static short ReadTemperature()
             {
                 int templ = ReadRegister(0x05);
@@ -245,28 +232,16 @@ namespace Polulou.Zumo
                 M2DIR.SetDriveMode(GpioPinDriveMode.Output);
             }
 
-            public static void MoveForward()
-            {
-                Move(80, 80);
-            }
+            public static void MoveForward() => Move(80, 80);
 
-            public static void MoveBackward()
-            {
-                Move(-80, -80);
-            }
+            public static void MoveBackward() => Move(-80, -80);
 
-            public static void TurnRight()
-            {
-                Move(50, -50);
-            }
-            public static void TurnLeft()
-            {
-                Move(-50, 50);
-            }
-            public static void Stop()
-            {
-                Move(0, 0);
-            }
+            public static void TurnRight() => Move(50, -50);
+
+            public static void TurnLeft() => Move(-50, 50);
+
+            public static void Stop() => Move(0, 0);
+
             public static void Move(double LeftSpeed, double RightSpeed)
             {
                 if (RightSpeed < 0)
@@ -291,18 +266,12 @@ namespace Polulou.Zumo
             Buzzer.Stop();
         }
 
-        public static void Beep()
-        {
-            Beep(10);
-        }
-        public static bool ButtonIsPressed()
-        {
-            return button.Read() == GpioPinValue.Low;
-        }
-        public static double BatteryVoltage()
-        {
-            return voltage.ReadRatio() * 3.3 / 0.6;
-        }
+        public static void Beep() => Beep(10);
+
+        public static bool ButtonIsPressed() => button.Read() == GpioPinValue.Low;
+
+        public static double BatteryVoltage() => voltage.ReadRatio() * 3.3 / 0.6;
+
         public static void SetLed(bool on)
         {
             if (on)
