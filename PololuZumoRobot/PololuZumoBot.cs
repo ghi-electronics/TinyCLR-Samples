@@ -101,7 +101,6 @@ namespace Polulou.Zumo
             {
                 var settings = new I2cConnectionSettings(0x1D) { //0011101b SA is high
                     BusSpeed = I2cBusSpeed.StandardMode,
-                    SharingMode = I2cSharingMode.Shared
                 };
 
                 //string aqs = I2cDevice.GetDeviceSelector("I2C1");
