@@ -6,7 +6,7 @@ using Polulou.Zumo;
 namespace PololuZumoArduino {
     public class Program {
         public static void Main() {
-            bool state = false;
+            var state = false;
 
 
             while (!ZumoBot.ButtonIsPressed()) {
@@ -27,8 +27,8 @@ namespace PololuZumoArduino {
             ZumoBot.SetLed(true);
 
             while (true) {
-                long left = ZumoBot.Reflectors.GetLevel(0);
-                long right = ZumoBot.Reflectors.GetLevel(5);
+                var left = ZumoBot.Reflectors.GetLevel(0);
+                var right = ZumoBot.Reflectors.GetLevel(5);
                 //Debug.WriteLine(">" + ZumoBot.Reflectors.GetLevel(0));
                 //System.Diagnostics.Debug.WriteLine("l: " + left + " r: " + right);
                 if (left < 8000 && right < 8000) {
