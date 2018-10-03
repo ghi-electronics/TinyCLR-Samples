@@ -48,7 +48,7 @@ namespace Polulou.Zumo
                 };
 
                 //string aqs = I2cDevice.GetDeviceSelector("I2C1");
-                device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
+                device = I2cController.FromName(FEZ.I2cBus.I2c1).GetDevice(settings);
 
                 ReadRegister(0x0f);// first read is not working
 
@@ -104,7 +104,7 @@ namespace Polulou.Zumo
                 };
 
                 //string aqs = I2cDevice.GetDeviceSelector("I2C1");
-                device = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
+                device = I2cController.FromName(FEZ.I2cBus.I2c1).GetDevice(settings);
 
                 ReadRegister(0x0f);// first read is not working right!!!
 
