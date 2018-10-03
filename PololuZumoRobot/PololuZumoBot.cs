@@ -47,7 +47,6 @@ namespace Polulou.Zumo
                     BusSpeed = I2cBusSpeed.StandardMode,
                 };
 
-                //string aqs = I2cDevice.GetDeviceSelector("I2C1");
                 device = I2cController.FromName(FEZ.I2cBus.I2c1).GetDevice(settings);
 
                 ReadRegister(0x0f);// first read is not working
@@ -103,7 +102,6 @@ namespace Polulou.Zumo
                     BusSpeed = I2cBusSpeed.StandardMode,
                 };
 
-                //string aqs = I2cDevice.GetDeviceSelector("I2C1");
                 device = I2cController.FromName(FEZ.I2cBus.I2c1).GetDevice(settings);
 
                 ReadRegister(0x0f);// first read is not working right!!!
@@ -125,7 +123,6 @@ namespace Polulou.Zumo
             private static byte ReadRegister(int register)
             {
                 buffer1[0] = (byte)register;
-                //byte[] b = new byte[1];
                 device.WriteRead(buffer1, buffer1);
 
                 return buffer1[0];
