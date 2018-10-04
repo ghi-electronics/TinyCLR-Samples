@@ -149,7 +149,7 @@ namespace SeeedGroveStarterKit {
 
         // send command
         private void command(byte value) {
-            byte[] dta = new byte[2] { 0x80, value };
+            var dta = new byte[2] { 0x80, value };
             this.DisplayDevice.Write(dta);
             //i2c_send_byteS(dta, 2);
         }
@@ -157,7 +157,7 @@ namespace SeeedGroveStarterKit {
         // send data
         private void write(byte value) {
 
-            byte[] dta = new byte[2] { 0x40, value };
+            var dta = new byte[2] { 0x40, value };
             //i2c_send_byteS(dta, 2);
             this.DisplayDevice.Write(dta);
             //return 1; // assume sucess
@@ -167,7 +167,7 @@ namespace SeeedGroveStarterKit {
 
         public void Write(string s) {
 
-            for (int i = 0; i < s.Length; i++)
+            for (var i = 0; i < s.Length; i++)
                 this.write((byte)s[i]);
         }
         public void Clear() {
@@ -207,7 +207,7 @@ namespace SeeedGroveStarterKit {
 
         // Control the backlight LED blinking
         private void WriteBacklightReg(byte addr, byte data) {
-            byte[] wb = new byte[2];
+            var wb = new byte[2];
             wb[0] = addr;
             wb[1] = data;
 

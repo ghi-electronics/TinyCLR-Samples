@@ -38,7 +38,7 @@ namespace SeeedGroveStarterKit {
 
             // Typically, with 50 hz, 0 degree is 0.05 and 180 degrees is 0.10
             //double duty = ((position / 180.0) * (0.10 - 0.05)) + 0.05;
-            double duty = ((position / 180.0) * (this._MaxPulseCalibration / 20 - this._MinPulseCalibration / 20)) + this._MinPulseCalibration / 20;
+            var duty = ((position / 180.0) * (this._MaxPulseCalibration / 20 - this._MinPulseCalibration / 20)) + this._MinPulseCalibration / 20;
 
 
             this.servo.SetActiveDutyCyclePercentage(duty);

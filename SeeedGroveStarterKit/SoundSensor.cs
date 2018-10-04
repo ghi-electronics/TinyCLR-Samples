@@ -8,8 +8,8 @@ namespace SeeedGroveStarterKit {
         // between 0 and 100
         public double ReadLevel() {
             double LastRead = 0;
-            for (int i = 0; i < 10; i++) {
-                double d = this.Channel.ReadRatio();
+            for (var i = 0; i < 10; i++) {
+                var d = this.Channel.ReadRatio();
                 if (d > LastRead)
                     LastRead = d;
             }
