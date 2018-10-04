@@ -4,7 +4,7 @@ using GHIElectronics.TinyCLR.Devices.Pwm;
 
 namespace SeeedGroveStarterKit {
     public class ServoMotor {
-        private PwmPin servo;
+        private PwmChannel servo;
         public ServoMotor(string controller, int PwmPinNumber) {
             PwmController PWM = PwmController.FromId(controller);
 
