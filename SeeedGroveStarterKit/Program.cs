@@ -48,8 +48,8 @@ namespace SeeedGroveStarterKit {
             led.Blink(10);
             Thread.Sleep(-1);//*/
             //==============================
-            /* Buzzer
-            Buzzer buzz = new Buzzer(FEZ.GpioPin.D4);
+            //* Buzzer
+            var buzz = new Buzzer(FEZ.GpioPin.D4);
             buzz.Beep();
             Thread.Sleep(5000);
             buzz.TurnOn();
@@ -61,7 +61,7 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(1000);
             }//*/
             //==============================
-            //* Rotary Angle Sensor
+            /* Rotary Angle Sensor
             var rot = new RotaryAngleSensor(FEZ.AdcChannel.A0);
             var servo = new ServoMotor(FEZ.PwmChannel.Controller4.Id, FEZ.PwmChannel.Controller4.D5);
             while (true)
