@@ -6,7 +6,7 @@ namespace SeeedGroveStarterKit {
     public class ServoMotor {
         private PwmChannel servo;
         public ServoMotor(string controller, int PwmPinNumber) {
-            PwmController PWM = PwmController.FromId(controller);
+            var PWM = PwmController.FromName(controller);
 
             this.servo = PWM.OpenPin(PwmPinNumber);
             PWM.SetDesiredFrequency(1 / 0.020);
