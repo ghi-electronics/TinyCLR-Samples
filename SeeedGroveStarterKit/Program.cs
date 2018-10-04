@@ -107,8 +107,8 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(1000);
             }//*/
             //==============================
-            /* Light Sensor
-            LightSensor light = new LightSensor(FEZ.AdcChannel.A3);
+            //* Light Sensor
+            var light = new LightSensor(FEZ.AdcChannel.A3);
             while(true)
             {
                 Debug.WriteLine("-> " + light.ReadLightLevel());
@@ -116,7 +116,7 @@ namespace SeeedGroveStarterKit {
             }//*/
             //==============================
 
-            //* LCD RGB Backlight
+            /* LCD RGB Backlight
             var lcd = new LcdRgbBacklight();
             lcd.Clear();
             lcd.SetBacklightRGB(100, 100, 0);
