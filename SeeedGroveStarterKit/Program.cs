@@ -83,14 +83,14 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(30);
             }//*/
             //==============================
-            /* Button
-            Button btn = new Button(FEZ.GpioPin.D8);
+            //* Button
+            var btn = new Button(FEZ.GpioPin.D8);
             if (btn.IsPressed())
                 Debug.WriteLine("Not using Events");
             btn.ButtonPressed += Btn_ButtonPressed;
             Thread.Sleep(-1);//*/
             //==============================
-            //*
+            /*
             var touch = new TouchSensor(FEZ.GpioPin.D7);
               if (touch.IsTouched())
                     Debug.WriteLine("Not using Events");
