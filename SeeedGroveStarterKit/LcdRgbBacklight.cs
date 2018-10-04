@@ -43,13 +43,13 @@ namespace SeeedGroveStarterKit {
             };
 
             //string aqs = I2cDevice.GetDeviceSelector("I2C1");
-            this.DisplayDevice = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
+            this.DisplayDevice = I2cController.FromName(FEZ.I2cBus.I2c1).GetDevice(settings);
 
             settings = new I2cConnectionSettings((0xc4 >> 1)) {
                 BusSpeed = I2cBusSpeed.FastMode
             };
 
-            this.BacklightDevice = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
+            this.BacklightDevice = I2cController.FromName(FEZ.I2cBus.I2c1).GetDevice(settings);
 
             ////////////////////////////////////
             // get the display going
