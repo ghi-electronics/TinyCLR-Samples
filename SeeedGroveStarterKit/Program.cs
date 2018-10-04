@@ -12,7 +12,7 @@ namespace SeeedGroveStarterKit {
             //==============================
             /*Relay
 
-            Relay relay = new Relay(FEZ.GpioPin.D6);
+            var relay = new Relay(FEZ.GpioPin.D6);
             while (true)
             {
                 relay.TurnOn();
@@ -22,8 +22,8 @@ namespace SeeedGroveStarterKit {
             }//*/
             //==============================
             /*Servo
-            ServoMotor servo = new ServoMotor(FEZ.PwmPin.Controller2.Id,FEZ.PwmPin.Controller2.D5);
-            int pos = 90;
+            var servo = new ServoMotor(FEZ.PwmChannel.Controller4.Id,FEZ.PwmChannel.Controller4.D5);
+            var pos = 90;
             while (true)
             {
                 servo.SetPosition(pos);
@@ -34,7 +34,7 @@ namespace SeeedGroveStarterKit {
             }//*/
             //==============================
             /* LED Socket
-            LedSocket led = new LedSocket(FEZ.GpioPin.D3);
+            var led = new LedSocket(FEZ.GpioPin.D3);
             led.TurnOn();
             Thread.Sleep(5000);
             led.TurnOff();
@@ -49,7 +49,7 @@ namespace SeeedGroveStarterKit {
             Thread.Sleep(-1);//*/
             //==============================
             /* Buzzer
-            Buzzer buzz = new Buzzer(FEZ.GpioPin.D4);
+            var buzz = new Buzzer(FEZ.GpioPin.D4);
             buzz.Beep();
             Thread.Sleep(5000);
             buzz.TurnOn();
@@ -62,45 +62,48 @@ namespace SeeedGroveStarterKit {
             }//*/
             //==============================
             /* Rotary Angle Sensor
-            RotaryAngleSensor rot = new RotaryAngleSensor(FEZ.AdcChannel.A0);
-            ServoMotor servo = new ServoMotor(FEZ.PwmPin.Controller2.Id, FEZ.PwmPin.Controller2.D5);
+            var rot = new RotaryAngleSensor(FEZ.AdcChannel.A0);
+            var servo = new ServoMotor(FEZ.PwmChannel.Controller4.Id, FEZ.PwmChannel.Controller4.D5);
             while (true)
             {
-                double d = rot.GetAngle();
-                System.Diagnostics.Debug.WriteLine("->" + d);
+                var d = rot.GetAngle();
+                Debug.WriteLine("->" + d);
                 servo.SetPosition(d / 100 * 180);
                 Thread.Sleep(100);
             }//*/
             //==============================
             /* Sound Sensor
-            SoundSensor sound = new SoundSensor(FEZ.AdcChannel.A2);
-            ServoMotor servo = new ServoMotor(FEZ.PwmPin.Controller2.Id, FEZ.PwmPin.Controller2.D5);
+            var sound = new SoundSensor(FEZ.AdcChannel.A2);
+            var servo = new ServoMotor(FEZ.PwmChannel.Controller4.Id, FEZ.PwmChannel.Controller4.D5);
             while (true)
             {
-                double d = sound.ReadLevel();
+                var d = sound.ReadLevel();
                 servo.SetPosition(d / 100 * 180);
                 Debug.WriteLine("-> " + d);
                 Thread.Sleep(30);
             }//*/
             //==============================
             /* Button
-            Button btn = new Button(FEZ.GpioPin.D8);
-            if (btn.IsPressed())
-                Debug.WriteLine("Not using Events");
+            var btn = new Button(FEZ.GpioPin.D8);
             btn.ButtonPressed += Btn_ButtonPressed;
-            Thread.Sleep(-1);//*/
+            while (true) {
+                if (btn.IsPressed())
+                    Debug.WriteLine("Not using Events");
+                Thread.Sleep(50);
+            }//*/
             //==============================
             /*
-            TouchSensor touch = new TouchSensor(FEZ.GpioPin.D7);
-              if (touch.IsTouched())
-                    Debug.WriteLine("Not using Events");
-
-            //touch.Touched += Btn_ButtonPressed;
+            var touch = new TouchSensor(FEZ.GpioPin.D7);
             touch.Untouched += Touch_Untouched;
-            Thread.Sleep(-1);//*/
+            //touch.Touched += Btn_ButtonPressed;
+            while (true) {
+                if (touch.IsTouched())
+                    Debug.WriteLine("Not using Events");
+                Thread.Sleep(50);
+            }//*/
             //==============================
             /* Temperature Sensor
-            TemperatureSensor temp = new TemperatureSensor(FEZ.AdcChannel.A1);
+            var temp = new TemperatureSensor(FEZ.AdcChannel.A1);
             while(true)
             {
                 Debug.WriteLine("-> " + temp.ReadTemperature());
@@ -108,7 +111,7 @@ namespace SeeedGroveStarterKit {
             }//*/
             //==============================
             /* Light Sensor
-            LightSensor light = new LightSensor(FEZ.AdcChannel.A3);
+            var light = new LightSensor(FEZ.AdcChannel.A3);
             while(true)
             {
                 Debug.WriteLine("-> " + light.ReadLightLevel());
@@ -117,7 +120,7 @@ namespace SeeedGroveStarterKit {
             //==============================
 
             //* LCD RGB Backlight
-            LcdRgbBacklight lcd = new LcdRgbBacklight();
+            var lcd = new LcdRgbBacklight();
             lcd.Clear();
             lcd.SetBacklightRGB(100, 100, 0);
             lcd.BlinkBacklight(true);
@@ -126,7 +129,7 @@ namespace SeeedGroveStarterKit {
             Thread.Sleep(1000);
             lcd.SetCursor(0, 1);
             lcd.Write("Count:");
-            int count = 0;
+            var count = 0;
             while (true) {
                 lcd.SetCursor(7, 1);
                 lcd.Write(count.ToString());
@@ -142,12 +145,8 @@ namespace SeeedGroveStarterKit {
         // ================================================
         // ================================================
 
-        private static void Touch_Untouched() {
-            Debug.WriteLine("Untouched in event");
-        }
+        private static void Touch_Untouched() => Debug.WriteLine("Untouched in event");
 
-        private static void Btn_ButtonPressed() {
-            Debug.WriteLine("Button Pressed in event");
-        }
+        private static void Btn_ButtonPressed() => Debug.WriteLine("Button Pressed in event");
     }
 }
