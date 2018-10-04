@@ -117,7 +117,7 @@ namespace SeeedGroveStarterKit {
             //==============================
 
             //* LCD RGB Backlight
-            LcdRgbBacklight lcd = new LcdRgbBacklight();
+            var lcd = new LcdRgbBacklight();
             lcd.Clear();
             lcd.SetBacklightRGB(100, 100, 0);
             lcd.BlinkBacklight(true);
@@ -126,7 +126,7 @@ namespace SeeedGroveStarterKit {
             Thread.Sleep(1000);
             lcd.SetCursor(0, 1);
             lcd.Write("Count:");
-            int count = 0;
+            var count = 0;
             while (true) {
                 lcd.SetCursor(7, 1);
                 lcd.Write(count.ToString());
@@ -142,12 +142,8 @@ namespace SeeedGroveStarterKit {
         // ================================================
         // ================================================
 
-        private static void Touch_Untouched() {
-            Debug.WriteLine("Untouched in event");
-        }
+        private static void Touch_Untouched() => Debug.WriteLine("Untouched in event");
 
-        private static void Btn_ButtonPressed() {
-            Debug.WriteLine("Button Pressed in event");
-        }
+        private static void Btn_ButtonPressed() => Debug.WriteLine("Button Pressed in event");
     }
 }
