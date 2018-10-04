@@ -4,15 +4,15 @@ namespace SeeedGroveStarterKit {
     public class Relay {
         GpioPin Pin;
         public Relay(int GpioPinNumber) {
-            Pin = GpioController.GetDefault().OpenPin(GpioPinNumber);
-            Pin.Write(GpioPinValue.Low);
-            Pin.SetDriveMode(GpioPinDriveMode.Output);
+            this.Pin = GpioController.GetDefault().OpenPin(GpioPinNumber);
+            this.Pin.Write(GpioPinValue.Low);
+            this.Pin.SetDriveMode(GpioPinDriveMode.Output);
         }
         public void TurnOn() {
-            Pin.Write(GpioPinValue.High);
+            this.Pin.Write(GpioPinValue.High);
         }
         public void TurnOff() {
-            Pin.Write(GpioPinValue.Low);
+            this.Pin.Write(GpioPinValue.Low);
         }
     }
 }

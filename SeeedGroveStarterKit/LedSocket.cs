@@ -9,36 +9,36 @@ namespace SeeedGroveStarterKit {
         private int BlinkDelay = 300;
         private void Blinker() {
             while (true) {
-                Pin.Write(GpioPinValue.Low);
-                Thread.Sleep(BlinkDelay);
-                Pin.Write(GpioPinValue.High);
-                Thread.Sleep(BlinkDelay);
+                this.Pin.Write(GpioPinValue.Low);
+                Thread.Sleep(this.BlinkDelay);
+                this.Pin.Write(GpioPinValue.High);
+                Thread.Sleep(this.BlinkDelay);
             }
         }
         public LedSocket(int GpioPinNumber) {
-            Pin = GpioController.GetDefault().OpenPin(GpioPinNumber);
-            Pin.Write(GpioPinValue.Low);
-            Pin.SetDriveMode(GpioPinDriveMode.Output);
-            BlinkerT = new Thread(Blinker);
-            BlinkerT.Start();
-            BlinkerT.Suspend();
+            this.Pin = GpioController.GetDefault().OpenPin(GpioPinNumber);
+            this.Pin.Write(GpioPinValue.Low);
+            this.Pin.SetDriveMode(GpioPinDriveMode.Output);
+            this.BlinkerT = new Thread(this.Blinker);
+            this.BlinkerT.Start();
+            this.BlinkerT.Suspend();
         }
         public void TurnOn() {
-            lock (BlinkerT) {
-                BlinkerT.Suspend();
-                Pin.Write(GpioPinValue.High);
+            lock (this.BlinkerT) {
+                this.BlinkerT.Suspend();
+                this.Pin.Write(GpioPinValue.High);
             }
         }
         public void TurnOff() {
-            lock (BlinkerT) {
-                BlinkerT.Suspend();
-                Pin.Write(GpioPinValue.Low);
+            lock (this.BlinkerT) {
+                this.BlinkerT.Suspend();
+                this.Pin.Write(GpioPinValue.Low);
             }
         }
         public void Blink(double BlinkRateSec = 3) {
-            BlinkDelay = (int)(((1 / BlinkRateSec) * 1000) / 2);
-            lock (BlinkerT) {
-                BlinkerT.Resume();
+            this.BlinkDelay = (int)(((1 / BlinkRateSec) * 1000) / 2);
+            lock (this.BlinkerT) {
+                this.BlinkerT.Resume();
             }
         }
     }

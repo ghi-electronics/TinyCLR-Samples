@@ -4,14 +4,14 @@ namespace SeeedGroveStarterKit {
     public class TouchSensor {
         GpioPin Pin;
         public TouchSensor(int PinNumber) {
-            Pin = GpioController.GetDefault().OpenPin(PinNumber);
-            Pin.Write(GpioPinValue.Low);
-            Pin.SetDriveMode(GpioPinDriveMode.Input);
-            Pin.ValueChanged += Pin_ValueChanged;
+            this.Pin = GpioController.GetDefault().OpenPin(PinNumber);
+            this.Pin.Write(GpioPinValue.Low);
+            this.Pin.SetDriveMode(GpioPinDriveMode.Input);
+            this.Pin.ValueChanged += this.Pin_ValueChanged;
         }
 
         public bool IsTouched() {
-            return Pin.Read() == GpioPinValue.High;
+            return this.Pin.Read() == GpioPinValue.High;
         }
 
 

@@ -43,13 +43,13 @@ namespace SeeedGroveStarterKit {
             settings.BusSpeed = I2cBusSpeed.FastMode;
 
             //string aqs = I2cDevice.GetDeviceSelector("I2C1");
-            DisplayDevice = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
+            this.DisplayDevice = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
 
             settings = new I2cConnectionSettings((0xc4 >> 1));
             settings.SharingMode = I2cSharingMode.Shared;
             settings.BusSpeed = I2cBusSpeed.FastMode;
 
-            BacklightDevice = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
+            this.BacklightDevice = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
 
             ////////////////////////////////////
             // get the display going
@@ -60,14 +60,14 @@ namespace SeeedGroveStarterKit {
 
 
             if (lines > 1) {
-                _displayfunction |= 0x08;// LCD_2LINE;
+                this._displayfunction |= 0x08;// LCD_2LINE;
             }
-            _numlines = lines;
-            _currline = 0;
+            this._numlines = lines;
+            this._currline = 0;
 
             // for some 1 line displays you can select a 10 pixel high font
             if ((dotsize != 0) && (lines == 1)) {
-                _displayfunction |= 0x04;// LCD_5x10DOTS;
+                this._displayfunction |= 0x04;// LCD_5x10DOTS;
             }
 
             // SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
@@ -80,45 +80,45 @@ namespace SeeedGroveStarterKit {
             // page 45 figure 23
 
             // Send function set command sequence
-            command((byte)(LCD_FUNCTIONSET | _displayfunction));
+            this.command((byte)(this.LCD_FUNCTIONSET | this._displayfunction));
             //delayMicroseconds(4500);  // wait more than 4.1ms
             Thread.Sleep(5);
 
             // second try
-            command((byte)(LCD_FUNCTIONSET | _displayfunction));
+            this.command((byte)(this.LCD_FUNCTIONSET | this._displayfunction));
             //delayMicroseconds(150);
             Thread.Sleep(1);
 
             // third go
-            command((byte)(LCD_FUNCTIONSET | _displayfunction));
+            this.command((byte)(this.LCD_FUNCTIONSET | this._displayfunction));
 
 
             // finally, set # lines, font size, etc.
-            command((byte)(LCD_FUNCTIONSET | _displayfunction));
+            this.command((byte)(this.LCD_FUNCTIONSET | this._displayfunction));
 
             // turn the display on with no cursor or blinking default
-            _displaycontrol = (byte)(LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
-            EnableDisplay(true);
+            this._displaycontrol = (byte)(this.LCD_DISPLAYON | this.LCD_CURSOROFF | this.LCD_BLINKOFF);
+            this.EnableDisplay(true);
 
             // clear it off
-            Clear();
+            this.Clear();
 
             // Initialize to default text direction (for romance languages)
-            _displaymode = (byte)(LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
+            this._displaymode = (byte)(this.LCD_ENTRYLEFT | this.LCD_ENTRYSHIFTDECREMENT);
             // set the entry mode
-            command((byte)(LCD_ENTRYMODESET | _displaymode));
+            this.command((byte)(this.LCD_ENTRYMODESET | this._displaymode));
 
 
             // backlight init
-            WriteBacklightReg(REG_MODE1, 0);
+            this.WriteBacklightReg(this.REG_MODE1, 0);
             // set LEDs controllable by both PWM and GRPPWM registers
-            WriteBacklightReg(REG_OUTPUT, 0xFF);
+            this.WriteBacklightReg(this.REG_OUTPUT, 0xFF);
             // set MODE2 values
             // 0010 0000 -> 0x20  (DMBLNK to 1, ie blinky mode)
-            WriteBacklightReg(REG_MODE2, 0x20);
+            this.WriteBacklightReg(this.REG_MODE2, 0x20);
 
             //setColorWhite();
-            SetBacklightRGB(255, 0, 100);
+            this.SetBacklightRGB(255, 0, 100);
 
         }
 
@@ -150,7 +150,7 @@ namespace SeeedGroveStarterKit {
         // send command
         private void command(byte value) {
             byte[] dta = new byte[2] { 0x80, value };
-            DisplayDevice.Write(dta);
+            this.DisplayDevice.Write(dta);
             //i2c_send_byteS(dta, 2);
         }
 
@@ -159,7 +159,7 @@ namespace SeeedGroveStarterKit {
 
             byte[] dta = new byte[2] { 0x40, value };
             //i2c_send_byteS(dta, 2);
-            DisplayDevice.Write(dta);
+            this.DisplayDevice.Write(dta);
             //return 1; // assume sucess
         }
 
@@ -168,16 +168,16 @@ namespace SeeedGroveStarterKit {
         public void Write(string s) {
 
             for (int i = 0; i < s.Length; i++)
-                write((byte)s[i]);
+                this.write((byte)s[i]);
         }
         public void Clear() {
-            command(LCD_CLEARDISPLAY);        // clear display, set cursor position to zero
+            this.command(this.LCD_CLEARDISPLAY);        // clear display, set cursor position to zero
             //delayMicroseconds(2000);          // this command takes a long time!
             Thread.Sleep(2);
         }
 
         public void GoHome() {
-            command(LCD_RETURNHOME);        // set cursor position to zero
+            this.command(this.LCD_RETURNHOME);        // set cursor position to zero
             //delayMicroseconds(2000);        // this command takes a long time!
             Thread.Sleep(2);
         }
@@ -185,7 +185,7 @@ namespace SeeedGroveStarterKit {
         public void SetCursor(byte col, byte row) {
 
             col = (byte)(row == 0 ? (col | 0x80) : (col | 0xc0));
-            command(col);
+            this.command(col);
             //byte[] dta = new byte[2] { 0x80, col };
             //DisplayDevice.Write(dta);
 
@@ -196,11 +196,11 @@ namespace SeeedGroveStarterKit {
         // Turn the display on/off (quickly)
         public void EnableDisplay(bool on) {
             if (on)
-                _displaycontrol |= LCD_DISPLAYON;
+                this._displaycontrol |= this.LCD_DISPLAYON;
             else
-                _displaycontrol &= (byte)~LCD_DISPLAYON;
+                this._displaycontrol &= (byte)~this.LCD_DISPLAYON;
 
-            command((byte)(LCD_DISPLAYCONTROL | _displaycontrol));
+            this.command((byte)(this.LCD_DISPLAYCONTROL | this._displaycontrol));
         }
 
         // =============================================================================
@@ -211,7 +211,7 @@ namespace SeeedGroveStarterKit {
             wb[0] = addr;
             wb[1] = data;
 
-            BacklightDevice.Write(wb);
+            this.BacklightDevice.Write(wb);
 
             //I2C.WriteRead((0xc4 >> 1), wb, 0, 2, rb, 0, 0, out written, out read);
 
@@ -221,12 +221,12 @@ namespace SeeedGroveStarterKit {
             // blink period in seconds = (<reg 7> + 1) / 24
             // on/off ratio = <reg 6> / 256
             if (on) {
-                WriteBacklightReg(0x07, 0x17);  // blink every second
-                WriteBacklightReg(0x06, 0x7f);  // half on, half off
+                this.WriteBacklightReg(0x07, 0x17);  // blink every second
+                this.WriteBacklightReg(0x06, 0x7f);  // half on, half off
             }
             else {
-                WriteBacklightReg(0x07, 0x00);
-                WriteBacklightReg(0x06, 0xff);
+                this.WriteBacklightReg(0x07, 0x00);
+                this.WriteBacklightReg(0x06, 0xff);
             }
         }
         public void SetBacklightRGB(byte r, byte g, byte b) {
@@ -235,9 +235,9 @@ namespace SeeedGroveStarterKit {
             byte REG_GREEN = 0x03;      // pwm1
             byte REG_BLUE = 0x02;      // pwm0
 
-            WriteBacklightReg(REG_RED, r);
-            WriteBacklightReg(REG_GREEN, g);
-            WriteBacklightReg(REG_BLUE, b);
+            this.WriteBacklightReg(REG_RED, r);
+            this.WriteBacklightReg(REG_GREEN, g);
+            this.WriteBacklightReg(REG_BLUE, b);
         }
     }
 }

@@ -5,14 +5,14 @@ namespace SeeedGroveStarterKit {
         GpioPin Pin;
 
         public Button(int GpioPinNumber) {
-            Pin = GpioController.GetDefault().OpenPin(GpioPinNumber);
-            Pin.Write(GpioPinValue.Low);
-            Pin.SetDriveMode(GpioPinDriveMode.Input);
-            Pin.ValueChanged += Pin_ValueChanged;
+            this.Pin = GpioController.GetDefault().OpenPin(GpioPinNumber);
+            this.Pin.Write(GpioPinValue.Low);
+            this.Pin.SetDriveMode(GpioPinDriveMode.Input);
+            this.Pin.ValueChanged += this.Pin_ValueChanged;
         }
 
         public bool IsPressed() {
-            return Pin.Read() == GpioPinValue.High;
+            return this.Pin.Read() == GpioPinValue.High;
         }
         /// <summary>
         /// The signature of button events.
