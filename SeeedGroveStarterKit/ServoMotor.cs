@@ -8,7 +8,7 @@ namespace SeeedGroveStarterKit {
         public ServoMotor(string controller, int PwmPinNumber) {
             var PWM = PwmController.FromName(controller);
 
-            this.servo = PWM.OpenPin(PwmPinNumber);
+            this.servo = PWM.OpenChannel(PwmPinNumber);
             PWM.SetDesiredFrequency(1 / 0.020);
         }
         public double MinPulseCalibration {
