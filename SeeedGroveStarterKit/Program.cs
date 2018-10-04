@@ -99,15 +99,15 @@ namespace SeeedGroveStarterKit {
             touch.Untouched += Touch_Untouched;
             Thread.Sleep(-1);//*/
             //==============================
-            /* Temperature Sensor
-            TemperatureSensor temp = new TemperatureSensor(FEZ.AdcChannel.A1);
+            //* Temperature Sensor
+            var temp = new TemperatureSensor(FEZ.AdcChannel.A1);
             while(true)
             {
                 Debug.WriteLine("-> " + temp.ReadTemperature());
                 Thread.Sleep(1000);
             }//*/
             //==============================
-            //* Light Sensor
+            /* Light Sensor
             var light = new LightSensor(FEZ.AdcChannel.A3);
             while(true)
             {
