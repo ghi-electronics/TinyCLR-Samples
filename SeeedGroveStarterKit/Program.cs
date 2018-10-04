@@ -72,18 +72,18 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(100);
             }//*/
             //==============================
-            /* Sound Sensor
-            SoundSensor sound = new SoundSensor(FEZ.AdcChannel.A2);
-            ServoMotor servo = new ServoMotor(FEZ.PwmPin.Controller2.Id, FEZ.PwmPin.Controller2.D5);
+            //* Sound Sensor
+            var sound = new SoundSensor(FEZ.AdcChannel.A2);
+            var servo = new ServoMotor(FEZ.PwmChannel.Controller1.Id, FEZ.PwmChannel.Controller4.D5);
             while (true)
             {
-                double d = sound.ReadLevel();
+                var d = sound.ReadLevel();
                 servo.SetPosition(d / 100 * 180);
                 Debug.WriteLine("-> " + d);
                 Thread.Sleep(30);
             }//*/
             //==============================
-            //* Button
+            /* Button
             var btn = new Button(FEZ.GpioPin.D8);
             if (btn.IsPressed())
                 Debug.WriteLine("Not using Events");
