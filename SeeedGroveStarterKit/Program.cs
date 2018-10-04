@@ -61,18 +61,18 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(1000);
             }//*/
             //==============================
-            /* Rotary Angle Sensor
-            RotaryAngleSensor rot = new RotaryAngleSensor(FEZ.AdcChannel.A0);
-            ServoMotor servo = new ServoMotor(FEZ.PwmPin.Controller2.Id, FEZ.PwmPin.Controller2.D5);
+            //* Rotary Angle Sensor
+            var rot = new RotaryAngleSensor(FEZ.AdcChannel.A0);
+            var servo = new ServoMotor(FEZ.PwmChannel.Controller4.Id, FEZ.PwmChannel.Controller4.D5);
             while (true)
             {
-                double d = rot.GetAngle();
-                System.Diagnostics.Debug.WriteLine("->" + d);
+                var d = rot.GetAngle();
+                Debug.WriteLine("->" + d);
                 servo.SetPosition(d / 100 * 180);
                 Thread.Sleep(100);
             }//*/
             //==============================
-            //* Sound Sensor
+            /* Sound Sensor
             var sound = new SoundSensor(FEZ.AdcChannel.A2);
             var servo = new ServoMotor(FEZ.PwmChannel.Controller1.Id, FEZ.PwmChannel.Controller4.D5);
             while (true)
