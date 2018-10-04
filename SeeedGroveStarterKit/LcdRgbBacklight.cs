@@ -38,16 +38,18 @@ namespace SeeedGroveStarterKit {
         private byte REG_OUTPUT = 0x08;
 
         public LcdRgbBacklight() {
-            var settings = new I2cConnectionSettings((0x7c >> 1));
-            settings.SharingMode = I2cSharingMode.Shared;
-            settings.BusSpeed = I2cBusSpeed.FastMode;
+            var settings = new I2cConnectionSettings((0x7c >> 1)) {
+                SharingMode = I2cSharingMode.Shared,
+                BusSpeed = I2cBusSpeed.FastMode
+            };
 
             //string aqs = I2cDevice.GetDeviceSelector("I2C1");
             this.DisplayDevice = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
 
-            settings = new I2cConnectionSettings((0xc4 >> 1));
-            settings.SharingMode = I2cSharingMode.Shared;
-            settings.BusSpeed = I2cBusSpeed.FastMode;
+            settings = new I2cConnectionSettings((0xc4 >> 1)) {
+                SharingMode = I2cSharingMode.Shared,
+                BusSpeed = I2cBusSpeed.FastMode
+            };
 
             this.BacklightDevice = I2cDevice.FromId(FEZ.I2cBus.I2c1, settings);
 
