@@ -21,9 +21,9 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(1000);
             }//*/
             //==============================
-            /*Servo
-            ServoMotor servo = new ServoMotor(FEZ.PwmPin.Controller2.Id,FEZ.PwmPin.Controller2.D5);
-            int pos = 90;
+            //*Servo
+            var servo = new ServoMotor(FEZ.PwmChannel.Controller4.Id,FEZ.PwmChannel.Controller4.D5);
+            var pos = 90;
             while (true)
             {
                 servo.SetPosition(pos);
@@ -33,7 +33,7 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(500);
             }//*/
             //==============================
-            //* LED Socket
+            /* LED Socket
             var led = new LedSocket(FEZ.GpioPin.D3);
             led.TurnOn();
             Thread.Sleep(5000);
