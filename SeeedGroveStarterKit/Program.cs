@@ -74,7 +74,7 @@ namespace SeeedGroveStarterKit {
             //==============================
             /* Sound Sensor
             var sound = new SoundSensor(FEZ.AdcChannel.A2);
-            var servo = new ServoMotor(FEZ.PwmChannel.Controller1.Id, FEZ.PwmChannel.Controller4.D5);
+            var servo = new ServoMotor(FEZ.PwmChannel.Controller4.Id, FEZ.PwmChannel.Controller4.D5);
             while (true)
             {
                 var d = sound.ReadLevel();
@@ -83,7 +83,7 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(30);
             }//*/
             //==============================
-            //* Button
+            /* Button
             var btn = new Button(FEZ.GpioPin.D8);
             btn.ButtonPressed += Btn_ButtonPressed;
             while (true) {
