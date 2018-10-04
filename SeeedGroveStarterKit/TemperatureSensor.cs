@@ -3,9 +3,8 @@
 namespace SeeedGroveStarterKit {
     public class TemperatureSensor {
         private AdcChannel Channel;
-        public TemperatureSensor(int AdcPinNumber) {
-            this.Channel = AdcController.GetDefault().OpenChannel(AdcPinNumber);
-        }
+        public TemperatureSensor(int AdcPinNumber) => this.Channel = AdcController.GetDefault().OpenChannel(AdcPinNumber);
+        
         public double ReadTemperature() {
             // Per code example from seeed http://wiki.seeed.cc/Grove-Temperature_Sensor_V1.2/
             // Seemes to work fine with 3.3V

@@ -3,9 +3,8 @@
 namespace SeeedGroveStarterKit {
     public class SoundSensor {
         private AdcChannel Channel;
-        public SoundSensor(int AdcPinNumber) {
-            this.Channel = AdcController.GetDefault().OpenChannel(AdcPinNumber);
-        }
+        public SoundSensor(int AdcPinNumber) => this.Channel = AdcController.GetDefault().OpenChannel(AdcPinNumber);
+        
         // between 0 and 100
         public double ReadLevel() {
             double LastRead = 0;

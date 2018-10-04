@@ -8,11 +8,8 @@ namespace SeeedGroveStarterKit {
             this.Pin.Write(GpioPinValue.Low);
             this.Pin.SetDriveMode(GpioPinDriveMode.Output);
         }
-        public void TurnOn() {
-            this.Pin.Write(GpioPinValue.High);
-        }
-        public void TurnOff() {
-            this.Pin.Write(GpioPinValue.Low);
-        }
+        public void TurnOn() => this.Pin.Write(GpioPinValue.High);
+        
+        public void TurnOff() => this.Pin.Write(GpioPinValue.Low);
     }
 }

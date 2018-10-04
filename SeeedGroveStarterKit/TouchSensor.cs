@@ -10,11 +10,8 @@ namespace SeeedGroveStarterKit {
             this.Pin.ValueChanged += this.Pin_ValueChanged;
         }
 
-        public bool IsTouched() {
-            return this.Pin.Read() == GpioPinValue.High;
-        }
-
-
+        public bool IsTouched() => this.Pin.Read() == GpioPinValue.High;
+        
         /// <summary>
         /// The signature of button events.
         /// </summary>
