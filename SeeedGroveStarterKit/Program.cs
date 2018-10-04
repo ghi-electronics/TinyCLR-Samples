@@ -90,8 +90,8 @@ namespace SeeedGroveStarterKit {
             btn.ButtonPressed += Btn_ButtonPressed;
             Thread.Sleep(-1);//*/
             //==============================
-            /*
-            TouchSensor touch = new TouchSensor(FEZ.GpioPin.D7);
+            //*
+            var touch = new TouchSensor(FEZ.GpioPin.D7);
               if (touch.IsTouched())
                     Debug.WriteLine("Not using Events");
 
@@ -99,7 +99,7 @@ namespace SeeedGroveStarterKit {
             touch.Untouched += Touch_Untouched;
             Thread.Sleep(-1);//*/
             //==============================
-            //* Temperature Sensor
+            /* Temperature Sensor
             var temp = new TemperatureSensor(FEZ.AdcChannel.A1);
             while(true)
             {
