@@ -10,7 +10,7 @@ namespace SeeedGroveStarterKit {
         public static void Main() {
             // Add a slash (/) before the (/ *) to uncomment a block
             //==============================
-            //*Relay
+            /*Relay
 
             var relay = new Relay(FEZ.GpioPin.D6);
             while (true)
@@ -83,21 +83,24 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(30);
             }//*/
             //==============================
-            /* Button
+            //* Button
             var btn = new Button(FEZ.GpioPin.D8);
-            if (btn.IsPressed())
-                Debug.WriteLine("Not using Events");
             btn.ButtonPressed += Btn_ButtonPressed;
-            Thread.Sleep(-1);//*/
+            while (true) {
+                if (btn.IsPressed())
+                    Debug.WriteLine("Not using Events");
+                Thread.Sleep(50);
+            }//*/
             //==============================
             /*
             var touch = new TouchSensor(FEZ.GpioPin.D7);
-              if (touch.IsTouched())
-                    Debug.WriteLine("Not using Events");
-
-            //touch.Touched += Btn_ButtonPressed;
             touch.Untouched += Touch_Untouched;
-            Thread.Sleep(-1);//*/
+            //touch.Touched += Btn_ButtonPressed;
+            while (true) {
+                if (touch.IsTouched())
+                    Debug.WriteLine("Not using Events");
+                Thread.Sleep(50);
+            }//*/
             //==============================
             /* Temperature Sensor
             var temp = new TemperatureSensor(FEZ.AdcChannel.A1);
@@ -116,7 +119,7 @@ namespace SeeedGroveStarterKit {
             }//*/
             //==============================
 
-            /* LCD RGB Backlight
+            //* LCD RGB Backlight
             var lcd = new LcdRgbBacklight();
             lcd.Clear();
             lcd.SetBacklightRGB(100, 100, 0);
