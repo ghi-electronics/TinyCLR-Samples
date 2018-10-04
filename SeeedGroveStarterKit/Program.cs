@@ -33,8 +33,8 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(500);
             }//*/
             //==============================
-            /* LED Socket
-            LedSocket led = new LedSocket(FEZ.GpioPin.D3);
+            //* LED Socket
+            var led = new LedSocket(FEZ.GpioPin.D3);
             led.TurnOn();
             Thread.Sleep(5000);
             led.TurnOff();
@@ -48,7 +48,7 @@ namespace SeeedGroveStarterKit {
             led.Blink(10);
             Thread.Sleep(-1);//*/
             //==============================
-            //* Buzzer
+            /* Buzzer
             var buzz = new Buzzer(FEZ.GpioPin.D4);
             buzz.Beep();
             Thread.Sleep(5000);
