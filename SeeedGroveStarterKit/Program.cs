@@ -10,9 +10,9 @@ namespace SeeedGroveStarterKit {
         public static void Main() {
             // Add a slash (/) before the (/ *) to uncomment a block
             //==============================
-            /*Relay
+            //*Relay
 
-            Relay relay = new Relay(FEZ.GpioPin.D6);
+            var relay = new Relay(FEZ.GpioPin.D6);
             while (true)
             {
                 relay.TurnOn();
@@ -21,7 +21,7 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(1000);
             }//*/
             //==============================
-            //*Servo
+            /*Servo
             var servo = new ServoMotor(FEZ.PwmChannel.Controller4.Id,FEZ.PwmChannel.Controller4.D5);
             var pos = 90;
             while (true)
