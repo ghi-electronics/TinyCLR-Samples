@@ -22,7 +22,7 @@ namespace APA102CLedStrip {
                 apa102c.Flush();
                 Thread.Sleep(125);
 
-                if (++i > ledCount)
+                if (++i > (ledCount - 1))
                     i = 0;
             }
         }
