@@ -9,7 +9,7 @@ namespace APA102CLedStrip {
         public static void Main() {
             var spi1Controller = SpiController.FromName(FEZ.SpiBus.Spi1);
 
-            var ledCount = 8 * 32;
+            var ledCount = 10; // Number of physical LEDs in the chain
             var apa102c = new APA102CController(spi1Controller.GetDevice(APA102CController.GetConnectionSettings()), ledCount);
             var i = 0;
 
