@@ -92,7 +92,7 @@ namespace SeeedGroveStarterKit {
                 Thread.Sleep(50);
             }//*/
             //==============================
-            /*
+            /* Touch Sensor
             var touch = new TouchSensor(FEZ.GpioPin.D7);
             touch.Untouched += Touch_Untouched;
             //touch.Touched += Btn_ButtonPressed;
