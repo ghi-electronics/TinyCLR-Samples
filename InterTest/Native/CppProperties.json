@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "inheritEnvironments": [
+        "gcc-arm"
+      ],
+      "name": "gccarm",
+      "includePath": [
+        "${env.INCLUDE}",
+        "include"
+      ],
+      "defines": [
+        "__cplusplus = 201103L"
+      ]
+
+    }
+  ]
+}
