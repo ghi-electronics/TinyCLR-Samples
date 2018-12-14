@@ -10,10 +10,11 @@ static const TinyCLR_Interop_MethodHandler methods[] = {
     nullptr,
     nullptr,
     nullptr,
+    nullptr,
 };
 
 const TinyCLR_Interop_Assembly Interop_InterTest = {
     "InterTest",
-    0x98B04F6D,
+    0x09D5FC88,
     methods
 };
