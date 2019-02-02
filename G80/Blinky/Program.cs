@@ -9,11 +9,11 @@ namespace Blinky {
     class Program {
         static void Main() {
             // Blink LED1
-            var LED = GpioController.GetDefault().OpenPin(G80.GpioPin.PE14);
-            LED.SetDriveMode(GpioPinDriveMode.Output);
+            var led = GpioController.GetDefault().OpenPin(G80.GpioPin.PE14);
+            led.SetDriveMode(GpioPinDriveMode.Output);
             var state = false;
             while (true) {
-                LED.Write(state ? GpioPinValue.High : GpioPinValue.Low);
+                led.Write(state ? GpioPinValue.High : GpioPinValue.Low);
                 state = !state;
                 Thread.Sleep(100);
             }
