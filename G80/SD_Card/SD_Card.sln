@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SD_Card", "SD_Card.csproj", "{D22C5A2B-ADEA-46C8-B800-8C3E039FCABD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D22C5A2B-ADEA-46C8-B800-8C3E039FCABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D22C5A2B-ADEA-46C8-B800-8C3E039FCABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D22C5A2B-ADEA-46C8-B800-8C3E039FCABD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{D22C5A2B-ADEA-46C8-B800-8C3E039FCABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D22C5A2B-ADEA-46C8-B800-8C3E039FCABD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D22C5A2B-ADEA-46C8-B800-8C3E039FCABD}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0D1C83F7-5510-4004-B60A-D1651D95B376}
+	EndGlobalSection
+EndGlobal
