@@ -57,6 +57,9 @@
     <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drawing.1.0.0\lib\net452\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
     </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.1.0.0\lib\net452\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.dll</HintPath>
+    </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Native, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Native.1.0.0\lib\net452\GHIElectronics.TinyCLR.Native.dll</HintPath>
     </Reference>
