@@ -1,3 +1,5 @@
 # TinyCLR Samples
 
-This repository has various samples that show using various parts of TinyCLR, including various shields for the [FEZ](http://docs.ghielectronics.com/hardware/fez/shields/shields.html).
+This repository has TinyCLR OS sample code for supported System on Modules (SoM). It also includes examples on using components/accessories.
+
+Learn more about [TinyCLR OS](https://ghielectronics.com/tinyclr/features).
