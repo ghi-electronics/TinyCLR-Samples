@@ -1,0 +1,28 @@
+MEMORY {
+	interop_table : ORIGIN = 0x20016000, LENGTH = 0x10
+    RAM (wrx) : ORIGIN = 0x20016000+0x10, LENGTH = 0x3F8-0x10-8
+}
+
+SECTIONS {
+	 interop_table : {
+        * (interop_table)
+    }>interop_table
+
+ . = ALIGN(4);
+   
+	.text : {
+    	*(.text)
+    }> RAM
+
+    .rodata ALIGN(4): {
+        *(.rodata )
+    }>RAM
+
+    .data ALIGN(4): {
+        *(.data)
+    }>RAM
+
+    .bss ALIGN(4): {
+        *(.bss)
+    }>RAM
+}
