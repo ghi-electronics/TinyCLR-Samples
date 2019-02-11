@@ -18,6 +18,7 @@ namespace Blinky {
                 Thread.Sleep(400);
             }
         }
+
         static void Main() {
             // This code will run in its own thread
             new Thread(Alarm).Start();
