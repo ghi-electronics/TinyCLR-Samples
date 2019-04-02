@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Threading;
 using GHIElectronics.TinyCLR.Devices.Display;
 using GHIElectronics.TinyCLR.Devices.Gpio;
@@ -26,7 +26,7 @@ namespace UD435 {
                 HorizontalSyncPulseWidth = 1,
                 DataEnableIsFixed = false,
                 DataEnablePolarity = false,
-                PixelClockRate = 12_000_000,
+                PixelClockRate = 18_000_000,
                 PixelPolarity = false,
                 VerticalBackPorch = 23,
                 VerticalFrontPorch = 7,
