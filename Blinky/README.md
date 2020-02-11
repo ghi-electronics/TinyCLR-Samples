@@ -1,6 +1,6 @@
 # Blinky
 
-Complete code samples to blink an LED on GHI Electronics hardware.
+Complete code samples to blink an LED.
  
 
-Learn more about [TinyCLR OS](https://ghielectronics.com/tinyclr/features).
+Learn more about at the [GHI Electronics website](https://ghielectronics.com).
