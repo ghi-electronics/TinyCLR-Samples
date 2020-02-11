@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B7F8BB5F-8678-4C74-BD31-AE113EAC6E95}</ProjectGuid>
+    <ProjectGuid>{D51797A4-DB41-4FE4-BFDC-254DA2833624}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Blinky</RootNamespace>
     <AssemblyName>Blinky</AssemblyName>
