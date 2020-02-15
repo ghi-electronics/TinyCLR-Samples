@@ -9,11 +9,13 @@ You can also use the accessory samples as live examples of how to use different 
 ### Analog Input
 
 * MikroClick/Alcohol-Click
-* 
+
 
 ### SPI
 
 ### I2C
+
+* MikroClick/FM-Click
 
 ### UART
 
