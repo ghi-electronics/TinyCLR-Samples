@@ -10,9 +10,9 @@ namespace LedRing_Click {
     class Program {
         static void Main() {
             var ring = new Mikro.Click.LedRingClick(
-             SC20100.SpiBus.Spi3,
-             SC20100.GpioPin.PD14,
-             SC20100.GpioPin.PD15);
+             SC20100.SpiBus.Spi3, //SPI Channel
+             SC20100.GpioPin.PD14, //CS Pin
+             SC20100.GpioPin.PD15); //RST Pin
             
             while (true) {
                 uint fill = 1;
