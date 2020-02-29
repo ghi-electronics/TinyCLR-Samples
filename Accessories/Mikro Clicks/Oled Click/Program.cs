@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Spi;
+using GHIElectronics.TinyCLR.Drivers.SolomonSystech.SSD1351;
 using GHIElectronics.TinyCLR.Pins;
 using Oled_Click.Properties;
-using SSD1351;
 
 namespace Oled_Click {
     class Program {

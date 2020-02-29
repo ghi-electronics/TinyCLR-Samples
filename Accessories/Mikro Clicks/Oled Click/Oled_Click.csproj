@@ -47,11 +47,16 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Resources\small.tinyfnt" />
-    <None Include="small.tinyfnt" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Display, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Display.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Devices.Display.dll</HintPath>
+    </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Devices.Gpio, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Devices.Gpio.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.I2c, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.I2c.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Devices.I2c.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Devices.Spi, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Spi.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Devices.Spi.dll</HintPath>
@@ -59,18 +64,15 @@
     <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drawing.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
     </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.SolomonSystech.SSD1351, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.SolomonSystech.SSD1351.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Drivers.SolomonSystech.SSD1351.dll</HintPath>
+    </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Native, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Native.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Native.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Pins, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\TinyCLR-Drivers\SolomonSystech\SSD1351\SSD1351.csproj">
-      <Project>{12CF3A2E-F00D-4A97-809D-E1AB7C9E80F7}</Project>
-      <Name>SSD1351</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

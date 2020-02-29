@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oled_Click", "Oled_Click.csproj", "{A0C9871F-6039-4475-A93E-E1E23973210C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSD1351", "..\..\..\..\TinyCLR-Drivers\SolomonSystech\SSD1351\SSD1351.csproj", "{12CF3A2E-F00D-4A97-809D-E1AB7C9E80F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		{A0C9871F-6039-4475-A93E-E1E23973210C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0C9871F-6039-4475-A93E-E1E23973210C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A0C9871F-6039-4475-A93E-E1E23973210C}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{12CF3A2E-F00D-4A97-809D-E1AB7C9E80F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{12CF3A2E-F00D-4A97-809D-E1AB7C9E80F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{12CF3A2E-F00D-4A97-809D-E1AB7C9E80F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{12CF3A2E-F00D-4A97-809D-E1AB7C9E80F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
