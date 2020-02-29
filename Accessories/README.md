@@ -16,6 +16,7 @@ You can also use the accessory samples as live examples of how to use different 
 ### I2C
 
 * MikroClick/FM-Click
+* MikroClick/TouchClamp
 
 ### UART
 
