@@ -73,7 +73,7 @@ namespace TouchClamp_Click {
         public TouchClamp(string device) {
 
             var settings = new I2cConnectionSettings(MPR121WriteAddress >> 1) {
-                BusSpeed = 400,
+                BusSpeed = 400000,
             };
             this.i2cBus = I2cController.FromName(device).GetDevice(settings);
 
