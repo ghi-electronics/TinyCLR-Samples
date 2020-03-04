@@ -1,4 +1,4 @@
-﻿using GHIElectronics.TinyCLR.Devices.Gpio;
+using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Spi;
 using GHIElectronics.TinyCLR.Drivers.TexasInstruments.CD4017B;
 using GHIElectronics.TinyCLR.Drivers.TexasInstruments.SNx4HC595;
@@ -17,23 +17,23 @@ namespace Click_7x10R
         static byte[][] numberArray;
 
         static void Main()
-        {            
-            var latch = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PD3);
-            var cd4017Clock = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PC0);
-            var cd4017Reset = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PA15);
+        {
+            var latchPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PD3);
+            var cd4017ClockPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PC0);
+            var cd4017ResetPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PA15);
 
-            snx4hc595 = new SNx4HC595(SpiController.FromName(SC20100.SpiBus.Spi3).GetDevice(SNx4HC595.GetSpiConnectionSettings()), latch);
-            cd4017 = new CD4017B(cd4017Clock, cd4017Reset);
+            snx4hc595 = new SNx4HC595(SpiController.FromName(SC20100.SpiBus.Spi3).GetDevice(SNx4HC595.GetSpiConnectionSettings()), latchPin);
+            cd4017 = new CD4017B(cd4017ClockPin, cd4017ResetPin);
 
             InitNumberArray();
 
             cd4017.ResetCount();
 
-            int mainCounter = 0;
+            var mainCounter = 0;
 
             while (true)
             {
-                var exp = DateTime.Now.Ticks + 1000 * 10000;
+                var exp = DateTime.Now.Ticks + 1000 * 10000; // Count up every 1 second
 
                 while (DateTime.Now.Ticks < exp)
                 {
@@ -54,6 +54,7 @@ namespace Click_7x10R
         {
             numberArray = new byte[10][];
 
+            // Flip X
             numberArray[0] = new byte[] { SwapEndian(0x0E), SwapEndian(0x11), SwapEndian(0x11), SwapEndian(0x11), SwapEndian(0x11), SwapEndian(0x11), SwapEndian(0x0E) };  //0
             numberArray[1] = new byte[] { SwapEndian(0x0E), SwapEndian(0x04), SwapEndian(0x04), SwapEndian(0x04), SwapEndian(0x04), SwapEndian(0x0C), SwapEndian(0x04) };  //1
             numberArray[2] = new byte[] { SwapEndian(0x1F), SwapEndian(0x08), SwapEndian(0x04), SwapEndian(0x02), SwapEndian(0x01), SwapEndian(0x11), SwapEndian(0x0E) };  //2
@@ -86,13 +87,15 @@ namespace Click_7x10R
             var buffer2 = new byte[2];
 
             for (int i = 0; i < 7; i++)
-            {                
+            {
+                // Flip Y
                 buffer2[0] = numberArray[counter % 10][6 - i];
                 buffer2[1] = numberArray[counter / 10][6 - i];
 
                 snx4hc595.WriteBuffer(buffer2);
                 Thread.Sleep(1);
-                snx4hc595.Invalidate();
+
+                snx4hc595.Invalidate(); // clear for next line
                 cd4017.IncrementCount();
             }
         }
