@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Threading;
-using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 
-
-namespace Click.Radio {
-    /// <summary>RadioFM module for .NET Gadgeteer</summary>
-    
-    public class RadioFM1 {
+namespace Mikro.Click {
+    public class FMClick {
         /// <summary>The channel returned by <see cref="Seek" /> when no Channel is found.</summary>
         public const double INVALID_CHANNEL = -1.0;
 
@@ -77,22 +73,22 @@ namespace Click.Radio {
         private RadioTextChangedHandler onRadioTextChanged;
 
         /// <summary>Represents the delegate that is used to handle the <see cref="RadioTextChanged" /> event.</summary>
-        /// <param name="sender">The <see cref="RadioFM1" /> that raised the event.</param>
+        /// <param name="sender">The <see cref="FMClick" /> that raised the event.</param>
         /// <param name="newRadioText">The new Radio Text.</param>
-        public delegate void RadioTextChangedHandler(RadioFM1 sender, string newRadioText);
+        public delegate void RadioTextChangedHandler(FMClick sender, string newRadioText);
 
         /// <summary>Raised when new Radio Text is available.</summary>
         public event RadioTextChangedHandler RadioTextChanged;
 
         /// <summary>Gets or sets the Volume of the radio.</summary>
-      
+
         public int Volume {
             get {
                 return this.currentVolume;
             }
 
             set {
-                // if (value > RadioFM1.MAX_VOLUME || value < RadioFM1.MIN_VOLUME) throw new ArgumentOutOfRangeException("value", "The volume provided was outside the allowed range.");
+                // if (value > FMClick.MAX_VOLUME || value < FMClick.MIN_VOLUME) throw new ArgumentOutOfRangeException("value", "The volume provided was outside the allowed range.");
 
                 this.currentVolume = value;
                 this.SetDeviceVolume((ushort)value);//(ushort)System.Math.Ceiling(value / 100.0));
@@ -166,7 +162,7 @@ namespace Click.Radio {
         }
 
         /// <summary>Constructs a new instance.</summary>      
-        public RadioFM1(int reset,int chipSelect ,string deviceBus) {
+        public FMClick(int reset, int chipSelect, I2cController controller) {
             this.radioTextWorkerRunning = true;
             this.currentRadioText = "N/A";
             this.spacingDivisor = 2;
@@ -177,16 +173,18 @@ namespace Click.Radio {
             this.resetPin.SetDriveMode(GpioPinDriveMode.Output);
 
             this.selPin = GpioController.GetDefault().OpenPin(chipSelect);
-            this.selPin.SetDriveMode(GpioPinDriveMode.Output); 
+            this.selPin.SetDriveMode(GpioPinDriveMode.Output);
             this.selPin.Write(GpioPinValue.High);
-  
-            var settings = new I2cConnectionSettings(RadioFM1.I2C_ADDRESS,400);           
-            var controller = I2cController.FromName(deviceBus);
-            this.i2cBus = controller.GetDevice(settings);       
+
+            var settings = new I2cConnectionSettings(FMClick.I2C_ADDRESS, 400_000);
+            
+            this.i2cBus = controller.GetDevice(settings);
+
+
             this.InitializeDevice();
             this.SetChannelConfiguration(Spacing.USAAustrailia, Band.USAEurope);
             this.Channel = this.MinChannel;
-            //this.Volume = RadioFM1.MAX_VOLUME;
+            //this.Volume = FMClick.MAX_VOLUME;
             this.radioTextWorkerThread = new Thread(this.RadioTextWorker);
         }
 
@@ -200,19 +198,19 @@ namespace Click.Radio {
             if (this.SeekDevice(direction))
                 return this.Channel;
             else
-                return RadioFM1.INVALID_CHANNEL;
+                return FMClick.INVALID_CHANNEL;
         }
 
         /// <summary>Increases the Volume by one.</summary>
         public void IncreaseVolume() {
-            if (this.Volume == RadioFM1.MAX_VOLUME) return;
+            if (this.Volume == FMClick.MAX_VOLUME) return;
 
             ++this.Volume;
         }
 
         /// <summary>Decreases the Volume by one.</summary>
         public void DecreaseVolume() {
-            if (this.Volume == RadioFM1.MIN_VOLUME) return;
+            if (this.Volume == FMClick.MIN_VOLUME) return;
 
             --this.Volume;
         }
@@ -224,38 +222,43 @@ namespace Click.Radio {
             this.ReadRegisters();
 
             if (spacing == Spacing.USAAustrailia) {
-                this.registers[RadioFM1.REGISTER_SYSCONFIG2] &= 0xFFCF;
+                this.registers[FMClick.REGISTER_SYSCONFIG2] &= 0xFFCF;
                 this.spacingDivisor = 2;
-            } else if (spacing == Spacing.EuropeJapan) {
-                this.registers[RadioFM1.REGISTER_SYSCONFIG2] &= 0xFFDF;
+            }
+            else if (spacing == Spacing.EuropeJapan) {
+                this.registers[FMClick.REGISTER_SYSCONFIG2] &= 0xFFDF;
                 this.spacingDivisor = 1;
-            } else {
+            }
+            else {
                 throw new ArgumentException("You must provide a valid spacing.", "spacing");
             }
 
             if (band == Band.USAEurope) {
-                this.registers[RadioFM1.REGISTER_SYSCONFIG2] &= 0xFF3F;
+                this.registers[FMClick.REGISTER_SYSCONFIG2] &= 0xFF3F;
                 this.baseChannel = 875;
                 this.MinChannel = 87.5;
                 this.MaxChannel = 107.5;
-            } else if (band == Band.JapanWide) {
-                this.registers[RadioFM1.REGISTER_SYSCONFIG2] &= 0xFF7F;
+            }
+            else if (band == Band.JapanWide) {
+                this.registers[FMClick.REGISTER_SYSCONFIG2] &= 0xFF7F;
                 this.baseChannel = 760;
                 this.MinChannel = 76;
                 this.MaxChannel = 108;
-            } else if (band == Band.Japan) {
-                this.registers[RadioFM1.REGISTER_SYSCONFIG2] &= 0xFFBF;
+            }
+            else if (band == Band.Japan) {
+                this.registers[FMClick.REGISTER_SYSCONFIG2] &= 0xFFBF;
                 this.baseChannel = 760;
                 this.MinChannel = 76;
                 this.MaxChannel = 90;
-            } else {
+            }
+            else {
                 throw new ArgumentException("You must provide a valid band.", "band");
             }
 
             this.UpdateRegisters();
         }
 
-        private void OnRadioTextChanged(RadioFM1 sender, string newRadioText) {
+        private void OnRadioTextChanged(FMClick sender, string newRadioText) {
             var e = this.RadioTextChanged;
 
             if (e != null)
@@ -263,8 +266,8 @@ namespace Click.Radio {
         }
 
         private void RadioTextWorker() {
-            char[] currentRadioText = new char[RadioFM1.MAX_MESSAGE_LENGTH];
-            bool[] isSegmentPresent = new bool[RadioFM1.MAX_SEGMENTS];
+            char[] currentRadioText = new char[FMClick.MAX_MESSAGE_LENGTH];
+            bool[] isSegmentPresent = new bool[FMClick.MAX_SEGMENTS];
             int endOfMessage = -1;
             int endSegmentAddress = -1;
             string lastMessage = "";
@@ -273,11 +276,11 @@ namespace Click.Radio {
 
             while (this.radioTextWorkerRunning) {
                 this.ReadRegisters();
-                ushort a = this.registers[RadioFM1.REGISTER_RDSA];
-                ushort b = this.registers[RadioFM1.REGISTER_RDSB];
-                ushort c = this.registers[RadioFM1.REGISTER_RDSC];
-                ushort d = this.registers[RadioFM1.REGISTER_RDSD];
-                bool ready = (this.registers[RadioFM1.REGISTER_STATUSRSSI] & (1 << RadioFM1.BIT_RDSR)) != 0;
+                ushort a = this.registers[FMClick.REGISTER_RDSA];
+                ushort b = this.registers[FMClick.REGISTER_RDSB];
+                ushort c = this.registers[FMClick.REGISTER_RDSC];
+                ushort d = this.registers[FMClick.REGISTER_RDSD];
+                bool ready = (this.registers[FMClick.REGISTER_STATUSRSSI] & (1 << FMClick.BIT_RDSR)) != 0;
 
                 if (ready) {
                     int programIDCode = a;
@@ -286,13 +289,14 @@ namespace Click.Radio {
                     int trafficIDCode = (b >> 10) & 0x1;
                     int programTypeCode = (b >> 5) & 0x1F;
 
-                    if (groupTypeCode == RadioFM1.RADIO_TEXT_GROUP_CODE) {
-                        int textToggleFlag = b & (1 << (RadioFM1.TOGGLE_FLAG_POSITION - 1));
+                    if (groupTypeCode == FMClick.RADIO_TEXT_GROUP_CODE) {
+                        int textToggleFlag = b & (1 << (FMClick.TOGGLE_FLAG_POSITION - 1));
                         if (textToggleFlag != lastTextToggleFlag) {
-                            currentRadioText = new char[RadioFM1.MAX_MESSAGE_LENGTH];
+                            currentRadioText = new char[FMClick.MAX_MESSAGE_LENGTH];
                             lastTextToggleFlag = textToggleFlag;
                             waitForNextMessage = false;
-                        } else if (waitForNextMessage) {
+                        }
+                        else if (waitForNextMessage) {
                             continue;
                         }
 
@@ -301,19 +305,20 @@ namespace Click.Radio {
                         isSegmentPresent[segmentAddress] = true;
 
                         if (versionCode == 0) {
-                            textAddress = segmentAddress * RadioFM1.CHARS_PER_SEGMENT * RadioFM1.VERSION_A_TEXT_SEGMENT_PER_GROUP;
+                            textAddress = segmentAddress * FMClick.CHARS_PER_SEGMENT * FMClick.VERSION_A_TEXT_SEGMENT_PER_GROUP;
                             currentRadioText[textAddress] = (char)(c >> 8);
                             currentRadioText[textAddress + 1] = (char)(c & 0xFF);
                             currentRadioText[textAddress + 2] = (char)(d >> 8);
                             currentRadioText[textAddress + 3] = (char)(d & 0xFF);
-                        } else {
-                            textAddress = segmentAddress * RadioFM1.CHARS_PER_SEGMENT * RadioFM1.VERSION_B_TEXT_SEGMENT_PER_GROUP;
+                        }
+                        else {
+                            textAddress = segmentAddress * FMClick.CHARS_PER_SEGMENT * FMClick.VERSION_B_TEXT_SEGMENT_PER_GROUP;
                             currentRadioText[textAddress] = (char)(d >> 8);
                             currentRadioText[textAddress + 1] = (char)(d & 0xFF);
                         }
 
                         if (endOfMessage == -1) {
-                            for (int i = 0; i < RadioFM1.MAX_CHARS_PER_GROUP; ++i) {
+                            for (int i = 0; i < FMClick.MAX_CHARS_PER_GROUP; ++i) {
                                 if (currentRadioText[textAddress + i] == 0xD) {
                                     endOfMessage = textAddress + i;
                                     endSegmentAddress = segmentAddress;
@@ -349,7 +354,8 @@ namespace Click.Radio {
                     }
 
                     Thread.Sleep(35);
-                } else {
+                }
+                else {
                     Thread.Sleep(40);
                 }
             }
@@ -368,11 +374,11 @@ namespace Click.Radio {
             Thread.Sleep(500);
 
             this.ReadRegisters();
-            this.registers[RadioFM1.REGISTER_POWERCFG] = 0x4001;
-            this.registers[RadioFM1.REGISTER_SYSCONFIG1] |= (1 << RadioFM1.BIT_RDS);
-            this.registers[RadioFM1.REGISTER_SYSCONFIG2] &= 0xFFCF;
-            this.registers[RadioFM1.REGISTER_SYSCONFIG2] &= 0xFFF0;
-            this.registers[RadioFM1.REGISTER_SYSCONFIG2] |= 0x000F;
+            this.registers[FMClick.REGISTER_POWERCFG] = 0x4001;
+            this.registers[FMClick.REGISTER_SYSCONFIG1] |= (1 << FMClick.BIT_RDS);
+            this.registers[FMClick.REGISTER_SYSCONFIG2] &= 0xFFCF;
+            this.registers[FMClick.REGISTER_SYSCONFIG2] &= 0xFFF0;
+            this.registers[FMClick.REGISTER_SYSCONFIG2] |= 0x000F;
             this.UpdateRegisters();
 
             Thread.Sleep(110);
@@ -383,8 +389,8 @@ namespace Click.Radio {
 
 
             this.i2cBus.Read(data);
-            
-          
+
+
             for (int i = 0, x = 0xA; i < 12; i += 2, ++x)
                 this.registers[x] = (ushort)((data[i] << 8) | (data[i + 1]));
 
@@ -401,21 +407,21 @@ namespace Click.Radio {
             }
 
             this.i2cBus.Write(data);
-           
+
 
         }
 
         private void SetDeviceVolume(ushort volume) {
             this.ReadRegisters();
-            this.registers[RadioFM1.REGISTER_SYSCONFIG2] &= 0xFFF0;
-            this.registers[RadioFM1.REGISTER_SYSCONFIG2] |= volume;
+            this.registers[FMClick.REGISTER_SYSCONFIG2] &= 0xFFF0;
+            this.registers[FMClick.REGISTER_SYSCONFIG2] |= volume;
             this.UpdateRegisters();
         }
 
         private int GetDeviceChannel() {
             this.ReadRegisters();
 
-            int Channel = this.registers[RadioFM1.REGISTER_READCHAN] & 0x03FF;
+            int Channel = this.registers[FMClick.REGISTER_READCHAN] & 0x03FF;
 
             return Channel * this.spacingDivisor + this.baseChannel;
         }
@@ -425,24 +431,24 @@ namespace Click.Radio {
             newChannel /= this.spacingDivisor;
 
             this.ReadRegisters();
-            this.registers[RadioFM1.REGISTER_CHANNEL] &= 0xFE00;
-            this.registers[RadioFM1.REGISTER_CHANNEL] |= (ushort)newChannel;
-            this.registers[RadioFM1.REGISTER_CHANNEL] |= (1 << RadioFM1.BIT_TUNE);
+            this.registers[FMClick.REGISTER_CHANNEL] &= 0xFE00;
+            this.registers[FMClick.REGISTER_CHANNEL] |= (ushort)newChannel;
+            this.registers[FMClick.REGISTER_CHANNEL] |= (1 << FMClick.BIT_TUNE);
             this.UpdateRegisters();
 
             while (true) {
                 this.ReadRegisters();
-                if ((this.registers[RadioFM1.REGISTER_STATUSRSSI] & (1 << BIT_STC)) != 0)
+                if ((this.registers[FMClick.REGISTER_STATUSRSSI] & (1 << BIT_STC)) != 0)
                     break;
             }
 
             this.ReadRegisters();
-            this.registers[RadioFM1.REGISTER_CHANNEL] &= 0x7FFF;
+            this.registers[FMClick.REGISTER_CHANNEL] &= 0x7FFF;
             this.UpdateRegisters();
 
             while (true) {
                 this.ReadRegisters();
-                if ((this.registers[RadioFM1.REGISTER_STATUSRSSI] & (1 << BIT_STC)) == 0)
+                if ((this.registers[FMClick.REGISTER_STATUSRSSI] & (1 << BIT_STC)) == 0)
                     break;
             }
         }
@@ -450,30 +456,30 @@ namespace Click.Radio {
         private bool SeekDevice(SeekDirection direction) {
             this.ReadRegisters();
 
-            this.registers[RadioFM1.REGISTER_POWERCFG] &= 0xFBFF;
+            this.registers[FMClick.REGISTER_POWERCFG] &= 0xFBFF;
 
             if (direction == SeekDirection.Backward)
-                this.registers[RadioFM1.REGISTER_POWERCFG] &= 0xFDFF;
+                this.registers[FMClick.REGISTER_POWERCFG] &= 0xFDFF;
             else
-                this.registers[RadioFM1.REGISTER_POWERCFG] |= 1 << RadioFM1.BIT_SEEKUP;
+                this.registers[FMClick.REGISTER_POWERCFG] |= 1 << FMClick.BIT_SEEKUP;
 
-            this.registers[RadioFM1.REGISTER_POWERCFG] |= (1 << RadioFM1.BIT_SEEK);
+            this.registers[FMClick.REGISTER_POWERCFG] |= (1 << FMClick.BIT_SEEK);
             this.UpdateRegisters();
 
             while (true) {
                 this.ReadRegisters();
-                if ((this.registers[RadioFM1.REGISTER_STATUSRSSI] & (1 << RadioFM1.BIT_STC)) != 0)
+                if ((this.registers[FMClick.REGISTER_STATUSRSSI] & (1 << FMClick.BIT_STC)) != 0)
                     break;
             }
 
             this.ReadRegisters();
-            int valueSFBL = this.registers[RadioFM1.REGISTER_STATUSRSSI] & (1 << RadioFM1.BIT_SFBL);
-            this.registers[RadioFM1.REGISTER_POWERCFG] &= 0xFEFF;
+            int valueSFBL = this.registers[FMClick.REGISTER_STATUSRSSI] & (1 << FMClick.BIT_SFBL);
+            this.registers[FMClick.REGISTER_POWERCFG] &= 0xFEFF;
             this.UpdateRegisters();
 
             while (true) {
                 this.ReadRegisters();
-                if ((this.registers[RadioFM1.REGISTER_STATUSRSSI] & (1 << RadioFM1.BIT_STC)) == 0)
+                if ((this.registers[FMClick.REGISTER_STATUSRSSI] & (1 << FMClick.BIT_STC)) == 0)
                     break;
             }
 

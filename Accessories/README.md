@@ -24,6 +24,7 @@ You can also use the accessory samples as live examples of how to use different 
 ### 1-Wire
 
 ### PWM
+* MikroClick/DC-Motor
 
 ### Modbus
 
