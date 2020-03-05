@@ -17,9 +17,10 @@ namespace Mic_Click {
 
             ////////// Set these to match your board //////////////
             var adcChannel = SC20100.AdcChannel.Controller1.PC0;
+            var adcController = SC20100.AdcChannel.Controller1.Id;
             ///////////////////////////////////////////////////////
 
-            var mic = new MicClick(AdcController.GetDefault().OpenChannel(adcChannel));
+            var mic = new MicClick(AdcController.FromName(adcController).OpenChannel(adcChannel));
 
             //TestWithSimpleDebug(mic);
             TestWithGraph(mic);
