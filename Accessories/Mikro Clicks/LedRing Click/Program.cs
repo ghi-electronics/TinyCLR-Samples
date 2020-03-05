@@ -10,10 +10,10 @@ namespace LedRing_Click {
             ////////// Set these to match your board //////////////
             var clickRstPin = SC20100.GpioPin.PD4;
             var clickCsPin = SC20100.GpioPin.PD3;
-            var spiChannel = SC20100.SpiBus.Spi3;
+            var spiBus = SC20100.SpiBus.Spi3;
             ///////////////////////////////////////////////////////
 
-            var controller = SpiController.FromName(spiChannel);
+            var controller = SpiController.FromName(spiBus);
             var ring = new LedRingClick(controller,clickCsPin,clickRstPin);
             
             while (true) {
