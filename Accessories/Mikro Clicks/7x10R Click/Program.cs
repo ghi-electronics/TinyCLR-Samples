@@ -19,10 +19,11 @@ namespace Click_7x10R
         static void Main()
         {
             var latchPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PD3);
+            var resetPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PD4);
             var cd4017ClockPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PC0);
             var cd4017ResetPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PA15);
 
-            snx4hc595 = new SNx4HC595(SpiController.FromName(SC20100.SpiBus.Spi3).GetDevice(SNx4HC595.GetSpiConnectionSettings()), latchPin);
+            snx4hc595 = new SNx4HC595(SpiController.FromName(SC20100.SpiBus.Spi3), latchPin, resetPin);
             cd4017 = new CD4017B(cd4017ClockPin, cd4017ResetPin);
 
             InitNumberArray();
@@ -71,7 +72,7 @@ namespace Click_7x10R
         {
             var d = 0;
 
-            for (int i = 4; i >= 0; i--)
+            for (var i = 4; i >= 0; i--)
             {
                 var b = (num >> i) & 1;
 
@@ -86,7 +87,7 @@ namespace Click_7x10R
         {
             var buffer2 = new byte[2];
 
-            for (int i = 0; i < 7; i++)
+            for (var i = 0; i < 7; i++)
             {
                 // Flip Y
                 buffer2[0] = numberArray[counter % 10][6 - i];
@@ -95,7 +96,7 @@ namespace Click_7x10R
                 snx4hc595.WriteBuffer(buffer2);
                 Thread.Sleep(1);
 
-                snx4hc595.Invalidate(); // clear for next line
+                snx4hc595.Clear(); // clear for next line
                 cd4017.IncrementCount();
             }
         }
