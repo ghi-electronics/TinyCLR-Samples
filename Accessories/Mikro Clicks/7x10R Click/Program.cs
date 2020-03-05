@@ -15,18 +15,24 @@ namespace Click_7x10R {
         static byte[][] numberArray;
 
         static void Main() {
+            ////////  Change these to match your board ///////////////
+            var spiBus = SC20100.SpiBus.Spi3;
+            var clickCsPin = SC20100.GpioPin.PD3;
+            var clickRstPin = SC20100.GpioPin.PD4;
+            var clickAnPin = SC20100.GpioPin.PC0;
+            var clickPwmPin = SC20100.GpioPin.PA15;           
+            //////////////////////////////////////////////////////////
+
             var gpio = GpioController.GetDefault();
 
-            ////////  Change these to match your board ///////////////
             snx4hc595 = new SNx4HC595(
-                SpiController.FromName(SC20100.SpiBus.Spi3),
-                gpio.OpenPin(SC20100.GpioPin.PD3), // Click.CS
-                gpio.OpenPin(SC20100.GpioPin.PD4)); // Click.RST
+                SpiController.FromName(spiBus),
+                gpio.OpenPin(clickCsPin),
+                gpio.OpenPin(clickRstPin));
 
             cd4017 = new CD4017B(
-                gpio.OpenPin(SC20100.GpioPin.PC0), // Click.AN
-                gpio.OpenPin(SC20100.GpioPin.PA15)); // Click.PWM
-                                                     //////////////////////////////////////////////////////////
+                gpio.OpenPin(clickAnPin),
+                gpio.OpenPin(clickPwmPin));
 
             InitNumberArray();
 
