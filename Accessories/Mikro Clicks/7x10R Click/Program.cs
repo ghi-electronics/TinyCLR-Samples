@@ -8,23 +8,25 @@ using System.Collections;
 using System.Text;
 using System.Threading;
 
-namespace Click_7x10R
-{
-    class Program
-    {
+namespace Click_7x10R {
+    class Program {
         static SNx4HC595 snx4hc595;
         static CD4017B cd4017;
         static byte[][] numberArray;
 
-        static void Main()
-        {
-            var latchPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PD3);
-            var resetPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PD4);
-            var cd4017ClockPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PC0);
-            var cd4017ResetPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PA15);
+        static void Main() {
+            var gpio = GpioController.GetDefault();
 
-            snx4hc595 = new SNx4HC595(SpiController.FromName(SC20100.SpiBus.Spi3), latchPin, resetPin);
-            cd4017 = new CD4017B(cd4017ClockPin, cd4017ResetPin);
+            ////////  Change these to match your board ///////////////
+            snx4hc595 = new SNx4HC595(
+                SpiController.FromName(SC20100.SpiBus.Spi3),
+                gpio.OpenPin(SC20100.GpioPin.PD3), // Click.CS
+                gpio.OpenPin(SC20100.GpioPin.PD4)); // Click.RST
+
+            cd4017 = new CD4017B(
+                gpio.OpenPin(SC20100.GpioPin.PC0), // Click.AN
+                gpio.OpenPin(SC20100.GpioPin.PA15)); // Click.PWM
+                                                     //////////////////////////////////////////////////////////
 
             InitNumberArray();
 
@@ -32,27 +34,23 @@ namespace Click_7x10R
 
             var mainCounter = 0;
 
-            while (true)
-            {
+            while (true) {
                 var exp = DateTime.Now.Ticks + 1000 * 10000; // Count up every 1 second
 
-                while (DateTime.Now.Ticks < exp)
-                {
+                while (DateTime.Now.Ticks < exp) {
                     cd4017.ResetCount();
 
                     DrawNumber(mainCounter);
                 }
 
-                if (++mainCounter == 100)
-                {
+                if (++mainCounter == 100) {
                     mainCounter = 0;
                 }
             }
 
         }
 
-        static void InitNumberArray()
-        {
+        static void InitNumberArray() {
             numberArray = new byte[10][];
 
             // Flip X
@@ -68,12 +66,10 @@ namespace Click_7x10R
             numberArray[9] = new byte[] { SwapEndian(0x0C), SwapEndian(0x02), SwapEndian(0x01), SwapEndian(0x0F), SwapEndian(0x11), SwapEndian(0x11), SwapEndian(0x0E) };  //9
         }
 
-        static byte SwapEndian(byte num)
-        {
+        static byte SwapEndian(byte num) {
             var d = 0;
 
-            for (var i = 4; i >= 0; i--)
-            {
+            for (var i = 4; i >= 0; i--) {
                 var b = (num >> i) & 1;
 
                 if (b != 0)
@@ -83,12 +79,10 @@ namespace Click_7x10R
             return (byte)d;
         }
 
-        static void DrawNumber(int counter)
-        {
+        static void DrawNumber(int counter) {
             var buffer2 = new byte[2];
 
-            for (var i = 0; i < 7; i++)
-            {
+            for (var i = 0; i < 7; i++) {
                 // Flip Y
                 buffer2[0] = numberArray[counter % 10][6 - i];
                 buffer2[1] = numberArray[counter / 10][6 - i];
