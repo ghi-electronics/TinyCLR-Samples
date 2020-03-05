@@ -7,11 +7,7 @@ using GHIElectronics.TinyCLR.Devices.Adc;
 namespace Mikro.Click {
     class MicClick {
         private readonly AdcChannel analog;
-        public MicClick(int adcController) {
-            var adc = AdcController.GetDefault();
-            var analogChannel = adc.OpenChannel(adcController);
-            this.analog = analogChannel;
-        }
+        public MicClick(AdcChannel adcChannel) => this.analog = adcChannel;
         public double Read() {
             var ratio = this.analog.ReadRatio();
             return ratio;

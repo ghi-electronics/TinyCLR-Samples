@@ -7,6 +7,7 @@ using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Spi;
 using GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735;
 using GHIElectronics.TinyCLR.Devices.Display;
+using GHIElectronics.TinyCLR.Devices.Adc;
 using Mikro.Click;
 
 namespace Mic_Click {
@@ -15,25 +16,25 @@ namespace Mic_Click {
         static void Main() {
 
             ////////// Set these to match your board //////////////
-            var adc = SC20100.AdcChannel.Controller1.PC0;
+            var adcChannel = SC20100.AdcChannel.Controller1.PC0;
             ///////////////////////////////////////////////////////
 
-            var sensor = new MicClick(adc);
+            var mic = new MicClick(AdcController.GetDefault().OpenChannel(adcChannel));
 
-            //TestWithSimpleDebug(sensor);
-            TestWithGraph(sensor);
+            //TestWithSimpleDebug(mic);
+            TestWithGraph(mic);
 
             //never get here!
             Thread.Sleep(Timeout.Infinite);
 
         }
-        static void TestWithSimpleDebug(MicClick sensor) {
+        static void TestWithSimpleDebug(MicClick mic) {
             while (true) {
-                Debug.WriteLine(sensor.Read().ToString());
+                Debug.WriteLine(mic.Read().ToString());
                 Thread.Sleep(100);
             }
         }
-        static void TestWithGraph(MicClick sensor) {
+        static void TestWithGraph(MicClick mic) {
 
             const int SCREEN_WIDTH = 160;
             const int SCREEN_HEIGHT = 128;
@@ -74,7 +75,7 @@ namespace Mic_Click {
 
             while (true) {
 
-                graph = (int)(sensor.Read() * 100) + 20;
+                graph = (int)(mic.Read() * 100) + 20;
 
                 if (x++ > SCREEN_WIDTH) {
                     x = 0;
