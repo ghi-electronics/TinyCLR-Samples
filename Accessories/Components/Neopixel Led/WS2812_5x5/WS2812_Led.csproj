@@ -55,8 +55,8 @@
     <Reference Include="GHIElectronics.TinyCLR.Native, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>.\packages\GHIElectronics.TinyCLR.Native.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Native.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>.\packages\GHIElectronics.TinyCLR.Pins.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
