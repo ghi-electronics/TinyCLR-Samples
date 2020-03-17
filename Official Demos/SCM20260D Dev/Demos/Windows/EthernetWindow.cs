@@ -1,0 +1,179 @@
+using System;
+using System.Collections;
+using System.Drawing;
+using System.Net;
+using System.Text;
+using System.Threading;
+using Demos.Properties;
+using GHIElectronics.TinyCLR.Devices.Gpio;
+using GHIElectronics.TinyCLR.Devices.Network;
+using GHIElectronics.TinyCLR.Pins;
+using GHIElectronics.TinyCLR.UI;
+using GHIElectronics.TinyCLR.UI.Controls;
+using GHIElectronics.TinyCLR.UI.Media;
+using GHIElectronics.TinyCLR.UI.Threading;
+
+namespace Demos {
+    public class EthernetWindow : ApplicationWindow {
+
+        private readonly Canvas canvas;
+
+        private Text ipAddressLable;
+        private Text gatewayLabel;
+        private Text subnetmaskLabel;
+        private Text dnsLable1;
+        private Text dnsLable2;
+
+        private string ipAddress = "IP Address : ";
+        private string gateway = "Gateway    : ";
+        private string subnetmask = "Subnet Mask: ";
+        private string dns1 = "DNS1       : ";
+        private string dns2 = "DNS2       : ";
+
+        private NetworkController networkController;
+
+        public EthernetWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+            this.canvas = new Canvas();
+            this.Element = this.canvas;
+
+            this.CreateWindow();
+
+            this.CreateEthernet();
+        }
+
+        private void CreateWindow() {
+
+            var startX = 20;
+            var startY = 40;
+            var offsetY = 30;
+            var font = Resources.GetFont(Resources.FontResources.droid_reg12);
+
+            this.canvas.Children.Clear();
+
+            // Enable TopBar
+            this.canvas.Children.Add(this.TopBar.Element);
+            this.TopBar.OnClose += this.TopBar_OnClose;
+
+            this.ipAddressLable = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.ipAddress) {
+                ForeColor = Colors.White,
+            };
+
+            this.gatewayLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.gateway) {
+                ForeColor = Colors.White,
+            };
+
+            this.subnetmaskLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.subnetmask) {
+                ForeColor = Colors.White,
+            };
+
+            this.dnsLable1 = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.dns1) {
+                ForeColor = Colors.White,
+            };
+
+            this.dnsLable2 = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.dns2) {
+                ForeColor = Colors.White,
+            };
+
+            Canvas.SetLeft(this.ipAddressLable, startX); Canvas.SetTop(this.ipAddressLable, startY); startY += offsetY;
+            Canvas.SetLeft(this.gatewayLabel, startX); Canvas.SetTop(this.gatewayLabel, startY); startY += offsetY;
+            Canvas.SetLeft(this.subnetmaskLabel, startX); Canvas.SetTop(this.subnetmaskLabel, startY); startY += offsetY;
+            Canvas.SetLeft(this.dnsLable1, startX); Canvas.SetTop(this.dnsLable1, startY); startY += offsetY;
+            Canvas.SetLeft(this.dnsLable2, startX); Canvas.SetTop(this.dnsLable2, startY); startY += offsetY;
+
+            this.canvas.Children.Add(this.ipAddressLable);
+            this.canvas.Children.Add(this.gatewayLabel);
+            this.canvas.Children.Add(this.subnetmaskLabel);
+            this.canvas.Children.Add(this.dnsLable1);
+            this.canvas.Children.Add(this.dnsLable2);            
+        }
+
+        private void TopBar_OnClose(object sender, RoutedEventArgs e) => this.Close();
+    
+        private void CreateEthernet() {
+
+            var gpioController = GpioController.GetDefault();
+
+            var resetPin = gpioController.OpenPin(SC20260.GpioPin.PG3);
+            resetPin.SetDriveMode(GpioPinDriveMode.Output);
+
+            resetPin.Write(GpioPinValue.Low);
+            Thread.Sleep(100);
+
+            resetPin.Write(GpioPinValue.High);
+            Thread.Sleep(100);
+
+            this.networkController = NetworkController.FromName("GHIElectronics.TinyCLR.NativeApis.STM32H7.EthernetEmacController\\0");
+
+            var networkInterfaceSetting = new EthernetNetworkInterfaceSettings();
+            var networkCommunicationInterfaceSettings = new BuiltInNetworkCommunicationInterfaceSettings();
+
+            networkInterfaceSetting.Address = new IPAddress(new byte[] { 192, 168, 1, 122 });
+            networkInterfaceSetting.SubnetMask = new IPAddress(new byte[] { 255, 255, 255, 0 });
+            networkInterfaceSetting.GatewayAddress = new IPAddress(new byte[] { 192, 168, 1, 1 });
+            networkInterfaceSetting.DnsAddresses = new IPAddress[] { new IPAddress(new byte[] { 75, 75, 75, 75 }), new IPAddress(new byte[] { 75, 75, 75, 76 }) };
+
+            networkInterfaceSetting.MacAddress = new byte[] { 0x00, 0x04, 0x00, 0x00, 0x00, 0x00 };
+            networkInterfaceSetting.IsDhcpEnabled = true;
+            networkInterfaceSetting.IsDynamicDnsEnabled = true;
+
+            this.networkController.SetInterfaceSettings(networkInterfaceSetting);
+            this.networkController.SetCommunicationInterfaceSettings(networkCommunicationInterfaceSettings);
+            this.networkController.SetAsDefaultController();
+
+            this.networkController.NetworkAddressChanged += this.NetworkController_NetworkAddressChanged;
+            this.networkController.NetworkLinkConnectedChanged += this.NetworkController_NetworkLinkConnectedChanged;            
+        }
+
+        private void NetworkController_NetworkLinkConnectedChanged(NetworkController sender, NetworkLinkConnectedChangedEventArgs e) {
+            //throw new NotImplementedException();
+        }
+
+        private void NetworkController_NetworkAddressChanged(NetworkController sender, NetworkAddressChangedEventArgs e) {
+            var ipProperties = sender.GetIPProperties();
+
+            var address = ipProperties.Address.GetAddressBytes();
+            var subnet = ipProperties.SubnetMask.GetAddressBytes();
+            var gw = ipProperties.GatewayAddress.GetAddressBytes();
+
+            var interfaceProperties = sender.GetInterfaceProperties();
+
+            var dnsCount = ipProperties.DnsAddresses.Length;
+            var dns1 = string.Empty;
+            var dns2 = string.Empty;
+
+            for (var i = 0; i < dnsCount; i++) {
+                var dns = ipProperties.DnsAddresses[i].GetAddressBytes();
+
+                if (i == 0)
+                    dns1 = "dns[" + i + "] :" + dns[0] + "." + dns[1] + "." + dns[2] + "." + dns[3];
+                else
+                    dns2 = "dns[" + i + "] :" + dns[0] + "." + dns[1] + "." + dns[2] + "." + dns[3];
+            }
+
+            var ip = address[0] + "." + address[1] + "." + address[2] + "." + address[3];
+            var gateway = gw[0] + "." + gw[1] + "." + gw[2] + "." + gw[3];
+            var subnetmask = subnet[0] + "." + subnet[1] + "." + subnet[2] + "." + subnet[3];
+
+            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
+
+                this.ipAddressLable.TextContent = this.ipAddress + ip;
+                this.gatewayLabel.TextContent = this.gateway + gateway;
+                this.subnetmaskLabel.TextContent = this.subnetmask + subnetmask;
+                this.dnsLable1.TextContent = this.dns1 + dns1;
+                this.dnsLable2.TextContent = this.dns2 + dns2;
+
+                this.ipAddressLable.Invalidate();
+                this.gatewayLabel.Invalidate();
+                this.subnetmaskLabel.Invalidate();
+                this.dnsLable1.Invalidate();
+                this.dnsLable2.Invalidate();
+                return null;
+
+            }, null);
+
+        }
+
+        protected override void Active() => this.networkController.Enable();
+        protected override void Deactive() => this.networkController.Disable();
+    }
+}
