@@ -114,12 +114,9 @@
     <Reference Include="GHIElectronics.TinyCLR.Pins, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="C:\MicroFrameworkPK_v4_4\GitHub\TinyCLR-Libraries\GHIElectronics.TinyCLR.UI\GHIElectronics.TinyCLR.UI.csproj">
-      <Project>{2BD3FB57-7D27-4DAF-A0DC-A23F5793E12A}</Project>
-      <Name>GHIElectronics.TinyCLR.UI</Name>
-    </ProjectReference>
+    <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.UI.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
