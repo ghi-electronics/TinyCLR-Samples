@@ -8,34 +8,45 @@ using GHIElectronics.TinyCLR.UI.Controls;
 
 namespace Demos {
     public class TemplateWindow : ApplicationWindow  {
-        private readonly Canvas canvas; // can be StackPanel
+        private Canvas canvas; // can be StackPanel
 
         public TemplateWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-            this.canvas = new Canvas();
-
-            this.Element = this.canvas;
-
-            this.CreateWindow();
-        }
-
-        private void CreateWindow() {            
-            // Enable Top Bar
-            this.canvas.Children.Add(this.TopBar.Element);
-            this.TopBar.OnClose += this.Bar_OnClose;
-
-            // Design your Window
-            // .............
-
+            
         }
 
         protected override void Active() {
             // To initialize, reset your variable, design...
+            this.canvas = new Canvas();
+
+            this.Child = this.canvas;
+
+            // Enable TopBar
+            if (this.TopBar != null) {
+                Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
+                this.canvas.Children.Add(this.TopBar);
+            }
+
+            // Enable BottomBar - If needed
+            if (this.BottomBar != null) {
+                Canvas.SetLeft(this.BottomBar, 0); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
+                this.canvas.Children.Add(this.BottomBar);
+
+                // Regiter touch event for button back or next
+                this.OnBottomBarButtonBackTouchUpEvent += this.TemplateWindow_OnBottomBarButtonBackTouchUpEvent;
+                this.OnBottomBarButtonNextTouchUpEvent += this.TemplateWindow_OnBottomBarButtonNextTouchUpEvent;
+            }
         }
 
-        protected override void Deactive() {
+        private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
+            // This is Button Back Touch event
+            this.Close();
+
+        private void TemplateWindow_OnBottomBarButtonNextTouchUpEvent(object sender, RoutedEventArgs e) =>
+            // This is Button Next Touch event
+            this.Close();
+
+        protected override void Deactive() =>
             // To stop or free, uinitialize variable resource
-        }
-
-        private void Bar_OnClose(object sender, GHIElectronics.TinyCLR.UI.RoutedEventArgs e) => this.Close();
+            this.canvas.Children.Clear();
     }
 }

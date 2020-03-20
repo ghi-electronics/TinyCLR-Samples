@@ -6,13 +6,10 @@ using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
     public class SystemWindow : ApplicationWindow {
-        private readonly Canvas canvas;
+        private Canvas canvas;
 
         public SystemWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-            this.canvas = new Canvas();
-            this.Element = this.canvas;
 
-            this.CreateWindow(); 
         }
 
         private void CreateWindow() {
@@ -22,10 +19,6 @@ namespace Demos {
             var font = Resources.GetFont(Resources.FontResources.droid_reg12);
 
             this.canvas.Children.Clear();
-
-            // Enable TopBar
-            this.canvas.Children.Add(this.TopBar.Element);
-            this.TopBar.OnClose += this.TopBar_OnClose;
 
             var devText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Device: " + GHIElectronics.TinyCLR.Native.DeviceInformation.DeviceName) {
                 ForeColor = Colors.White,
@@ -50,9 +43,22 @@ namespace Demos {
             this.canvas.Children.Add(devText);
             this.canvas.Children.Add(clockText);
             this.canvas.Children.Add(osText);
-            this.canvas.Children.Add(mText);                       
+            this.canvas.Children.Add(mText);
+
+            // Enable TopBar
+            Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
+            this.canvas.Children.Add(this.TopBar);
         }
 
-        private void TopBar_OnClose(object sender, RoutedEventArgs e) => this.Close();
+        protected override void Active() {
+
+            this.canvas = new Canvas();
+
+            this.CreateWindow();
+
+            this.Child = this.canvas;
+        }
+
+        protected override void Deactive() => this.canvas.Children.Clear();
     }
 }

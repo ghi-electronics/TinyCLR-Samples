@@ -16,7 +16,9 @@ using GHIElectronics.TinyCLR.UI.Threading;
 namespace Demos {
     public class EthernetWindow : ApplicationWindow {
 
-        private readonly Canvas canvas;
+        private Canvas canvas;
+
+        private Font font;
 
         private Text ipAddressLable;
         private Text gatewayLabel;
@@ -33,12 +35,7 @@ namespace Demos {
         private NetworkController networkController;
 
         public EthernetWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-            this.canvas = new Canvas();
-            this.Element = this.canvas;
-
-            this.CreateWindow();
-
-            this.CreateEthernet();
+ 
         }
 
         private void CreateWindow() {
@@ -46,31 +43,29 @@ namespace Demos {
             var startX = 20;
             var startY = 40;
             var offsetY = 30;
-            var font = Resources.GetFont(Resources.FontResources.droid_reg12);
+
+            this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
 
             this.canvas.Children.Clear();
+      
 
-            // Enable TopBar
-            this.canvas.Children.Add(this.TopBar.Element);
-            this.TopBar.OnClose += this.TopBar_OnClose;
-
-            this.ipAddressLable = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.ipAddress) {
+            this.ipAddressLable = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.ipAddress) {
                 ForeColor = Colors.White,
             };
 
-            this.gatewayLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.gateway) {
+            this.gatewayLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.gateway) {
                 ForeColor = Colors.White,
             };
 
-            this.subnetmaskLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.subnetmask) {
+            this.subnetmaskLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.subnetmask) {
                 ForeColor = Colors.White,
             };
 
-            this.dnsLable1 = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.dns1) {
+            this.dnsLable1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.dns1) {
                 ForeColor = Colors.White,
             };
 
-            this.dnsLable2 = new GHIElectronics.TinyCLR.UI.Controls.Text(font, this.dns2) {
+            this.dnsLable2 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.dns2) {
                 ForeColor = Colors.White,
             };
 
@@ -84,10 +79,12 @@ namespace Demos {
             this.canvas.Children.Add(this.gatewayLabel);
             this.canvas.Children.Add(this.subnetmaskLabel);
             this.canvas.Children.Add(this.dnsLable1);
-            this.canvas.Children.Add(this.dnsLable2);            
-        }
+            this.canvas.Children.Add(this.dnsLable2);
 
-        private void TopBar_OnClose(object sender, RoutedEventArgs e) => this.Close();
+            // Enable TopBar
+            Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
+            this.canvas.Children.Add(this.TopBar);
+        }        
     
         private void CreateEthernet() {
 
@@ -173,7 +170,31 @@ namespace Demos {
 
         }
 
-        protected override void Active() => this.networkController.Enable();
-        protected override void Deactive() => this.networkController.Disable();
+
+        protected override void Active() {
+            // To initialize, reset your variable, design...
+            this.canvas = new Canvas();
+
+            this.Child = this.canvas;
+
+            this.CreateWindow();
+
+            this.CreateEthernet();
+
+            this.networkController.Enable();
+
+        }
+
+        protected override void Deactive() {
+            // To stop or free, uinitialize variable resource
+
+            this.networkController.Disable();
+
+            this.canvas.Children.Clear();
+
+            this.font.Dispose();
+
+
+        }
     }
 }

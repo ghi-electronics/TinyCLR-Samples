@@ -19,13 +19,11 @@ namespace Demos {
         private readonly StackPanel mainStackPanel;        
         private StackPanel[] iconStackPanels;
 
-        private int registerWindowIndex = 0;
-
         const int IconColum = 6;
         const int IconRow = 3;
         const int MaxWindows = IconColum * IconRow;
 
-        private ApplicationWindow[] applicationWindows;
+        private ArrayList applicationWindows;
 
         public MainWindow(int width, int height) : base() {
             this.Width = width;
@@ -37,17 +35,18 @@ namespace Demos {
             this.Background = new LinearGradientBrush(Colors.Blue, Colors.Teal, 0, 0, width, height);
 
             this.CreateTopBar();
-            this.CreateIcons();            
+            this.CreateIcons();
+
+            this.applicationWindows = new ArrayList();
         }
 
-        private void CreateTopBar() {            
-            var topbar = new TopBar(this.Width, "Demo App", false);
-            this.topBar = topbar.Element;
+        private void CreateTopBar() {
+            var topbar = new TopBar(this.Width, "Demo App", true);
+            this.topBar = topbar.Child;
         }
 
         private void CreateIcons() {
-            this.iconStackPanels = new StackPanel[IconRow];
-            this.applicationWindows = new ApplicationWindow[IconRow * IconColum];
+            this.iconStackPanels = new StackPanel[IconRow];            
 
             for (var r = 0; r < IconRow; r++) {
                 this.iconStackPanels[r] = new StackPanel(Orientation.Horizontal);
@@ -66,18 +65,23 @@ namespace Demos {
         }
 
         public void RegisterWindow(ApplicationWindow aw) {
-            if (this.registerWindowIndex == MaxWindows)
+            if (this.applicationWindows.Count == MaxWindows)
                 throw new ArgumentOutOfRangeException("No more than " + MaxWindows + " windows");
-            aw.Parent = this;
-            this.applicationWindows[this.registerWindowIndex] = aw;
-            this.applicationWindows[this.registerWindowIndex].Id = this.registerWindowIndex;
 
-            var r = this.registerWindowIndex / IconColum;
+            aw.Parent = this;
+            aw.Id = this.applicationWindows.Count;
+
+            var r = this.applicationWindows.Count / IconColum;
+
+            this.applicationWindows.Add(aw);
 
             this.iconStackPanels[r].Children.Clear();
 
             for (var i = 0; i < IconColum; i++) {
-                var a = this.applicationWindows[r * IconColum + i];
+                if (r * IconColum + i >= this.applicationWindows.Count)
+                    break;
+
+                var a = (ApplicationWindow)this.applicationWindows[r * IconColum + i];
 
                 if (a != null) {
                     this.iconStackPanels[r].Children.Add(a.Icon);                    
@@ -85,16 +89,14 @@ namespace Demos {
                 }
             }
 
-            this.UpdateScreen();
-
-            this.registerWindowIndex++;
+            this.UpdateScreen();            
         }
 
         private void Icon_Click(object sender, RoutedEventArgs e) {
             if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
                 var icon = (Icon)sender;
 
-                var applicationWindow = this.applicationWindows[icon.Id];
+                var applicationWindow = (ApplicationWindow)this.applicationWindows[icon.Id];
 
                 this.Child = applicationWindow.Open();                
             }

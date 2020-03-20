@@ -15,9 +15,6 @@ using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
     class Program : Application {
-        const int SCREEN_WIDTH = 480;
-        const int SCREEN_HEIGHT = 272;
-
         public static Program MainApp;
 
         public Program(DisplayController d) : base(d) {
@@ -25,30 +22,36 @@ namespace Demos {
         }
 
         static void Main() {
-            
+           
             Display.InitializeDisplay();
-            Touch.InitializeTouch();
+            Input.Touch.InitializeTouch();
 
             MainApp = new Program(Display.DisplayController);
 
-            var mainWindow = new MainWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
+            var mainWindow = new MainWindow(Display.Width, Display.Height);
 
             // Create System Window            
-            var iconImageSystem = Resources.GetBitmap(Resources.BitmapResources.settingImage);                  
-            var iconTextSystem = "System Information";            
-            var systemWindow = new SystemWindow(iconImageSystem, iconTextSystem, SCREEN_WIDTH, SCREEN_HEIGHT);            
+            var iconImageSystem = Resources.GetBitmap(Resources.BitmapResources.settingImage);
+            var iconTextSystem = "System Information";
+            var systemWindow = new SystemWindow(iconImageSystem, iconTextSystem, Display.Width, Display.Height);
+
             mainWindow.RegisterWindow(systemWindow);
 
             // Create Ethernet Window
             var iconImageEthernet = Resources.GetBitmap(Resources.BitmapResources.Ethernet); // Icon
-            var iconTextEthernet = "Ethernet"; 
-            var networkWindow = new EthernetWindow(iconImageEthernet, iconTextEthernet, SCREEN_WIDTH, SCREEN_HEIGHT); // Create                     
+            var iconTextEthernet = "Ethernet";
+            var networkWindow = new EthernetWindow(iconImageEthernet, iconTextEthernet, Display.Width, Display.Height);
+
             mainWindow.RegisterWindow(networkWindow); // Register to MainWindow
 
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
-            var templateWindow = new TemplateWindow(iconImageTemplate, iconTextTemplate, SCREEN_WIDTH, SCREEN_HEIGHT); // Create                     
+            var templateWindow = new TemplateWindow(iconImageTemplate, iconTextTemplate, Display.Width, Display.Height) {
+                EnableButtonNext = true,
+                EnableButtonBack = true,
+            };
+
             mainWindow.RegisterWindow(templateWindow); // Register to MainWindow
 
             MainApp.Run(mainWindow);

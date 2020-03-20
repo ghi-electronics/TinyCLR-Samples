@@ -36,6 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Input.cs" />
+    <Compile Include="Utils\BottomBar.cs" />
     <Compile Include="Windows\ApplicationWindow.cs" />
     <Compile Include="Display.cs" />
     <Compile Include="Windows\EthernetWindow.cs" />
@@ -51,7 +53,6 @@
     <Compile Include="Windows\SystemWindow.cs" />
     <Compile Include="Utils\TopBar.cs" />
     <Compile Include="Windows\TemplateWindow.cs" />
-    <Compile Include="Touch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

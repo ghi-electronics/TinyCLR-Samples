@@ -30,8 +30,8 @@ namespace Demos.Utils {
         private readonly bool enableButtonNext;
 
         public BottomBar(int width, bool enableButtonBack, bool enableButtonNext) {
-            this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
-            this.buttonWidth = 40;
+            this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
+            this.buttonWidth = 80;
             this.buttonHeight = this.font.Height + 8;
             this.enableButtonBack = enableButtonBack;
             this.enableButtonNext = enableButtonNext;

@@ -16,9 +16,9 @@ namespace Demos {
         private Text leftLabel;
         private Text rightLabel;
 
-        public string LeftText { get; set; }        
+        public string LeftText { get; set; }
 
-        private readonly bool enableCloseButton;
+        private readonly bool enableClock;
         private readonly Button buttonClose;
 
         private readonly Font font;
@@ -31,11 +31,11 @@ namespace Demos {
         public delegate void OnCloseEventHandle(object sender, RoutedEventArgs e);
         public event OnCloseEventHandle OnClose;
 
-        private readonly Canvas canvas;
+        private Canvas canvas;
 
-        public UIElement Element { get; private set; }
+        public UIElement Child { get; private set; }
 
-        public TopBar(int width, string leftText, bool enableCloseButton = true) {
+        public TopBar(int width, string leftText, bool enableClock = false) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
 
             this.height = this.font.Height + 8;
@@ -54,8 +54,9 @@ namespace Demos {
                 VerticalAlignment = VerticalAlignment.Center,
             };
 
-            if (enableCloseButton) {
-                this.enableCloseButton = enableCloseButton;
+            this.enableClock = enableClock;
+
+            if (this.enableClock == false) { // then enable button
 
                 this.buttonClose = new Button() {
                     Child = closeText,
@@ -63,13 +64,13 @@ namespace Demos {
                     Height = this.height,
                 };
             }
-            else {
-                this.enableCloseButton = false;
-            }
+
 
             this.CreateBar();
-            this.CreateClockTimer();
+            this.Child.IsVisibleChanged += this.Element_IsVisibleChanged;
         }
+
+        private void Element_IsVisibleChanged(object sender, PropertyChangedEventArgs e) => this.CreateClockTimer();
 
         private void CreateBar() {
 
@@ -78,6 +79,7 @@ namespace Demos {
             };
 
             this.canvas.Children.Add(rect);
+
 
             this.leftLabel = new Text {
                 ForeColor = Colors.White,
@@ -89,15 +91,7 @@ namespace Demos {
             Canvas.SetTop(this.leftLabel, 2);
             this.canvas.Children.Add(this.leftLabel);
 
-            if (this.enableCloseButton) {
-                Canvas.SetRight(this.buttonClose, 0);
-                Canvas.SetTop(this.buttonClose, 0);
-
-                this.canvas.Children.Add(this.buttonClose);
-
-                this.buttonClose.Click += this.ButtonClose_Click;
-            }
-            else {
+            if (this.enableClock) {
                 this.rightLabel = new Text {
                     ForeColor = Colors.White,
                     Font = font,
@@ -107,13 +101,22 @@ namespace Demos {
                 Canvas.SetRight(this.rightLabel, 0);
                 Canvas.SetTop(this.rightLabel, 2);
                 this.canvas.Children.Add(this.rightLabel);
+
+            }
+            else {
+                Canvas.SetRight(this.buttonClose, 0);
+                Canvas.SetTop(this.buttonClose, 0);
+
+                this.canvas.Children.Add(this.buttonClose);
+
+                this.buttonClose.Click += this.ButtonClose_Click;
             }
 
-            this.Element = this.canvas;
+            this.Child = this.canvas;
         }
 
         private void CreateClockTimer() {
-            if (this.enableCloseButton == false) {
+            if (this.enableClock && this.clockTimer == null) {
                 this.clockTimer = new DispatcherTimer();
 
                 this.clockTimer.Tick += this.ClockTimer_Tick;
@@ -123,7 +126,7 @@ namespace Demos {
         }
 
         private void ClockTimer_Tick(object sender, EventArgs e) {
-            if (this.enableCloseButton == false)
+            if (this.enableClock)
                 this.rightLabel.TextContent = DateTime.Now.ToString();
         }
 
@@ -131,8 +134,17 @@ namespace Demos {
             if (this.OnClose != null) {
                 if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
                     this.OnClose?.Invoke(sender, e);
-                }                
+                }
             }
+        }
+
+        public void Dispose() {
+            this.canvas.Children.Clear();
+
+            this.font.Dispose();
+
+            if (this.buttonClose != null)
+                this.buttonClose.Dispose();
         }
     }
 }
