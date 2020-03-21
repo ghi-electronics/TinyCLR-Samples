@@ -16,8 +16,8 @@ namespace Demos {
         public MainWindow Parent { get; set; }
 
         public bool EnableClockOnTopBar { get; set; }
-        public bool EnableButtonBack { get; set; }
-        public bool EnableButtonNext { get; set; }
+        public bool EnableButtomBack { get; set; }
+        public bool EnableButtomNext { get; set; }
 
         private TopBar topBar;
         private BottomBar bottomBar;
@@ -59,22 +59,22 @@ namespace Demos {
                 this.topBar = new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
                 this.topBar.OnClose += this.OnClose;
 
-                if (this.EnableButtonBack || this.EnableButtonNext) {
-                    this.bottomBar = new BottomBar(this.Width, this.EnableButtonBack, this.EnableButtonNext);                    
+                if (this.EnableButtomBack || this.EnableButtomNext) {
+                    this.bottomBar = new BottomBar(this.Width, this.EnableButtomBack, this.EnableButtomNext);
                 }
 
 
                 this.Active();
 
-                if (this.EnableButtonBack || this.EnableButtonNext) {
+                if (this.EnableButtomBack || this.EnableButtomNext) {
                     this.Child.AddHandler(Buttons.ButtonUpEvent, new RoutedEventHandler(this.OnButtonUp), true);
                     this.Child.IsVisibleChanged += this.Child_IsVisibleChanged;
 
-                    if (this.EnableButtonBack) {
+                    if (this.EnableButtomBack) {
                         this.bottomBar.ButtonBack.Click += this.ButtonBack_Click;
                     }
 
-                    if (this.EnableButtonNext) {
+                    if (this.EnableButtomNext) {
                         this.bottomBar.ButtonNext.Click += this.ButtonNext_Click;
                     }
                 }
@@ -125,7 +125,7 @@ namespace Demos {
             }
         }
 
-        private void OnButtonUp(object sender, RoutedEventArgs e) => OnBottomBarButtonUpEvent?.Invoke(sender, e);        
+        private void OnButtonUp(object sender, RoutedEventArgs e) => OnBottomBarButtonUpEvent?.Invoke(sender, e);
 
         private void OnClose(object sender, RoutedEventArgs e) => this.Close();
     }

@@ -18,8 +18,6 @@ namespace Demos {
 
         private Canvas canvas;
 
-        private Font font;
-
         private Text ipAddressLable;
         private Text gatewayLabel;
         private Text subnetmaskLabel;
@@ -34,20 +32,22 @@ namespace Demos {
 
         private NetworkController networkController;
 
+        private Font font;
+
         public EthernetWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
- 
+
         }
 
         private void CreateWindow() {
 
-            var startX = 20;
-            var startY = 40;
-            var offsetY = 30;
+            var startX = 10;
+            var startY = 20;
+            var offsetY = 10;
 
-            this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
+            this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
             this.canvas.Children.Clear();
-      
+
 
             this.ipAddressLable = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.ipAddress) {
                 ForeColor = Colors.White,
@@ -84,8 +84,16 @@ namespace Demos {
             // Enable TopBar
             Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
             this.canvas.Children.Add(this.TopBar);
-        }        
-    
+
+            // Enable BottomBar
+            Canvas.SetLeft(this.BottomBar, 2); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
+            this.canvas.Children.Add(this.BottomBar);
+
+            this.OnBottomBarButtonUpEvent += this.SystemWindow_OnBottomBarButtonUpEvent;
+        }
+
+        private void SystemWindow_OnBottomBarButtonUpEvent(object sender, RoutedEventArgs e) => this.Close();
+
         private void CreateEthernet() {
 
             var gpioController = GpioController.GetDefault();
@@ -170,7 +178,6 @@ namespace Demos {
 
         }
 
-
         protected override void Active() {
             // To initialize, reset your variable, design...
             this.canvas = new Canvas();
@@ -179,22 +186,13 @@ namespace Demos {
 
             this.CreateWindow();
 
-            this.CreateEthernet();
-
-            this.networkController.Enable();
-
         }
 
         protected override void Deactive() {
             // To stop or free, uinitialize variable resource
-
-            this.networkController.Disable();
-
             this.canvas.Children.Clear();
 
             this.font.Dispose();
-
-
         }
     }
 }

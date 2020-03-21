@@ -7,12 +7,11 @@ using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Pins;
 
 namespace Demos {
-    static class Display {
-        const int BACKLIGHT = SC20260.GpioPin.PA15;
+    static class Display {        
         public static DisplayController DisplayController {get; set;}
 
         public static void InitializeDisplay() {
-            var backlight = GpioController.GetDefault().OpenPin(BACKLIGHT);
+            var backlight = GpioController.GetDefault().OpenPin(SC20260.GpioPin.PA15);
 
             backlight.SetDriveMode(GpioPinDriveMode.Output);
 
@@ -42,5 +41,8 @@ namespace Demos {
             DisplayController.SetConfiguration(controllerSetting);
             DisplayController.Enable();
         }
+
+        public static int Width => 480;
+        public static int Height => 272;
     }
 }

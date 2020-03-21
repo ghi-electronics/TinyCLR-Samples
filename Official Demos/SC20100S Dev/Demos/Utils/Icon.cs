@@ -27,13 +27,13 @@ namespace Demos {
                 this.bitmapImage = BitmapImage.FromGraphics(Graphics.FromImage(icon));
 
             this.IconText = text;
-            this.font = Resources.GetFont(Resources.FontResources.droid_reg09);
+            this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
             TextColor = Colors.White;
-            this.Width = 80;
-            this.Height = 80;
+            this.Width = 40;
+            this.Height = 40;
         }
-
+       
         public override void OnRender(DrawingContext dc) {
             var alpha = (this.IsEnabled) ? this.Alpha : (ushort)(this.Alpha / 2);
 
@@ -49,14 +49,14 @@ namespace Demos {
 
             if (this.bitmapImage != null) {
                 dc.Scale9Image(x + w / 4, y + h / 4, w - w / 2, h - h / 2, this.bitmapImage, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, alpha);
-            }
+            }            
 
             if (this.IconText != null && this.font != null) {
                 var text = this.IconText;
 
                 dc.DrawText(ref text, this.font, TextColor, 0, h - this.font.Height, w, this.font.Height, TextAlignment.Center, TextTrimming.None);
             }
-
+                       
         }
     }
 }
