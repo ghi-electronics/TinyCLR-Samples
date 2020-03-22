@@ -24,7 +24,6 @@ namespace Demos {
 
         const int IconColum = 3;
         const int IconRow = 1;
-        const int MaxWindows = IconColum * IconRow;
 
         private ArrayList applicationWindows;
 
@@ -139,9 +138,6 @@ namespace Demos {
         }
 
         public void RegisterWindow(ApplicationWindow aw) {
-            if (this.applicationWindows.Count == MaxWindows)
-                throw new ArgumentOutOfRangeException("No more than " + MaxWindows + " windows");
-            
 
             aw.Parent = this;
             aw.Id = this.applicationWindows.Count;
