@@ -31,7 +31,7 @@ namespace Demos {
 
             // Enable BottomBar - If needed
             if (this.BottomBar != null) {
-                Canvas.SetLeft(this.BottomBar, 2); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
+                Canvas.SetLeft(this.BottomBar, 0); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
                 this.canvas.Children.Add(this.BottomBar);
 
                 // Regiter Button event
