@@ -22,9 +22,8 @@ namespace Demos {
         
         private int selectWindowIndex = 0;
 
-        const int IconColum = 4;
-        const int IconRow = 2;
-        const int MaxWindows = IconColum * IconRow;
+        const int IconColum = 3;
+        const int IconRow = 1;
 
         private ArrayList applicationWindows;
 
@@ -82,7 +81,56 @@ namespace Demos {
                 }
             }
 
-            for (var r = 0; r < IconRow; r++) {
+            var r = 0;
+            var showListLeft = new ArrayList();
+
+            this.iconStackPanels[r].Children.Clear();
+            this.iconStackPanels[r].SetMargin(0, (this.Height - this.topBar.Height - ((ApplicationWindow)this.applicationWindows[0]).Icon.Height)/2, 0, 0);
+
+            var left = IconColum / 2;
+            var right = IconColum / 2;
+
+            var end = this.applicationWindows.Count-1;
+
+            for (var i = 0; i < left; i++) {
+                if (this.selectWindowIndex > 0) {
+                    showListLeft.Add(this.selectWindowIndex - 1 - i);
+                    
+                }
+                else {
+                    showListLeft.Add(end - i);
+                }
+            }
+
+            var showListRight = new ArrayList();
+
+            for (var i = 0; i < right; i++) {
+                if (this.selectWindowIndex < end) {
+                    showListRight.Add(this.selectWindowIndex + 1 + i);
+
+                }
+                else {
+                    showListRight.Add(i);
+                }
+            }
+
+
+            for (var i = left-1; i >=0; i--) {
+                var a = (ApplicationWindow)this.applicationWindows[(int)showListLeft[i]];
+
+                this.iconStackPanels[r].Children.Add(a.Icon);
+            }
+
+            this.iconStackPanels[r].Children.Add(((ApplicationWindow)this.applicationWindows[this.selectWindowIndex]).Icon);
+
+            for (var i = 0; i < right; i++) {
+                var a = (ApplicationWindow)this.applicationWindows[(int)showListRight[i]];
+
+                this.iconStackPanels[r].Children.Add(a.Icon);
+            }
+
+
+            for (r = 0; r < IconRow; r++) {
                 this.mainStackPanel.Children.Add(this.iconStackPanels[r]);
             }
 
@@ -90,31 +138,17 @@ namespace Demos {
         }
 
         public void RegisterWindow(ApplicationWindow aw) {
-            if (this.applicationWindows.Count == MaxWindows)
-                throw new ArgumentOutOfRangeException("No more than " + MaxWindows + " windows");
-            
 
             aw.Parent = this;
             aw.Id = this.applicationWindows.Count;
-
-            var r = this.applicationWindows.Count / IconColum;
+            aw.Icon.Width = this.Width / IconColum;
+            aw.Icon.Height = aw.Icon.Width + (3 * aw.Icon.Font.Height) / 2;
 
             this.applicationWindows.Add(aw);
 
-            this.iconStackPanels[r].Children.Clear();
 
-            for (var i = 0; i < IconColum; i++) {
-                if (r * IconColum + i >= this.applicationWindows.Count)
-                    break;
-
-                var a = (ApplicationWindow)this.applicationWindows[r * IconColum + i];
-
-                if (a != null) {
-                    this.iconStackPanels[r].Children.Add(a.Icon);                    
-                }
-            }
-
-            this.UpdateScreen();
+            if (this.applicationWindows.Count >= IconColum)
+                this.UpdateScreen();
             
         }
 

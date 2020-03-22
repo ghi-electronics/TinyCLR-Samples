@@ -70,6 +70,8 @@ namespace Demos {
 
             aw.Parent = this;
             aw.Id = this.applicationWindows.Count;
+            aw.Icon.Width = this.Width / IconColum;
+            aw.Icon.Height = aw.Icon.Width;
 
             var r = this.applicationWindows.Count / IconColum;
 
