@@ -32,6 +32,7 @@ namespace FEZ_Bit
         [System.SerializableAttribute()]
         internal enum FontResources : short
         {
+            droid_reg12 = -27848,
             droid_reg24 = -13442,
         }
     }
