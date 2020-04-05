@@ -107,8 +107,8 @@ namespace FEZ_Bit {
         }
         static void Main() {
             new Thread(Blinker).Start();
-            InitBot();
             InitDisplay();
+            InitBot();
 
 
             while (false) {

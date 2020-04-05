@@ -16,7 +16,7 @@
 // P15 ultrasonic echo
 // P16 neopixel x4
 // P10 touch sensor right, digital and need pull up
-// P19 I2C for PWM PCA9685
+// P19 I2C for PWM PCA9685... address 0x41
 // P20 I2C for PWM PCA9685
 
 // ON PWM Chip channels

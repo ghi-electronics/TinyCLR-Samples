@@ -47,6 +47,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="SuperBit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
