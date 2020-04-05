@@ -134,6 +134,7 @@ namespace FEZ_Bit {
             }
             buzzer.Stop();
 
+            bot.SetMotorSpeed(0.5, -0.9);
             screen.DrawString("Press A", font12, new SolidBrush(Color.Teal), 50, 90);
             screen.Flush();
             // wait for A button //////////////////////
@@ -142,7 +143,8 @@ namespace FEZ_Bit {
             while (buttonA.Read() == GpioPinValue.High) {
                 Thread.Sleep(10);
             }
-     
+            bot.SetMotorSpeed(0, -0);
+
             screen.Clear();
 
             screen.DrawString("TinyCLR OS", font12, new SolidBrush(Color.Teal), 40, 70);

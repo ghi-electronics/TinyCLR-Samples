@@ -11,6 +11,11 @@
 // P19 I2C for PWM PCA9685
 // P20 I2C for PWM PCA9685
 
+
+// ON PWM Chip channels
+// Ch12 Ch13 left motor
+// Ch14 Ch15 right motor
+
 using System;
 using System.Collections;
 using System.Text;
