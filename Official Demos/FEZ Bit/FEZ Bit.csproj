@@ -38,6 +38,8 @@
   <ItemGroup>
     <Compile Include="BitBot.cs" />
     <Compile Include="FEZBitPins.cs" />
+    <Compile Include="HelloBot.cs" />
+    <Compile Include="MaxBot.cs" />
     <Compile Include="PCA9685.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -46,6 +48,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="SuperBit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

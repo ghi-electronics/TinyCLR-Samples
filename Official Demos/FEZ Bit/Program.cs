@@ -13,6 +13,7 @@ using System.Drawing;
 
 
 using GHIElectronics.TinyCLR.Yahboom.BitBot;
+using GHIElectronics.TinyCLR.Devices.Signals;
 
 namespace FEZ_Bit {
     class Program {
@@ -107,20 +108,22 @@ namespace FEZ_Bit {
         }
         static void Main() {
             new Thread(Blinker).Start();
-            InitBot();
+
             InitDisplay();
+            InitBot();
 
 
-            while (false) {
-                bot.SetMotorSpeed(0.5, 0.5);
-                Thread.Sleep(2000);
-                bot.SetMotorSpeed(0.5, -0.5);
-                Thread.Sleep(500);
-                bot.SetMotorSpeed(0, 0);
-                Thread.Sleep(500);
-                var d = bot.ReadFrontSensor();
+            while (true) {
+                //bot.SetMotorSpeed(0.5, 0.5);
+                //Thread.Sleep(2000);
+                //bot.SetMotorSpeed(0.5, -0.5);
+                //Thread.Sleep(500);
+                //bot.SetMotorSpeed(0, 0);
+                //Thread.Sleep(500);
+                var d = bot.ReadLineSensor(false);
                 bot.Beep();
             }
+
             
             // Buzzer ///////////////////
             var pwmController3 = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
@@ -134,6 +137,7 @@ namespace FEZ_Bit {
             }
             buzzer.Stop();
 
+            bot.SetMotorSpeed(0.5, -0.9);
             screen.DrawString("Press A", font12, new SolidBrush(Color.Teal), 50, 90);
             screen.Flush();
             // wait for A button //////////////////////
@@ -142,7 +146,8 @@ namespace FEZ_Bit {
             while (buttonA.Read() == GpioPinValue.High) {
                 Thread.Sleep(10);
             }
-     
+            bot.SetMotorSpeed(0, -0);
+
             screen.Clear();
 
             screen.DrawString("TinyCLR OS", font12, new SolidBrush(Color.Teal), 40, 70);
