@@ -49,6 +49,7 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="SuperBit.cs" />
+    <Compile Include="TinyBit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
