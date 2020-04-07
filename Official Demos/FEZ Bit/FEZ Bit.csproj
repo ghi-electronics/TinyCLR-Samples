@@ -49,6 +49,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="RingBit.cs" />
     <Compile Include="SuperBit.cs" />
     <Compile Include="TinyBit.cs" />
   </ItemGroup>
