@@ -14,6 +14,7 @@ using System.Drawing;
 
 using GHIElectronics.TinyCLR.Yahboom.BitBot;
 using GHIElectronics.TinyCLR.Devices.Signals;
+using GHIElectronics.TinyCLR.Yahboom.TinyBit;
 
 namespace FEZ_Bit {
     class Program {
@@ -65,7 +66,7 @@ namespace FEZ_Bit {
                 frontsensorenable, frontvalue,
                 FEZBit.GpioPin.EdgeP16);
 
-            bot.SetHeadlight(0.9, 0.2, 0);
+            bot.SetHeadlight(200, 50, 0);
             bot.SetStatusLeds(false, true, false);
             bot.SetColorLeds(0, 0xff, 0, 0);
             bot.SetColorLeds(1, 0, 0xff, 0);
@@ -106,10 +107,88 @@ namespace FEZ_Bit {
             screen.Flush();
 
         }
+        static void TestCuteBot() {
+            var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
+            var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
+            var lineDetectLeft = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP13);
+            var lineDetectRight = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP14);
+
+            var bot = new GHIElectronics.TinyCLR.Elecfreaks.TinyBit.CuteBotController(
+                I2cController.FromName(FEZBit.I2cBus.Edge),
+                buzzerChannel,
+                lineDetectLeft, lineDetectRight,
+                FEZBit.GpioPin.EdgeP15
+                );
+
+            bot.Beep();
+            bot.SetColorLeds(1, 100, 0, 0);
+            bot.SetColorLeds(0, 0, 50, 100);
+            bot.SetHeadlight(true, 30, 100, 100);
+            bot.SetHeadlight(false, 30, 0, 200);
+            bot.SetMotorSpeed(0.5, 0.5);
+            bot.SetMotorSpeed(0.5, -0.5);
+            bot.SetMotorSpeed(-0.5, 0.5);
+            bot.SetMotorSpeed(0, 0);
+            while (true) {
+                var l = bot.ReadLineSensor(true);
+                var r = bot.ReadLineSensor(false);
+
+                Thread.Sleep(50);
+                bot.Beep();
+            }
+
+        }
+        static void TestTinyBit() {
+
+            // disable wifi
+            //var wifien = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiEn);
+            //wifien.SetDriveMode(GpioPinDriveMode.Output);
+            //wifien.Write(GpioPinValue.High);
+            //var wifireset = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiReset);
+            //wifireset.SetDriveMode(GpioPinDriveMode.Output);
+            //wifireset.Write(GpioPinValue.High);
+            //var wifics = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiCs);
+            //wifics.SetDriveMode(GpioPinDriveMode.Output);
+            //wifics.Write(GpioPinValue.High);
+
+            ////
+            var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
+            var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
+            var lineDetectLeft = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP13);
+            var lineDetectRight = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP14);
+            var voiceSensor = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id).OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP1);
+            var p2remove = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP1);
+             p2remove.SetDriveMode(GpioPinDriveMode.Input);
+
+            var bot = new TinyBitController(
+                I2cController.FromName(FEZBit.I2cBus.Edge),
+                buzzerChannel,
+                voiceSensor,
+                lineDetectLeft, lineDetectRight,
+                FEZBit.GpioPin.EdgeP12
+                );
+
+            bot.SetHeadlight(30, 100, 100);
+            bot.SetColorLeds(1, 200, 0, 0);
+            bot.SetMotorSpeed(0.5, 0.5);
+            bot.SetMotorSpeed(0.5, -0.5);
+            bot.SetMotorSpeed(-0.5, 0.5);
+            bot.SetMotorSpeed(0, 0);
+            while (true) {
+                var l = bot.ReadLineSensor(true);
+                var r = bot.ReadLineSensor(false);
+                var v = bot.ReadVoiceLevel();
+
+                Thread.Sleep(50);
+                bot.Beep();
+            }
+        }
         static void Main() {
             new Thread(Blinker).Start();
-
             InitDisplay();
+            //TestTinyBit();
+            TestCuteBot();
+
             InitBot();
 
 

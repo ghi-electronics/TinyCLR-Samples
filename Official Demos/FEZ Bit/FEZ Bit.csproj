@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BitBot.cs" />
+    <Compile Include="CuteBot.cs" />
     <Compile Include="FEZBitPins.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="MaxBot.cs" />
