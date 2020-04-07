@@ -49,16 +49,6 @@ namespace FEZ_Bit {
             var p2remove = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP1);
             p2remove.SetDriveMode(GpioPinDriveMode.Input);
 
-            var wifien = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiEn);
-            wifien.SetDriveMode(GpioPinDriveMode.Output);
-            wifien.Write(GpioPinValue.High);
-            var wifireset = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiReset);
-            wifireset.SetDriveMode(GpioPinDriveMode.Output);
-            wifireset.Write(GpioPinValue.High);
-            var wifics = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiCs);
-            wifics.SetDriveMode(GpioPinDriveMode.Output);
-            wifics.Write(GpioPinValue.High);
-
             bot = new BitBotController(
                 chip, buzzerChannel,
                 lineDetectLeft, lineDetectRight,
@@ -139,19 +129,6 @@ namespace FEZ_Bit {
 
         }
         static void TestTinyBit() {
-
-            // disable wifi
-            //var wifien = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiEn);
-            //wifien.SetDriveMode(GpioPinDriveMode.Output);
-            //wifien.Write(GpioPinValue.High);
-            //var wifireset = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiReset);
-            //wifireset.SetDriveMode(GpioPinDriveMode.Output);
-            //wifireset.Write(GpioPinValue.High);
-            //var wifics = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiCs);
-            //wifics.SetDriveMode(GpioPinDriveMode.Output);
-            //wifics.Write(GpioPinValue.High);
-
-            ////
             var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
             var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
             var lineDetectLeft = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP13);
@@ -183,9 +160,57 @@ namespace FEZ_Bit {
                 bot.Beep();
             }
         }
+        static void TestMaqueen() {
+            var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
+            var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
+            var lineDetectLeft = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP13);
+            var lineDetectRight = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP14);
+            var leftHeadlight = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP8);
+            var rightHeadight = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP12);
+
+            var bot = new GHIElectronics.TinyCLR.Dfrobot.MicroMaqueen.MaqueenController(
+                I2cController.FromName(FEZBit.I2cBus.Edge),
+                buzzerChannel,
+                leftHeadlight,rightHeadight,
+                lineDetectLeft, lineDetectRight,
+                FEZBit.GpioPin.EdgeP15
+                );
+
+            bot.Beep();
+            bot.SetColorLeds(1, 100, 0, 0);
+            bot.SetColorLeds(0, 0, 50, 100);
+            bot.SetHeadlight(true, true);
+            bot.SetHeadlight(false, true);
+            bot.SetMotorSpeed(0.5, 0.5);
+            bot.SetMotorSpeed(0.5, -0.5);
+            bot.SetMotorSpeed(-0.5, 0.5);
+            bot.SetMotorSpeed(0, 0);
+            while (true) {
+                var l = bot.ReadLineSensor(true);
+                var r = bot.ReadLineSensor(false);
+
+                Thread.Sleep(50);
+                bot.Beep();
+            }
+
+        }
         static void Main() {
             new Thread(Blinker).Start();
+
+            // disable wifi
+            var wifien = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiEn);
+            wifien.SetDriveMode(GpioPinDriveMode.Output);
+            wifien.Write(GpioPinValue.High);
+            var wifireset = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiReset);
+            wifireset.SetDriveMode(GpioPinDriveMode.Output);
+            wifireset.Write(GpioPinValue.High);
+            var wifics = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.WiFiCs);
+            wifics.SetDriveMode(GpioPinDriveMode.Output);
+            wifics.Write(GpioPinValue.High);
+
+
             InitDisplay();
+            TestMaqueen();
             //TestTinyBit();
             TestCuteBot();
 

@@ -42,6 +42,7 @@
     <Compile Include="GiggleBot.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="MaxBot.cs" />
+    <Compile Include="MicroMaqueen.cs" />
     <Compile Include="PCA9685.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
