@@ -38,12 +38,12 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
         private AdcChannel leftLineSensor, rightLineSensor;
         private WS2812 ws2812;
         public void SetColorLeds(int index, int red, int green, int blue) {
-            this.ws2812.SetColor(index, red, green , blue);
+            this.ws2812.SetColor(index, red, green, blue);
             this.ws2812.Draw();
         }
         public int ReadDistance() {
             var time = this.pulseFeedback.GeneratePulse();
-            return (int) time.TotalMilliseconds;
+            return (int)time.TotalMilliseconds;
         }
         public double ReadLineSensor(bool left) {
             if (left)
@@ -93,7 +93,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
             this.frontSensorValue = frontSensorValue;
             this.leftLineSensor = leftLineSensor;
             this.rightLineSensor = rightLineSensor;
-            
+
             this.pulseFeedback = new PulseFeedback(distanceTrigPin, distanceEchoPin, PulseFeedbackMode.DurationUntilEcho) {
                 DisableInterrupts = false,
                 Timeout = TimeSpan.FromSeconds(1),
@@ -106,7 +106,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
 
             this.frontSensorEnable.SetDriveMode(GpioPinDriveMode.Output);
             this.frontSensorEnable.Write(GpioPinValue.High);
-
+           
             this.ws2812 = new WS2812(colorLedPin, 3);
         }
         public void SetMotorSpeed(double left, double right) {
@@ -132,13 +132,11 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
             }
 
         }
-        public void SetHeadlight(double red, double green, double blue) {
-            if (red > 1.0 || green > 1.0 || blue > 1.0)
-                throw new ArgumentException();
-            this.pcaController.SetDutyCycle(PCA9685Controller.Channel.C0, 0, (int)(red * 4095));
-            this.pcaController.SetDutyCycle(PCA9685Controller.Channel.C1, 0, (int)(green * 4095));
-            this.pcaController.SetDutyCycle(PCA9685Controller.Channel.C2, 0, (int)(blue * 4095));
+        public void SetHeadlight(int red, int green, int blue) {
+            this.pcaController.SetDutyCycle(PCA9685Controller.Channel.C0, 0, (int)(red * 16));
+            this.pcaController.SetDutyCycle(PCA9685Controller.Channel.C1, 0, (int)(green * 16));
+            this.pcaController.SetDutyCycle(PCA9685Controller.Channel.C2, 0, (int)(blue * 16));
 
-             }
+        }
     }
 }

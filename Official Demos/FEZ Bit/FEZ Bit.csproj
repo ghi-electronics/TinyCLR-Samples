@@ -37,9 +37,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BitBot.cs" />
+    <Compile Include="CuteBot.cs" />
     <Compile Include="FEZBitPins.cs" />
+    <Compile Include="GiggleBot.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="MaxBot.cs" />
+    <Compile Include="MicroMaqueen.cs" />
     <Compile Include="PCA9685.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -48,7 +51,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="RingBit.cs" />
     <Compile Include="SuperBit.cs" />
+    <Compile Include="TinyBit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
