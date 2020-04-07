@@ -194,6 +194,23 @@ namespace FEZ_Bit {
             }
 
         }
+        static void TestYahboomPiano() {
+            var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
+            var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
+            
+            var piano = new GHIElectronics.TinyCLR.Yahboom.Piano.YahboomPianoController(
+                I2cController.FromName(FEZBit.I2cBus.Edge),
+                buzzerChannel,
+                FEZBit.GpioPin.EdgeP1);
+            piano.Beep();
+            piano.SetColorLeds(0, 50, 100, 0);
+            piano.SetColorLeds(1, 50, 0, 100);
+            while (true) {
+                var i = piano.ReadTouch();
+                Thread.Sleep(50);
+            }
+
+        }
         static void Main() {
             new Thread(Blinker).Start();
 
@@ -210,6 +227,7 @@ namespace FEZ_Bit {
 
 
             InitDisplay();
+            TestYahboomPiano();
             TestMaqueen();
             //TestTinyBit();
             TestCuteBot();
