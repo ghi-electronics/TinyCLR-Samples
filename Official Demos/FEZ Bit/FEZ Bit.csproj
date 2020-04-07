@@ -39,6 +39,7 @@
     <Compile Include="BitBot.cs" />
     <Compile Include="CuteBot.cs" />
     <Compile Include="FEZBitPins.cs" />
+    <Compile Include="GiggleBot.cs" />
     <Compile Include="HelloBot.cs" />
     <Compile Include="MaxBot.cs" />
     <Compile Include="PCA9685.cs" />
