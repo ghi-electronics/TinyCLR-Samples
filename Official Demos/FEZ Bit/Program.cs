@@ -194,6 +194,35 @@ namespace FEZ_Bit {
             }
 
         }
+        static void TestYahboomPiano() {
+            var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
+            var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
+            
+            var piano = new GHIElectronics.TinyCLR.Yahboom.Piano.YahboomPianoController(
+                I2cController.FromName(FEZBit.I2cBus.Edge),
+                buzzerChannel,
+                FEZBit.GpioPin.EdgeP1);
+            piano.Beep();
+            piano.SetColorLeds(0, 50, 100, 0);
+            piano.SetColorLeds(1, 50, 0, 100);
+            while (true) {
+                var i = piano.ReadTouch();
+                Thread.Sleep(50);
+            }
+
+        }
+        static void TestScrollBit() {
+            var scroll = new GHIElectronics.TinyCLR.Pimoroni.ScrollBit.ScrollBitController(I2cController.FromName(FEZBit.I2cBus.Edge));
+            var rnd = new Random();
+
+            while (true) { 
+                scroll.SetPixel(rnd.Next(17), rnd.Next(7), rnd.Next(100));
+                scroll.Show();
+                Thread.Sleep(50);
+            }
+
+            
+        }
         static void Main() {
             new Thread(Blinker).Start();
 
@@ -210,14 +239,15 @@ namespace FEZ_Bit {
 
 
             InitDisplay();
-            TestMaqueen();
+            //TestYahboomPiano();
+            //TestMaqueen();
             //TestTinyBit();
-            TestCuteBot();
-
+            //TestCuteBot();
+            TestScrollBit();
             InitBot();
 
 
-            while (true) {
+            while (false) {
                 //bot.SetMotorSpeed(0.5, 0.5);
                 //Thread.Sleep(2000);
                 //bot.SetMotorSpeed(0.5, -0.5);
