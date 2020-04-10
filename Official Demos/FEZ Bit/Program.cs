@@ -211,6 +211,18 @@ namespace FEZ_Bit {
             }
 
         }
+        static void TestScrollBit() {
+            var scroll = new GHIElectronics.TinyCLR.Pimoroni.ScrollBit.ScrollBitController(I2cController.FromName(FEZBit.I2cBus.Edge));
+            var rnd = new Random();
+
+            while (true) { 
+                scroll.SetPixel(rnd.Next(17), rnd.Next(7), rnd.Next(100));
+                scroll.Show();
+                Thread.Sleep(50);
+            }
+
+            
+        }
         static void Main() {
             new Thread(Blinker).Start();
 
@@ -227,15 +239,15 @@ namespace FEZ_Bit {
 
 
             InitDisplay();
-            TestYahboomPiano();
-            TestMaqueen();
+            //TestYahboomPiano();
+            //TestMaqueen();
             //TestTinyBit();
-            TestCuteBot();
-
+            //TestCuteBot();
+            TestScrollBit();
             InitBot();
 
 
-            while (true) {
+            while (false) {
                 //bot.SetMotorSpeed(0.5, 0.5);
                 //Thread.Sleep(2000);
                 //bot.SetMotorSpeed(0.5, -0.5);
