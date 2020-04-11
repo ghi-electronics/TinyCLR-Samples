@@ -19,7 +19,7 @@ namespace GHIElectronics.TinyCLR.Drivers.Shield {
         private UartController uart;
         private byte[] b1 = new byte[1];
         public MusicalInstrumentShield(string uart) {
-            this.uart = UartController.FromName(SC20100.UartPort.Uart5);
+            this.uart = UartController.FromName(uart);
             this.uart.SetActiveSettings((int)(57600*1.05), 8,
                 UartParity.None,
                 UartStopBitCount.One,

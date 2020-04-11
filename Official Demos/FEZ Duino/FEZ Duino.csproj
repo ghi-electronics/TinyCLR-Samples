@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Adafruit18DisplayShield.cs" />
+    <Compile Include="ArdumotoShield.cs" />
     <Compile Include="CanBusShield.cs" />
     <Compile Include="Display.HD44780.cs" />
     <Compile Include="ElEscudoDosShield.cs" />
