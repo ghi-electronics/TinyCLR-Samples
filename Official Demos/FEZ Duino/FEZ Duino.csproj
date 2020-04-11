@@ -39,6 +39,7 @@
     <Compile Include="Adafruit18DisplayShield.cs" />
     <Compile Include="CanBusShield.cs" />
     <Compile Include="Display.HD44780.cs" />
+    <Compile Include="ElEscudoDosShield.cs" />
     <Compile Include="JoystickShield.cs" />
     <Compile Include="LcdKeypadShield.cs" />
     <Compile Include="Program.cs" />
