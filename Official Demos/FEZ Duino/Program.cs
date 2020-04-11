@@ -53,8 +53,18 @@ namespace FEZ_Duino {
                 Thread.Sleep(50);
             }
         }
+        static void TestMusicShield() {
+            
+            var midi = new MusicalInstrumentShield(SC20100.UartPort.Uart5);
+            while (true) {
+                midi.PlayBasicDemo();
+                Thread.Sleep(500);
+            }
+            
+        }
         static void Main() {
             new Thread(Blinker).Start();
+            TestMusicShield();
             TestLcdKeypad();
 
             Thread.Sleep(-1);
