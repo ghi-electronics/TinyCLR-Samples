@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.Threading;
 using GHIElectronics.TinyCLR.Devices.Gpio;
+using GHIElectronics.TinyCLR.Devices.Pwm;
 using GHIElectronics.TinyCLR.Pins;
 
 using GHIElectronics.TinyCLR.Drivers.Shield;
@@ -61,6 +62,23 @@ namespace FEZ_Duino {
                 Thread.Sleep(500);
             }
             
+        }
+        static void TestShieldBot() {
+            var gpio = GpioController.GetDefault();
+            var l1 = gpio.OpenPin(SC20100.GpioPin.PA0);
+            var l2 = gpio.OpenPin(SC20100.GpioPin.PA0);
+            var r1 = gpio.OpenPin(SC20100.GpioPin.PA0);
+            var r2 = gpio.OpenPin(SC20100.GpioPin.PA0);
+
+            var pwmcontrller = PwmController.FromName(SC20100.PwmChannel.Controller1.Id);
+
+
+            var bot = new ShieldBot();
+            bot.SetSpeed(0.5, 0.5);
+            bot.SetSpeed(-0.5, 0.5);
+            bot.SetSpeed(0.5, -0.5);
+            bot.SetSpeed(0, 0);
+
         }
         static void Main() {
             new Thread(Blinker).Start();

@@ -36,7 +36,7 @@ namespace GHIElectronics.TinyCLR.Drivers.Shield {
                 this.dirA.Write(GpioPinValue.Low);
                 a *= -1;
             }
-            this.speedA.SetActiveDutyCyclePercentage(Math.Abs(a));
+            this.speedA.SetActiveDutyCyclePercentage(a);
 
             if (b > 0) {
                 this.dirB.Write(GpioPinValue.High);
@@ -45,7 +45,7 @@ namespace GHIElectronics.TinyCLR.Drivers.Shield {
                 this.dirB.Write(GpioPinValue.Low);
                 b *= -1;
             }
-            this.speedB.SetActiveDutyCyclePercentage(Math.Abs(b));
+            this.speedB.SetActiveDutyCyclePercentage(b);
         }
     }
 }
