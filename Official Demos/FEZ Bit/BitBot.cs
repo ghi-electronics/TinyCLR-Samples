@@ -43,7 +43,11 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
         }
         public int ReadDistance() {
             var time = this.pulseFeedback.GeneratePulse();
-            return (int)time.TotalMilliseconds;
+            var microsecond = time.TotalMilliseconds * 1000.0;
+
+            var distance = microsecond * 0.036 / 2;
+
+            return (int)distance;
         }
         public double ReadLineSensor(bool left) {
             if (left)
@@ -94,7 +98,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
             this.leftLineSensor = leftLineSensor;
             this.rightLineSensor = rightLineSensor;
 
-            this.pulseFeedback = new PulseFeedback(distanceTrigPin, distanceEchoPin, PulseFeedbackMode.DurationUntilEcho) {
+            this.pulseFeedback = new PulseFeedback(distanceTrigPin, distanceEchoPin, PulseFeedbackMode.EchoDuration) {
                 DisableInterrupts = false,
                 Timeout = TimeSpan.FromSeconds(1),
                 PulseLength = TimeSpan.FromTicks(100),
