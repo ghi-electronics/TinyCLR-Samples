@@ -44,6 +44,7 @@
     <Compile Include="KlefPiano.cs" />
     <Compile Include="MaxBot.cs" />
     <Compile Include="MicroMaqueen.cs" />
+    <Compile Include="MicroRover.cs" />
     <Compile Include="PCA9685.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
