@@ -18,7 +18,7 @@ namespace Demos {
             var gpio = GpioController.GetDefault();
 
             st7735 = new ST7735Controller(
-                spi.GetDevice(ST7735Controller.GetConnectionSettings(SpiChipSelectType.Gpio, SC20100.GpioPin.PD10)), // ChipSelect 
+                spi.GetDevice(ST7735Controller.GetConnectionSettings(SpiChipSelectType.Gpio, gpio.OpenPin(SC20100.GpioPin.PD10))), // ChipSelect 
                 gpio.OpenPin(SC20100.GpioPin.PC4), // Pin RS
                 gpio.OpenPin(SC20100.GpioPin.PE15) // Pin RESET
 
