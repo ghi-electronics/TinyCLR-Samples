@@ -223,6 +223,24 @@ namespace FEZ_Bit {
 
             
         }
+        static void TestTouchPads() {
+            var pulse = new PulseFeedback(FEZBit.GpioPin.EdgeP0,
+                PulseFeedbackMode.EchoDuration.DurationUntilEcho.DrainDuration) { 
+                DisableInterrupts = true,
+                Timeout = TimeSpan.FromSeconds(1),
+                PulseLength = TimeSpan.FromMilliseconds(1),
+                PulsePinValue = GpioPinValue.High,
+                //EchoPinValue = GpioPinValue.High,
+                //PulsePinDriveMode = GpioPinDriveMode.Input,
+                //EchoPinDriveMode = GpioPinDriveMode.Input
+            };
+
+            while (true) {
+                var d = pulse.GeneratePulse(); ;
+
+                Thread.Sleep(250);
+            }
+        }
         static void Main() {
             new Thread(Blinker).Start();
 
@@ -239,6 +257,7 @@ namespace FEZ_Bit {
 
 
             InitDisplay();
+            TestTouchPads();
             //TestYahboomPiano();
             //TestMaqueen();
             //TestTinyBit();
