@@ -1,4 +1,4 @@
-﻿using GHIElectronics.TinyCLR.UI;
+using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 using GHIElectronics.TinyCLR.UI.Threading;
@@ -33,9 +33,9 @@ namespace CarWashExample
                 Height = 20
             };
 
-            this.timer = new DispatcherTimer();
-
-            this.timer.Tag = this.progressBar;
+            this.timer = new DispatcherTimer {
+                Tag = this.progressBar
+            };
             this.timer.Tick += this.Counter;
             this.timer.Interval = new TimeSpan(0, 0, 1);
 

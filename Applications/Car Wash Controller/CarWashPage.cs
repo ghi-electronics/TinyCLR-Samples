@@ -33,9 +33,9 @@ namespace CarWashExample
                 Height = 40
             };
 
-            this.timer = new DispatcherTimer();
-
-            this.timer.Tag = this.progressBar;
+            this.timer = new DispatcherTimer {
+                Tag = this.progressBar
+            };
             this.timer.Tick += this.Counter;
             this.timer.Interval = new TimeSpan(0, 0, 1);
 
