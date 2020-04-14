@@ -42,6 +42,7 @@
     <Compile Include="Display.HD44780.cs" />
     <Compile Include="ElEscudoDosShield.cs" />
     <Compile Include="ElShield.cs" />
+    <Compile Include="EpectrumSample.cs" />
     <Compile Include="JoystickShield.cs" />
     <Compile Include="LcdKeypadShield.cs" />
     <Compile Include="MusicalInstrumentShield.cs" />
@@ -75,6 +76,12 @@
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drawing.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.Adafruit.LPD8806, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Adafruit.LPD8806.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Drivers.Adafruit.LPD8806.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.MixedSignalIntegrated.MSGEQ7, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.MixedSignalIntegrated.MSGEQ7.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Drivers.MixedSignalIntegrated.MSGEQ7.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.2.0.0-preview4\lib\net452\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.dll</HintPath>
