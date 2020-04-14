@@ -1,4 +1,4 @@
-﻿#define SC20260
+#define SC20260
 
 using GHIElectronics.TinyCLR.Devices.Display;
 using GHIElectronics.TinyCLR.Devices.Gpio;
@@ -15,6 +15,7 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using CarWashExample.Properties;
+using GHIElectronics.TinyCLR.Pins;
 
 namespace CarWashExample
 {
@@ -51,7 +52,7 @@ namespace CarWashExample
 
             ldr1.SetDriveMode(GpioPinDriveMode.InputPullUp);
 
-            int cnt = 0;
+            var cnt = 0;
 
             while (ldr1.Read() == GpioPinValue.High)
             {
@@ -71,7 +72,7 @@ namespace CarWashExample
 
         static void DoTestWPF()
         {
-            GpioPin backlight = GpioController.GetDefault().OpenPin(BACKLIGHT);
+            var backlight = GpioController.GetDefault().OpenPin(BACKLIGHT);
 
             backlight.SetDriveMode(GpioPinDriveMode.Output);
 
@@ -102,7 +103,7 @@ namespace CarWashExample
             displayController.SetConfiguration(controllerSetting);
             displayController.Enable();
 
-            var i2cController = I2cController.GetDefault();
+            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
             var settings = new I2cConnectionSettings(0x38)
             {// the slave's address
@@ -149,15 +150,9 @@ namespace CarWashExample
 
         public static Window WpfWindow { get; set; }
 
-        private static void Touch_TouchUp(FT5xx6Controller sender, TouchEventArgs e)
-        {
-            app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Up, System.DateTime.Now);
-        }
+        private static void Touch_TouchUp(FT5xx6Controller sender, TouchEventArgs e) => app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Up, System.DateTime.Now);
 
-        private static void Touch_TouchDown(FT5xx6Controller sender, TouchEventArgs e)
-        {
-            app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Down, System.DateTime.Now);
-        }
+        private static void Touch_TouchDown(FT5xx6Controller sender, TouchEventArgs e) => app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Down, System.DateTime.Now);
 
         private static Window CreateWindow(DisplayController disp)
         {

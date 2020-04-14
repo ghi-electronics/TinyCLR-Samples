@@ -23,11 +23,11 @@ namespace CarWashExample
         public PaymentWindow()
         {
             this.canvas = new Canvas();
-            font = Resources.GetFont(Resources.FontResources.small);
-            fontB = Resources.GetFont(Resources.FontResources.NinaB);
-            OnScreenKeyboard.Font = fontB;
+            this.font = Resources.GetFont(Resources.FontResources.small);
+            this.fontB = Resources.GetFont(Resources.FontResources.NinaB);
+            OnScreenKeyboard.Font = this.fontB;
 
-            messageBox = new MessageBox(400, 160, 100, 40, "Yes", 50, 50, "No", 100, 50, fontB)
+            this.messageBox = new MessageBox(400, 160, 100, 40, "Yes", 50, 50, "No", 100, 50, this.fontB)
             {
                 Title = "Confirmation",
                 Message = "Are you sure?",
@@ -36,8 +36,8 @@ namespace CarWashExample
                 TitleFont = fontB
             };
 
-            messageBox.ButtonLeftClick += MessageBox_ButtonLeftClick;
-            messageBox.ButtonRightClick += MessageBox_ButtonRightClick;
+            this.messageBox.ButtonLeftClick += this.MessageBox_ButtonLeftClick;
+            this.messageBox.ButtonRightClick += this.MessageBox_ButtonRightClick;
 
             this.Elements = this.CreatePage();
 
@@ -45,14 +45,14 @@ namespace CarWashExample
 
         private void MessageBox_ButtonLeftClick(object sender, RoutedEventArgs e)
         {
-            messageBox.Visibility = Visibility.Hidden;
+            this.messageBox.Visibility = Visibility.Hidden;
             Program.WpfWindow.Child = Program.LoadingPage.Elements;
             Program.LoadingPage.Active();
         }
 
         private void MessageBox_ButtonRightClick(object sender, RoutedEventArgs e)
         {
-            messageBox.Visibility = Visibility.Hidden;
+            this.messageBox.Visibility = Visibility.Hidden;
             Program.WpfWindow.Invalidate();
         }
 
@@ -60,7 +60,7 @@ namespace CarWashExample
         {
             this.canvas.Children.Clear();          
 
-            var creditCardText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Input your credit card number :")
+            var creditCardText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Input your credit card number :")
             {
                 ForeColor = Colors.White,                
             };
@@ -70,7 +70,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(creditCardText);
 
-            var expireText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Expire date :")
+            var expireText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Expire date :")
             {
                 ForeColor = Colors.White,
             };
@@ -80,7 +80,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(expireText);
 
-            var pinTex = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Pin :")
+            var pinTex = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Pin :")
             {
                 ForeColor = Colors.White,
             };
@@ -139,7 +139,7 @@ namespace CarWashExample
 
             var backButton = new Button()
             {
-                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Back")
+                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Back")
                 {
                     ForeColor = Colors.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
@@ -151,7 +151,7 @@ namespace CarWashExample
 
             var goButton = new Button()
             {
-                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Next")
+                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Next")
                 {
                     ForeColor = Colors.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
@@ -171,15 +171,15 @@ namespace CarWashExample
 
             this.canvas.Children.Add(goButton);
 
-            Canvas.SetLeft(messageBox, 50);
-            Canvas.SetTop(messageBox, 50);
+            Canvas.SetLeft(this.messageBox, 50);
+            Canvas.SetTop(this.messageBox, 50);
 
-            messageBox.Visibility = Visibility.Hidden;
+            this.messageBox.Visibility = Visibility.Hidden;
 
-            this.canvas.Children.Add(messageBox);
+            this.canvas.Children.Add(this.messageBox);
 
-            backButton.Click += BackButton_Click;
-            goButton.Click += GoButton_Click;
+            backButton.Click += this.BackButton_Click;
+            goButton.Click += this.GoButton_Click;
 
             return this.canvas;
         }
@@ -202,8 +202,8 @@ namespace CarWashExample
                 //    Program.LoadingPage.Active();
                 //}
 
-                messageBox.Visibility = Visibility.Visible;
-                messageBox.Invalidate();
+                this.messageBox.Visibility = Visibility.Visible;
+                this.messageBox.Invalidate();
 
                 Program.WpfWindow.Invalidate();
             }
@@ -212,8 +212,8 @@ namespace CarWashExample
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            messageBox.Visibility = Visibility.Hidden;
-            messageBox.Invalidate();
+            this.messageBox.Visibility = Visibility.Hidden;
+            this.messageBox.Invalidate();
 
             Program.WpfWindow.Child = Program.SelectServicePage.Elements;
             Program.WpfWindow.Invalidate();

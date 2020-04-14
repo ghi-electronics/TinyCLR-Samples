@@ -22,10 +22,10 @@ namespace CarWashExample
 
         public CarWashPage()
         {
-            this.canvas = new Canvas();            
-            fontB = Resources.GetFont(Resources.FontResources.NinaB);
+            this.canvas = new Canvas();
+            this.fontB = Resources.GetFont(Resources.FontResources.NinaB);
 
-            progressBar = new ProgressBar()
+            this.progressBar = new ProgressBar()
             {
                 MaxValue = 100,
                 Value = 100,
@@ -33,31 +33,25 @@ namespace CarWashExample
                 Height = 40
             };
 
-            timer = new DispatcherTimer();
-
-            timer.Tag = progressBar;
-            timer.Tick += Counter;
-            timer.Interval = new TimeSpan(0, 0, 1);
+            this.timer = new DispatcherTimer {
+                Tag = this.progressBar
+            };
+            this.timer.Tick += this.Counter;
+            this.timer.Interval = new TimeSpan(0, 0, 1);
 
             this.Elements = this.CreatePage();
         }
 
-        public void Active()
-        {
-            timer.Start();
-        }
+        public void Active() => this.timer.Start();
 
-        public void Deactive()
-        {
-            timer.Stop();
-        }
+        public void Deactive() => this.timer.Stop();
 
         private UIElement CreatePage()
         {
 
             this.canvas.Children.Clear();
 
-            var washCarText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Washing your car...")
+            var washCarText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Washing your car...")
             {
                 ForeColor = Colors.White,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -69,10 +63,10 @@ namespace CarWashExample
 
             this.canvas.Children.Add(washCarText);
 
-            Canvas.SetLeft(progressBar, 90);
-            Canvas.SetTop(progressBar, 80);
+            Canvas.SetLeft(this.progressBar, 90);
+            Canvas.SetTop(this.progressBar, 80);
 
-            this.canvas.Children.Add(progressBar);
+            this.canvas.Children.Add(this.progressBar);
 
             return this.canvas;
 
@@ -80,13 +74,13 @@ namespace CarWashExample
 
         void Counter(object sender, EventArgs e)
         {
-            progressBar.Value -= 10;
-            progressBar.Invalidate();
+            this.progressBar.Value -= 10;
+            this.progressBar.Invalidate();
 
-            if (progressBar.Value <= 0)
+            if (this.progressBar.Value <= 0)
             {
-                timer.Stop();
-                progressBar.Value = progressBar.MaxValue;
+                this.timer.Stop();
+                this.progressBar.Value = this.progressBar.MaxValue;
 
                 Program.WpfWindow.Child = Program.EndPage.Elements;
                 Program.WpfWindow.Invalidate();

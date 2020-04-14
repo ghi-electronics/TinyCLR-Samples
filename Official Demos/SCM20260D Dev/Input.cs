@@ -15,7 +15,7 @@ namespace Demos {
             static FT5xx6Controller touch;            
 
             public static void InitializeTouch() {
-                var i2cController = I2cController.GetDefault();
+                var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
                 var settings = new I2cConnectionSettings(0x38) {
                     BusSpeed = 100000,

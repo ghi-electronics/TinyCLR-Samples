@@ -1,4 +1,4 @@
-﻿using GHIElectronics.TinyCLR.UI;
+using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 using GHIElectronics.TinyCLR.UI.Media.Imaging;
@@ -26,10 +26,10 @@ namespace CarWashExample
 
         public SelectServiceWindow()
         {
-            this.canvas = new Canvas();            
-            fontB = Resources.GetFont(Resources.FontResources.NinaB);
-            fontDroid12 = Resources.GetFont(Resources.FontResources.droid_reg12);
-            fontDroid14 = Resources.GetFont(Resources.FontResources.droid_reg14);
+            this.canvas = new Canvas();
+            this.fontB = Resources.GetFont(Resources.FontResources.NinaB);
+            this.fontDroid12 = Resources.GetFont(Resources.FontResources.droid_reg12);
+            this.fontDroid14 = Resources.GetFont(Resources.FontResources.droid_reg14);
 
 
             this.Elements = this.CreatePage();
@@ -39,25 +39,25 @@ namespace CarWashExample
         {
             int xButton = 300, yButton = 15, yOffsetButton = 60;
             int xPriceText = 420, yPriceText = 25, yOffsetPriceText = 60;
-            int xLine = 280;
+            var xLine = 280;
 
             this.canvas.Children.Clear();
 
-            var premiumText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontDroid12, "Premium")
+            var premiumText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontDroid12, "Premium")
             {
                 ForeColor = Colors.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
             };
 
-            var standardText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontDroid12, "Standard")
+            var standardText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontDroid12, "Standard")
             {
                 ForeColor = Colors.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
             };
 
-            var basicText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontDroid12, "Basic")
+            var basicText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontDroid12, "Basic")
             {
                 ForeColor = Colors.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -65,7 +65,7 @@ namespace CarWashExample
                 
             };
 
-            var freeText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontDroid12, "Free")
+            var freeText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontDroid12, "Free")
             {
                 ForeColor = Colors.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -113,22 +113,22 @@ namespace CarWashExample
             Canvas.SetLeft(freeButton, xButton);
             Canvas.SetTop(freeButton, yButton + yOffsetButton * 3);
 
-            var premiumPriceText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontDroid14, "4.99$")
+            var premiumPriceText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontDroid14, "4.99$")
             {
                 ForeColor = Colors.White,
             };
 
-            var standardPriceText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontDroid14, "3.99$")
+            var standardPriceText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontDroid14, "3.99$")
             {
                 ForeColor = Colors.White,
             };
 
-            var basicPriceText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontDroid14, "2.99$")
+            var basicPriceText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontDroid14, "2.99$")
             {
                 ForeColor = Colors.White,
             };
 
-            var freePriceText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontDroid14, "0.00$")
+            var freePriceText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontDroid14, "0.00$")
             {
                 ForeColor = Colors.White,
             };
@@ -167,7 +167,7 @@ namespace CarWashExample
             this.canvas.Children.Add(line);
 
             // Timer
-            var timerText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, DateTime.Now.Day + " / " + DateTime.Now.Month + " / " +DateTime.Now.Year)
+            var timerText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, DateTime.Now.Day + " / " + DateTime.Now.Month + " / " +DateTime.Now.Year)
             {
                 ForeColor = Colors.White,
             };
@@ -177,7 +177,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(timerText);
 
-            var selectVehicleText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Select Vehicle Type:")
+            var selectVehicleText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Select Vehicle Type:")
             {
                 ForeColor = Colors.White,
             };
@@ -190,11 +190,11 @@ namespace CarWashExample
 
             var listBox = new ListBox();
 
-            listBox.Items.Add(new ListBoxItemHighlightable("Truck", fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
-            listBox.Items.Add(new ListBoxItemHighlightable("Van", fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
-            listBox.Items.Add(new ListBoxItemHighlightable("SUV", fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
-            listBox.Items.Add(new ListBoxItemHighlightable("Sedan", fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
-            listBox.Items.Add(new ListBoxItemHighlightable("Other", fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
+            listBox.Items.Add(new ListBoxItemHighlightable("Truck", this.fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
+            listBox.Items.Add(new ListBoxItemHighlightable("Van", this.fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
+            listBox.Items.Add(new ListBoxItemHighlightable("SUV", this.fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
+            listBox.Items.Add(new ListBoxItemHighlightable("Sedan", this.fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
+            listBox.Items.Add(new ListBoxItemHighlightable("Other", this.fontB, 4, GHIElectronics.TinyCLR.UI.Media.Colors.Blue, GHIElectronics.TinyCLR.UI.Media.Colors.White, GHIElectronics.TinyCLR.UI.Media.Colors.White));
 
             listBox.SelectedIndex = 0;
 
@@ -260,10 +260,10 @@ namespace CarWashExample
 
 
             // Add event
-            premiumButton.Click += Button_Click;
-            standardButton.Click += Button_Click;
-            basicButton.Click += Button_Click;
-            freeButton.Click += Button_Click;
+            premiumButton.Click += this.Button_Click;
+            standardButton.Click += this.Button_Click;
+            basicButton.Click += this.Button_Click;
+            freeButton.Click += this.Button_Click;
            
             return this.canvas;
         }
