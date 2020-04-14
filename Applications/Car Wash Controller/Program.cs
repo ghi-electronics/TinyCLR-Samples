@@ -1,4 +1,4 @@
-﻿#define SC20260
+#define SC20260
 
 using GHIElectronics.TinyCLR.Devices.Display;
 using GHIElectronics.TinyCLR.Devices.Gpio;
@@ -51,7 +51,7 @@ namespace CarWashExample
 
             ldr1.SetDriveMode(GpioPinDriveMode.InputPullUp);
 
-            int cnt = 0;
+            var cnt = 0;
 
             while (ldr1.Read() == GpioPinValue.High)
             {
@@ -71,7 +71,7 @@ namespace CarWashExample
 
         static void DoTestWPF()
         {
-            GpioPin backlight = GpioController.GetDefault().OpenPin(BACKLIGHT);
+            var backlight = GpioController.GetDefault().OpenPin(BACKLIGHT);
 
             backlight.SetDriveMode(GpioPinDriveMode.Output);
 
@@ -149,15 +149,9 @@ namespace CarWashExample
 
         public static Window WpfWindow { get; set; }
 
-        private static void Touch_TouchUp(FT5xx6Controller sender, TouchEventArgs e)
-        {
-            app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Up, System.DateTime.Now);
-        }
+        private static void Touch_TouchUp(FT5xx6Controller sender, TouchEventArgs e) => app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Up, System.DateTime.Now);
 
-        private static void Touch_TouchDown(FT5xx6Controller sender, TouchEventArgs e)
-        {
-            app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Down, System.DateTime.Now);
-        }
+        private static void Touch_TouchDown(FT5xx6Controller sender, TouchEventArgs e) => app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Down, System.DateTime.Now);
 
         private static Window CreateWindow(DisplayController disp)
         {

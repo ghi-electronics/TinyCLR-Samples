@@ -20,8 +20,8 @@ namespace CarWashExample
 
         public EndPage()
         {
-            this.canvas = new Canvas();            
-            fontB = Resources.GetFont(Resources.FontResources.NinaB);
+            this.canvas = new Canvas();
+            this.fontB = Resources.GetFont(Resources.FontResources.NinaB);
             this.Elements = this.CreatePage();
         }
         public void Active()
@@ -38,7 +38,7 @@ namespace CarWashExample
         {
             this.canvas.Children.Clear();
 
-            var willYouText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Will you:")
+            var willYouText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Will you:")
             {
                 ForeColor = Colors.White,
             };
@@ -49,14 +49,14 @@ namespace CarWashExample
             this.canvas.Children.Add(willYouText);
 
 
-            CheckBox checkbox = new CheckBox();
+            var checkbox = new CheckBox();
 
             Canvas.SetTop(checkbox, 50);
             Canvas.SetLeft(checkbox, 50);
 
             this.canvas.Children.Add(checkbox);
 
-            var backtousText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Back to us.")
+            var backtousText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Back to us.")
             {
                 ForeColor = Colors.White,
             };
@@ -66,7 +66,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(backtousText);
 
-            RadioButton radioButton = new RadioButton()
+            var radioButton = new RadioButton()
             {
                 Name = "radio1",
 
@@ -77,7 +77,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(radioButton);
 
-            var sellyourverhicleText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Sell your vehicle.")
+            var sellyourverhicleText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Sell your vehicle.")
             {
                 ForeColor = Colors.White,
             };
@@ -87,7 +87,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(sellyourverhicleText);
 
-            RadioButton radioButton2 = new RadioButton()
+            var radioButton2 = new RadioButton()
             {
                 Name = "radio2",
 
@@ -98,7 +98,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(radioButton2);
 
-            var donateyourverhicleText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Donate your vehicle.")
+            var donateyourverhicleText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Donate your vehicle.")
             {
                 ForeColor = Colors.White,
             };
@@ -108,7 +108,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(donateyourverhicleText);
 
-            RadioButton radioButton3 = new RadioButton()
+            var radioButton3 = new RadioButton()
             {
                 Name = "radio3",
 
@@ -119,7 +119,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(radioButton3);
 
-            var notsureText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Not sure yet.")
+            var notsureText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Not sure yet.")
             {
                 ForeColor = Colors.White,
             };
@@ -129,7 +129,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(notsureText);
 
-            var doneText = new GHIElectronics.TinyCLR.UI.Controls.Text(fontB, "Done!")
+            var doneText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Done!")
             {
                 ForeColor = Colors.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -149,7 +149,7 @@ namespace CarWashExample
 
             this.canvas.Children.Add(doneButton);
 
-            doneButton.Click += DoneButton_Click;
+            doneButton.Click += this.DoneButton_Click;
 
             return this.canvas;
         }
