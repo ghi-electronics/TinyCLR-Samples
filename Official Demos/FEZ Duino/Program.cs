@@ -63,25 +63,28 @@ namespace FEZ_Duino {
             }
             
         }
-        static void TestShieldBot() {
-            var gpio = GpioController.GetDefault();
-            var l1 = gpio.OpenPin(SC20100.GpioPin.PA0);
-            var l2 = gpio.OpenPin(SC20100.GpioPin.PA0);
-            var r1 = gpio.OpenPin(SC20100.GpioPin.PA0);
-            var r2 = gpio.OpenPin(SC20100.GpioPin.PA0);
+        //static void TestShieldBot() {
+        //    var gpio = GpioController.GetDefault();
+        //    var l1 = gpio.OpenPin(SC20100.GpioPin.PA0);
+        //    var l2 = gpio.OpenPin(SC20100.GpioPin.PA0);
+        //    var r1 = gpio.OpenPin(SC20100.GpioPin.PA0);
+        //    var r2 = gpio.OpenPin(SC20100.GpioPin.PA0);
 
-            var pwmcontrller = PwmController.FromName(SC20100.PwmChannel.Controller1.Id);
+        //    var pwmcontrller = PwmController.FromName(SC20100.PwmChannel.Controller1.Id);
 
 
-            var bot = new ShieldBot();
-            bot.SetSpeed(0.5, 0.5);
-            bot.SetSpeed(-0.5, 0.5);
-            bot.SetSpeed(0.5, -0.5);
-            bot.SetSpeed(0, 0);
+        //    var bot = new ShieldBot(l1,l2,r1,r2);
+        //    bot.SetSpeed(0.5, 0.5);
+        //    bot.SetSpeed(-0.5, 0.5);
+        //    bot.SetSpeed(0.5, -0.5);
+        //    bot.SetSpeed(0, 0);
 
-        }
+        //}
         static void Main() {
             new Thread(Blinker).Start();
+
+            EpectrumSample.Run();
+
             TestMusicShield();
             TestLcdKeypad();
 
