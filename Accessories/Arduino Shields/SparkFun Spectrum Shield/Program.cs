@@ -1,4 +1,4 @@
-﻿using GHIElectronics.TinyCLR.Devices.Adc;
+using GHIElectronics.TinyCLR.Devices.Adc;
 using GHIElectronics.TinyCLR.Devices.Display;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Spi;
@@ -23,8 +23,14 @@ namespace SpectrumShield
 
         static void Main()
         {
+            var adcController = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
 
-            var msgeq7 = new MSGEQ7(SC20100.AdcChannel.Controller1.PA0, SC20100.AdcChannel.Controller1.PA4, SC20100.GpioPin.PE1, SC20100.GpioPin.PE0);
+            var adcChannel = adcController.OpenChannel(SC20100.AdcChannel.Controller1.PA0);
+
+            var strobePin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PE1);
+            var resetPin = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PE0);
+
+            var msgeq7 = new Msgeq7(adcChannel, strobePin, resetPin);
 
             InitializeSPIDisplay();
 
@@ -32,7 +38,7 @@ namespace SpectrumShield
             {
                 msgeq7.UpdateBands();
 
-                DrawEqualizer(msgeq7.BandsLeft, msgeq7.BandsLeft);
+                DrawEqualizer(msgeq7.Data);
 
                 GC.Collect();
 
@@ -47,9 +53,11 @@ namespace SpectrumShield
 
             var gpio = GpioController.GetDefault();
 
+            var csPin = gpio.OpenPin(SC20100.GpioPin.PD10);
+
             st7735 = new ST7735Controller(
 
-                spi.GetDevice(ST7735Controller.GetConnectionSettings(SpiChipSelectType.Gpio, SC20100.GpioPin.PD10)), // CS PD10
+                spi.GetDevice(ST7735Controller.GetConnectionSettings(SpiChipSelectType.Gpio, csPin)), // CS PD10
 
                 gpio.OpenPin(SC20100.GpioPin.PC4), // PE10 RS
 
@@ -57,13 +65,8 @@ namespace SpectrumShield
 
             );
 
-            var displayController = DisplayController.FromProvider(st7735);
 
             st7735.SetDataAccessControl(true, true, true, false);
-
-            displayController.SetConfiguration(new SpiDisplayControllerSettings { Width = SCREEN_WIDTH, Height = SCREEN_HEIGHT, DataFormat = DisplayDataFormat.Rgb565 });
-
-            displayController.Enable();
 
             var bl = gpio.OpenPin(SC20100.GpioPin.PE5); // Backligth PC7
 
@@ -75,7 +78,7 @@ namespace SpectrumShield
 
             graphic = Graphics.FromImage(new Bitmap(160, 128));
         }
-        static void DrawEqualizer(int[] channelLeftValue, int[] channelRightValue)
+        static void DrawEqualizer(int[] data)
         {
             var channel1_x = 0;
             var channel_xOffset = SCREEN_WIDTH / 16;
@@ -84,16 +87,14 @@ namespace SpectrumShield
 
             var channel2_x = (SCREEN_WIDTH >>1) + channel_xOffset;
 
-            graphic.Clear(Color.Black);
+            graphic.Clear();
 
             for (var i = 0; i < 7; i++)
             {
-                var valueScaledLeft = (channelLeftValue[i] * (SCREEN_HEIGHT * 3 /4)) / 65535;
-                var valueScaledRight = (channelRightValue[i] * (SCREEN_HEIGHT * 3 / 4)) / 65535;
+                var valueScaledLeft = (data[i] * (SCREEN_HEIGHT * 3 /4)) / 65535;
 
                 graphic.FillRectangle(new SolidBrush(Color.Blue), channel1_x + channel_xOffset * i, channel_y, channel_w, valueScaledLeft);
-
-                graphic.FillRectangle(new SolidBrush(Color.Red), channel2_x + channel_xOffset * i, channel_y, channel_w, valueScaledRight);
+                
             }
 
 
@@ -102,9 +103,6 @@ namespace SpectrumShield
 
             Thread.Sleep(1);
         }
-        private static void Graphics_OnFlushEvent(IntPtr hdc, byte[] data)
-        {
-            st7735.DrawBuffer(data);
-        }
+        private static void Graphics_OnFlushEvent(IntPtr hdc, byte[] data) => st7735.DrawBuffer(data);
     }
 }
