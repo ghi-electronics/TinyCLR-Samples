@@ -14,7 +14,7 @@ namespace Demos {
         static ST7735Controller st7735 = null;
 
         public static void InitializeDisplay() {
-            var spi = SpiController.FromName(SC20100.SpiBus.Spi3);
+            var spi = SpiController.FromName(SC20100.SpiBus.Spi4);
             var gpio = GpioController.GetDefault();
 
             st7735 = new ST7735Controller(
@@ -24,7 +24,7 @@ namespace Demos {
 
             );
 
-            var bl = gpio.OpenPin(SC20100.GpioPin.PE5); // back light
+            var bl = gpio.OpenPin(SC20100.GpioPin.PA15); // back light
 
             bl.Write(GpioPinValue.High);
             bl.SetDriveMode(GpioPinDriveMode.Output);
