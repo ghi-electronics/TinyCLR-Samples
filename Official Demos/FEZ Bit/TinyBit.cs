@@ -6,7 +6,7 @@
 // P13 left lines sensor, digital
 // P14 right line sensor, digital
 // P15 ultrasonic echo
-// P15 ultrasonic trig
+// P16 ultrasonic trig
 
 
 // P19 I2C for PWM address 0x01. unknown chip!
@@ -21,16 +21,18 @@ using GHIElectronics.TinyCLR.Devices.Adc;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
 using GHIElectronics.TinyCLR.Devices.Pwm;
+using GHIElectronics.TinyCLR.Devices.Signals;
 
 namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
     class TinyBitController {
         private I2cDevice i2c;
         private AdcChannel voiceSensor;
-        private GpioPin leftLineSensor, rightLineSensor;
+        private GpioPin leftLineSensor, rightLineSensor, distanceTrigger, distanceEcho;
         private WS2812 ws2812;
         private byte[] b4 = new byte[4];
         private byte[] b5 = new byte[5];
         private PwmChannel buzzer;
+        private PulseFeedback pulseFeedback;
         public void Beep() {
             this.buzzer.Controller.SetDesiredFrequency(4000);
             this.buzzer.SetActiveDutyCyclePercentage(0.5);
@@ -69,7 +71,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
             this.b4[3] = (byte)(blue);
             this.i2c.Write(this.b4);
         }
-        public TinyBitController(I2cController i2cController, PwmChannel buzzer, AdcChannel voiceSensor, GpioPin leftLineSensor, GpioPin rightLineSensor, int colorLedPin) {
+        public TinyBitController(I2cController i2cController, PwmChannel buzzer, AdcChannel voiceSensor, GpioPin leftLineSensor, GpioPin rightLineSensor, GpioPin distanceTrigger, GpioPin distanceEcho, int colorLedPin) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x01,400_000));
             this.buzzer = buzzer;
             this.voiceSensor = voiceSensor;
@@ -77,8 +79,25 @@ namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
             this.leftLineSensor.SetDriveMode(GpioPinDriveMode.Input);
             this.rightLineSensor = rightLineSensor;
             this.rightLineSensor.SetDriveMode(GpioPinDriveMode.Input);
-            this.ws2812 = new WS2812(colorLedPin, 2);
+            this.ws2812 = new WS2812(GpioController.GetDefault().OpenPin(colorLedPin), 2);
+            this.distanceEcho = distanceEcho;
+            this.distanceTrigger = distanceTrigger;
 
+            this.pulseFeedback = new PulseFeedback(distanceTrigger, this.distanceEcho, PulseFeedbackMode.EchoDuration) {
+                DisableInterrupts = false,
+                Timeout = TimeSpan.FromSeconds(1),
+                PulseLength = TimeSpan.FromTicks(100),
+                PulseValue = GpioPinValue.High,
+                EchoValue = GpioPinValue.High,
+            };
+        }
+        public int ReadDistance() {
+            var time = this.pulseFeedback.Trigger();
+            var microsecond = time.TotalMilliseconds * 1000.0;
+
+            var distance = microsecond * 0.036 / 2;
+
+            return (int)distance;
         }
         public bool ReadLineSensor(bool left) {
             if (left)

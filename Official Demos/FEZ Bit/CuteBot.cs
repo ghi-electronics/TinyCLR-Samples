@@ -31,7 +31,7 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
         private byte[] b4 = new byte[4];
         private WS2812 ws2812;
 
-        public CuteBotController(I2cController i2cController, PwmChannel buzzer, GpioPin leftLineSensor, GpioPin rightLineSensor, int colorLedPin) {
+        public CuteBotController(I2cController i2cController, PwmChannel buzzer, GpioPin leftLineSensor, GpioPin rightLineSensor, GpioPin colorLedPin) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x10, 50_000));
             this.buzzer = buzzer;
             this.leftLineSensor = leftLineSensor;
