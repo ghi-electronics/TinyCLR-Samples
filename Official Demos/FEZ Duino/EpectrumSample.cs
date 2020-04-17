@@ -29,7 +29,7 @@ namespace FEZ_Duino {
                 OpenChannel(SC20100.AdcChannel.Controller1.PA4);
             var strobe = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PA2);
             var reset = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PC7);
-            var msgeq7 = new MSGEQ7(ain, ain, strobe, reset);
+            var msgeq7 = new Msgeq7(ain, strobe, reset);
             var spiController = SpiController.FromName(SC20100.SpiBus.Spi3);
 
             mLedStrip = new LPD8806(spiController, TOTAL_LEDS);
@@ -37,17 +37,17 @@ namespace FEZ_Duino {
             while (true) {
                 msgeq7.UpdateBands();
 
-                DrawEqualizer(msgeq7.BandsLeft, msgeq7.BandsRight);
+                DrawEqualizer(msgeq7.Data);
 
                 Thread.Sleep(10);
 
             }
         }
-        static void DrawEqualizer(int[] channelLeftValue, int[] channelRightValue) {
+        static void DrawEqualizer(int[] data) {
 
             for (var i = 0; i < TOTAL_COLUMN; i++) {
 
-                var valueScaledLeft = channelLeftValue[i] * LEDS_PER_COLUMN / 65535;
+                var valueScaledLeft = data[i] * LEDS_PER_COLUMN / 65535;
 
                 for (var x = 0; x < LEDS_PER_COLUMN; x++) {
                     if (x <= valueScaledLeft) {
