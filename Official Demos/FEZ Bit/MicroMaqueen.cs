@@ -34,7 +34,7 @@ namespace GHIElectronics.TinyCLR.Dfrobot.MicroMaqueen {
         private byte[] b3 = new byte[3];
         private WS2812 ws2812;
 
-        public MaqueenController(I2cController i2cController, PwmChannel buzzer, GpioPin leftHeadlight, GpioPin rightHeadlight, GpioPin leftLineSensor, GpioPin rightLineSensor, int colorLedPin) {
+        public MaqueenController(I2cController i2cController, PwmChannel buzzer, GpioPin leftHeadlight, GpioPin rightHeadlight, GpioPin leftLineSensor, GpioPin rightLineSensor, GpioPin colorLedPin) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x10, 100_000));
             this.buzzer = buzzer;
             this.leftLineSensor = leftLineSensor;

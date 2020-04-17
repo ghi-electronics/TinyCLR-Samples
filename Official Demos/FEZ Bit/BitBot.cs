@@ -42,7 +42,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
             this.ws2812.Draw();
         }
         public int ReadDistance() {
-            var time = this.pulseFeedback.GeneratePulse();
+            var time = this.pulseFeedback.Trigger();
             var microsecond = time.TotalMilliseconds * 1000.0;
 
             var distance = microsecond * 0.036 / 2;
@@ -85,11 +85,11 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
             PwmChannel buzzer,
             AdcChannel leftLineSensor,
             AdcChannel rightLineSensor,
-            int distanceTrigPin,
-            int distanceEchoPin,
+            GpioPin distanceTrigPin,
+            GpioPin distanceEchoPin,
             GpioPin frontSensorEnable,
             AdcChannel frontSensorValue,
-            int colorLedPin) {
+            GpioPin colorLedPin) {
             this.pcaController = pcaController;
             this.buzzer = buzzer;
             this.pcaController.SetFrequency(50);
@@ -102,10 +102,8 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
                 DisableInterrupts = false,
                 Timeout = TimeSpan.FromSeconds(1),
                 PulseLength = TimeSpan.FromTicks(100),
-                PulsePinValue = GpioPinValue.High,
-                EchoPinValue = GpioPinValue.High,
-                PulsePinDriveMode = GpioPinDriveMode.Output,
-                EchoPinDriveMode = GpioPinDriveMode.Input
+                PulseValue = GpioPinValue.High,
+                EchoValue = GpioPinValue.High,
             };
 
             this.frontSensorEnable.SetDriveMode(GpioPinDriveMode.Output);
