@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -14,67 +14,67 @@ namespace uAlfat.Core
         /// <summary>
         /// leading string data with zero
         /// </summary>
-        /// <param name="Data">string data</param>
-        /// <param name="Count">length of string data</param>
+        /// <param name="data">string data</param>
+        /// <param name="count">length of string data</param>
         /// <returns></returns>
-        public static string LeadingZero(string Data, int Count)
+        public static string LeadingZero(string data, int count)
         {
-            if (Count < Data.Length) return Data;
-            string Fills = string.Empty;
-            for (int i = 0; i < Count-Data.Length; i++)
+            if (count < data.Length) return data;
+            var fills = string.Empty;
+            for (var i = 0; i < count-data.Length; i++)
             {
-                Fills += "0";
+                fills += "0";
             }
-            return Fills+Data;
+            return fills+data;
         }
         /// <summary>
         /// add filler to the end of data string
         /// </summary>
-        /// <param name="Filler">filler character</param>
-        /// <param name="Count">number of filler</param>
+        /// <param name="filler">filler character</param>
+        /// <param name="count">number of filler</param>
         /// <returns></returns>
-        public static string GetFiller(char Filler, long Count)
+        public static string GetFiller(char filler, long count)
         {
-            if (Count < 1) return "";
-            string Fills = string.Empty;
-            for(int i = 0; i < Count; i++)
+            if (count < 1) return "";
+            var fills = string.Empty;
+            for(var i = 0; i < count; i++)
             {
-                Fills += Filler;
+                fills += filler;
             }
-            return Fills;
+            return fills;
         }
         /// <summary>
         /// Return absolute path from relative path
         /// </summary>
-        /// <param name="BaseDirectory"></param>
-        /// <param name="Target"></param>
+        /// <param name="baseDirectory"></param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        public static string AbsolutePath(string BaseDirectory, string Target)
+        public static string AbsolutePath(string baseDirectory, string target)
         {
             int i;
 
             // Remove last slash
-            if (BaseDirectory.Substring(BaseDirectory.Length - 1) == "\\")
-                BaseDirectory = BaseDirectory.Substring(0, BaseDirectory.Length - 1);
+            if (baseDirectory.Substring(baseDirectory.Length - 1) == "\\")
+                baseDirectory = baseDirectory.Substring(0, baseDirectory.Length - 1);
 
             // Check roots
-            if (Target.Substring(0, 1) == "\\")
-                return Target;
+            if (target.Substring(0, 1) == "\\")
+                return target;
 
             // Remove upline
-            while (Target.IndexOf("..\\") >= 0)
+            while (target.IndexOf("..\\") >= 0)
             {
-                i = BaseDirectory.LastIndexOf("\\");
+                i = baseDirectory.LastIndexOf("\\");
 
                 // Invalid Path
                 if (i <= 0)
-                    return Target;
+                    return target;
 
-                BaseDirectory = BaseDirectory.Substring(0, i);
-                Target = Target.Substring(3);
+                baseDirectory = baseDirectory.Substring(0, i);
+                target = target.Substring(3);
             }
 
-            return NormalizeDirectory(BaseDirectory) + Target;
+            return NormalizeDirectory(baseDirectory) + target;
         }
 
         /// <summary>
@@ -84,9 +84,9 @@ namespace uAlfat.Core
         /// <returns></returns>
         public static string FormatDiskSize(long value)
         {
-            double cur = (double)value;
-            string[] size = new string[] { "bytes", "kb", "mb", "gb", "tb" };
-            int i = 0;
+            var cur = (double)value;
+            var size = new string[] { "bytes", "kb", "mb", "gb", "tb" };
+            var i = 0;
 
             while (cur > 1024 && i < 4)
             {
@@ -105,14 +105,13 @@ namespace uAlfat.Core
         /// <returns></returns>
         public static bool InQuotes(string value, int position)
         {
-            int qcount = 0;
-            int i;
-            int iStart = 0;
+            var qcount = 0;
+            var iStart = 0;
 
             while (true)
             {
                 // Find next instance of a quote
-                i = value.IndexOf('"', iStart);
+                var i = value.IndexOf('"', iStart);
 
                 // If not return our value
                 if (i < 0 || i >= position)
@@ -197,17 +196,17 @@ namespace uAlfat.Core
         /// <summary>
         /// Ensures the directory ends with a '\' character
         /// </summary>
-        /// <param name="Path"></param>
+        /// <param name="path"></param>
         /// <returns></returns>
-        public static string NormalizeDirectory(string Path)
+        public static string NormalizeDirectory(string path)
         {
-            if (Path.Substring(Path.Length - 1) != "\\") return Path + "\\";
-            return Path;
+            if (path.Substring(path.Length - 1) != "\\") return path + "\\";
+            return path;
         }
 
         public static string PadZeroLeft(int value, int length)
         {
-            string s = value.ToString();
+            var s = value.ToString();
             while (s.Length < length)
                 s = "0" + s;
             return s;
@@ -216,25 +215,25 @@ namespace uAlfat.Core
         /// <summary>
         /// Get a relative path for a file or folder
         /// </summary>
-        /// <param name="BaseDirectory"></param>
-        /// <param name="Target"></param>
+        /// <param name="baseDirectory"></param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        public static string RelativePath(string BaseDirectory, string Target)
+        public static string RelativePath(string baseDirectory, string target)
         {
-            string sRes = string.Empty;
+            var sRes = string.Empty;
             int i, e, s;
 
             // Check for file only
-            if (Target.IndexOf('\\') < 0)
-                return Target;
+            if (target.IndexOf('\\') < 0)
+                return target;
 
             // Split strings
-            string[] rel1 = NormalizeDirectory(BaseDirectory).Split('\\');
-            string[] rel2 = Target.Split('\\');
+            var rel1 = NormalizeDirectory(baseDirectory).Split('\\');
+            var rel2 = target.Split('\\');
 
             // Check for different drive
             if (rel1[1].ToLower() != rel2[1].ToLower())
-                return Target;
+                return target;
 
             // Find last match
             s = 0;
@@ -266,7 +265,7 @@ namespace uAlfat.Core
             }
 
             // Check for file
-            if (Path.GetExtension(Target) != string.Empty)
+            if (Path.GetExtension(target) != string.Empty)
                 sRes = sRes.Substring(0, sRes.Length - 1);
 
             // Return outcome
@@ -276,31 +275,31 @@ namespace uAlfat.Core
         /// <summary>
         /// Finds and replaces occurances within a string
         /// </summary>
-        /// <param name="Source"></param>
-        /// <param name="ToFind"></param>
-        /// <param name="ReplaceWith"></param>
+        /// <param name="source"></param>
+        /// <param name="toFind"></param>
+        /// <param name="replaceWith"></param>
         /// <returns></returns>
-        public static string Replace(string Source, string ToFind, string ReplaceWith)
+        public static string Replace(string source, string toFind, string replaceWith)
         {
             int i;
-            int iStart = 0;
+            var iStart = 0;
 
-            if (Source == string.Empty || Source == null || ToFind == string.Empty || ToFind == null)
-                return Source;
+            if (source == string.Empty || source == null || toFind == string.Empty || toFind == null)
+                return source;
 
             while (true)
             {
-                i = Source.IndexOf(ToFind, iStart);
+                i = source.IndexOf(toFind, iStart);
                 if (i < 0) break;
 
                 if (i > 0)
-                    Source = Source.Substring(0, i) + ReplaceWith + Source.Substring(i + ToFind.Length);
+                    source = source.Substring(0, i) + replaceWith + source.Substring(i + toFind.Length);
                 else
-                    Source = ReplaceWith + Source.Substring(i + ToFind.Length);
+                    source = replaceWith + source.Substring(i + toFind.Length);
 
-                iStart = i + ReplaceWith.Length;
+                iStart = i + replaceWith.Length;
             }
-            return Source;
+            return source;
         }
 
         public static string ReplaceEmptyOrNull(string value, string replaceWith)
@@ -325,7 +324,7 @@ namespace uAlfat.Core
         /// <returns></returns>
         public static string[] SplitComponents(string value, char deliminator)
         {
-            int iStart = 0;
+            var iStart = 0;
             string[] ret = null;
             string[] tmp;
             int i;
@@ -378,8 +377,8 @@ namespace uAlfat.Core
         /// <returns></returns>
         public static string[] Tokenize(string command)
         {
-            string[] res = SplitComponents(command, ' ');
-            for (int i = 0; i < res.Length; i++)
+            var res = SplitComponents(command, ' ');
+            for (var i = 0; i < res.Length; i++)
             {
                 res[i] = res[i].Trim();
                 if (res[i].Substring(0, 1) == "\"" && res[i].Substring(res[i].Length - 1) == "\"")

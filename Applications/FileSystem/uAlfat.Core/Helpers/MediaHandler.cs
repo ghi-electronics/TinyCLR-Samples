@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Text;
 using System.Threading;
@@ -8,26 +8,20 @@ namespace uAlfat.Core
     public class MediaHandler
     {
         public Hashtable HandleList { get; set; }
-        public MediaHandler()
-        {
-            HandleList = new  Hashtable();
-        }
+        public MediaHandler() => this.HandleList = new Hashtable();
 
-        public bool IsExist(char HandleName)
-        {
-            return HandleList.Contains(HandleName);
-        }
+        public bool IsExist(char handleName) => this.HandleList.Contains(handleName);
         public bool AddHandle(MediaHandle newItem)
         {
             try
             {
-                if (HandleList.Contains(newItem.HandleName))
+                if (this.HandleList.Contains(newItem.HandleName))
                 {
-                    HandleList[newItem.HandleName] = newItem;
+                    this.HandleList[newItem.HandleName] = newItem;
                 }
                 else
                 {
-                    HandleList.Add(newItem.HandleName,newItem);
+                    this.HandleList.Add(newItem.HandleName,newItem);
                 }
                 return true;
             }
@@ -40,28 +34,28 @@ namespace uAlfat.Core
 
         public MediaHandle[] GetAll()
         {
-            var allItems = new MediaHandle[HandleList.Count];
-            for(int i=0;i<HandleList.Count;i++)
+            var allItems = new MediaHandle[this.HandleList.Count];
+            for(var i=0;i< this.HandleList.Count;i++)
             {
-                allItems[i] = HandleList[i] as MediaHandle;
+                allItems[i] = this.HandleList[i] as MediaHandle;
             }
             return allItems;
         }
 
-        public MediaHandle GetHandle(char HandleName)
+        public MediaHandle GetHandle(char handleName)
         {
-            if (HandleList.Contains(HandleName))
+            if (this.HandleList.Contains(handleName))
             {
-                return HandleList[HandleName] as MediaHandle;
+                return this.HandleList[handleName] as MediaHandle;
             }
             return null;
         }
 
-        public bool RemoveHandle(char HandleName)
+        public bool RemoveHandle(char handleName)
         {
-            if (HandleList.Contains(HandleName))
+            if (this.HandleList.Contains(handleName))
             {
-                HandleList.Remove(HandleName);
+                this.HandleList.Remove(handleName);
                 return true;
             }
             return false;

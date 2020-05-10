@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,25 +15,25 @@ namespace uAlfat.Core
         public string CommandPrefix { get; set; }
         public string[] Parameters { get; set; }
         public string NextLine { get; set; }
-        public static CommandParser Parse(string Data)
+        public static CommandParser Parse(string data)
         {
-            if (!string.IsNullOrEmpty(Data))
+            if (!string.IsNullOrEmpty(data))
             {
                 
-                var SplitLine = Regex.Split("\n",Data, RegexOptions.IgnoreCase);
-                Data = SplitLine[0];
-                var NextLine = string.Empty;
-                if (SplitLine.Length > 1)
-                    NextLine = SplitLine[1];
-                var splitted = Data.Split(' ');
+                var splitLine = Regex.Split("\n",data, RegexOptions.IgnoreCase);
+                data = splitLine[0];
+                var nextLine = string.Empty;
+                if (splitLine.Length > 1)
+                    nextLine = splitLine[1];
+                var splitted = data.Split(' ');
                 if (splitted.Length > 0)
                 {
                     var param = new string[splitted.Length - 1];
-                    for (int i = 1; i < splitted.Length; i++)
+                    for (var i = 1; i < splitted.Length; i++)
                     {
                         param[i - 1] = splitted[i];
                     }
-                    return new CommandParser() { CommandPrefix = splitted[0], Parameters = param, ParamLength = param.Length, NextLine = NextLine };
+                    return new CommandParser() { CommandPrefix = splitted[0], Parameters = param, ParamLength = param.Length, NextLine = nextLine };
                 }
             }
             return new CommandParser() { CommandPrefix=string.Empty, Parameters=null };

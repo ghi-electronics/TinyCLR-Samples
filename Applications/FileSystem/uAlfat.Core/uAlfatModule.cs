@@ -1,4 +1,4 @@
-﻿using GHIElectronics.TinyCLR.Devices.Gpio;
+using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
 using GHIElectronics.TinyCLR.IO;
@@ -19,8 +19,8 @@ namespace uAlfat.Core
         {
             Full = 'F', Reduced = 'R', Hibernate = 'H'
         }
-        public string currentPath { get; set; }
-        public PowerModes powerMode { get; set; }
+        public string CurrentPath { get; set; }
+        public PowerModes PowerMode { get; set; }
         public int LDRPin { get; set; }
         public static bool IsEchoEnabled { get; set; }
         public TimerModes TimerMode { get; set; }
@@ -37,31 +37,31 @@ namespace uAlfat.Core
         public static GHIElectronics.TinyCLR.Devices.UsbHost.UsbHostController UsbHost
         { set; get; }
         public static CommunicationsBus Bus { get; set; }
-        public uAlfatModule(string UartPort, string StorageControllerName, string SDControllerName, int LdrPin = SC20260.GpioPin.PE3)
+        public uAlfatModule(string uartPort, string storageControllerName, string sDControllerName, int ldrPin = SC20260.GpioPin.PE3)
         {
-            currentPath = string.Empty;
-            powerMode = PowerModes.Full;
-            this.LDRPin = LdrPin;
+            this.CurrentPath = string.Empty;
+            this.PowerMode = PowerModes.Full;
+            this.LDRPin = ldrPin;
             IsEchoEnabled = false;
-            TimerMode = TimerModes.Backup;
+            this.TimerMode = TimerModes.Backup;
             fileExplorer = new FileExplorer();
             activeHandle = new ActiveHandle() { Mode = ActiveHandle.HandleMode.Idle };
             handles = new MediaHandler();
             storages = new StorageContainer();
-            Bus = new CommunicationsBus(UartPort);
-            Bus.DataReceived += ProcessCommand;
-            this.StorageControllerName = StorageControllerName;
-            this.SDControllerName = SDControllerName;
-            InitUsbHost();
+            Bus = new CommunicationsBus(uartPort);
+            Bus.DataReceived += this.ProcessCommand;
+            this.StorageControllerName = storageControllerName;
+            this.SDControllerName = sDControllerName;
+            this.InitUsbHost();
             Console.WriteLine("uAlfat is ready");
         }
 
-        private void ProcessCommand(string Data)
+        private void ProcessCommand(string data)
         {
-            bool IsSuccess = false;
+            var isSuccess = false;
             var result = string.Empty;
 
-            var cmd = CommandParser.Parse(Data);
+            var cmd = CommandParser.Parse(data);
             string[] par1;
             //alfat commands
             switch (cmd.CommandPrefix)
@@ -69,8 +69,8 @@ namespace uAlfat.Core
                 case CommandTypes.Init:
                     {
                         //try connect sd card
-                        IsSuccess = ConnectSD(MediaTypes.D);
-                        if (IsSuccess)
+                        isSuccess = this.ConnectSD(MediaTypes.D);
+                        if (isSuccess)
                         {
                             result = ResponseCode.Success;
                         }
@@ -78,12 +78,12 @@ namespace uAlfat.Core
                         {
                             result = ResponseCode.NoSDCard;
                         }
-                        if (!IsSuccess)
+                        if (!isSuccess)
                         {
                             //try connect usb disk
-                            if (IsUsbDiskConnected)
+                            if (this.IsUsbDiskConnected)
                             {
-                                IsSuccess = true;
+                                isSuccess = true;
                                 result = ResponseCode.Success;
                             }
                             else
@@ -91,7 +91,7 @@ namespace uAlfat.Core
                                 result = ResponseCode.NoSDCard;
                             }
                         }
-                        if (IsSuccess)
+                        if (isSuccess)
                             Bus.WriteLine(ResponseCode.Success);
                         else
                             Bus.WriteLine(ResponseCode.NoSDCard);
@@ -100,9 +100,9 @@ namespace uAlfat.Core
                 case CommandTypes.MountUsb:
                     {
                         //try connect usb disk
-                        if (IsUsbDiskConnected)
+                        if (this.IsUsbDiskConnected)
                         {
-                            IsSuccess = true;
+                            isSuccess = true;
                             result = ResponseCode.Success;
                         }
                         else
@@ -110,7 +110,7 @@ namespace uAlfat.Core
                             result = ResponseCode.NoSDCard;
                         }
 
-                        if (IsSuccess)
+                        if (isSuccess)
                             Bus.WriteLine(ResponseCode.Success);
                         else
                             Bus.WriteLine(ResponseCode.NoSDCard);
@@ -120,9 +120,9 @@ namespace uAlfat.Core
                     {
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
                         //try connect usb disk
-                        if (IsUsbDiskConnected)
+                        if (this.IsUsbDiskConnected)
                         {
-                            IsSuccess = true;
+                            isSuccess = true;
                             result += "$01" + Strings.NewLine;
                         }
                         else
@@ -155,12 +155,12 @@ namespace uAlfat.Core
                                 else
                                 {
                                     //has storage been init ?
-                                    for (int i = 0; i < storages.Size; i++)
+                                    for (var i = 0; i < storages.Size; i++)
                                     {
                                         var storage = storages.GetStorageByIndex(i);
                                         if (storage != null)
                                         {
-                                            fileName = $"{currentPath}{fileName}";
+                                            fileName = $"{this.CurrentPath}{fileName}";
                                             var newHandle = new MediaHandle() { AccessType = accessType, HandleName = handle, FileName = fileName, Media = storage.Name };
 
                                             switch (accessType)
@@ -244,22 +244,22 @@ namespace uAlfat.Core
                         if (handles.IsExist(handle))
                         {
                             //if write/append mode then flush
-                            var CurrentHandle = handles.GetHandle(handle);
-                            if (CurrentHandle.AccessType == FileAccessTypes.Write || CurrentHandle.AccessType == FileAccessTypes.Append)
+                            var currentHandle = handles.GetHandle(handle);
+                            if (currentHandle.AccessType == FileAccessTypes.Write || currentHandle.AccessType == FileAccessTypes.Append)
                             {
-                                var byteToWrite = new byte[CurrentHandle.CursorPosition];
-                                CurrentHandle.Buffer.Seek(0, SeekOrigin.Begin);
-                                for (int i = 0; i < byteToWrite.Length; i++)
+                                var byteToWrite = new byte[currentHandle.CursorPosition];
+                                currentHandle.Buffer.Seek(0, SeekOrigin.Begin);
+                                for (var i = 0; i < byteToWrite.Length; i++)
                                 {
-                                    byteToWrite[i] = (byte)CurrentHandle.Buffer.ReadByte();
+                                    byteToWrite[i] = (byte)currentHandle.Buffer.ReadByte();
                                 }
 
                                 //flush memory to file
-                                File.WriteAllBytes(CurrentHandle.FileName, byteToWrite);
+                                File.WriteAllBytes(currentHandle.FileName, byteToWrite);
 
                             }
                             //make it available
-                            CurrentHandle.Buffer.Dispose();
+                            currentHandle.Buffer.Dispose();
                             var res = handles.RemoveHandle(handle);
                             result = res ? ResponseCode.Success : ResponseCode.InvalidHandle;
                         }
@@ -309,7 +309,7 @@ namespace uAlfat.Core
                         {
                             try
                             {
-                                int numReadBytes = Convert.ToInt32("0x" + par1[1], 16);
+                                var numReadBytes = Convert.ToInt32("0x" + par1[1], 16);
                                 var handle = par1[0][0];
                                 var pad = par1[0][1];
                                 var currentHandle = handles.GetHandle(handle);
@@ -341,7 +341,7 @@ namespace uAlfat.Core
                                                 var lengthRead = currentHandle.Buffer.Length - currentHandle.CursorPosition; //numReadBytes - currentHandle.Buffer.Length;
                                                 var readBytes = new byte[lengthRead];
                                                 currentHandle.Buffer.Seek(currentHandle.CursorPosition, SeekOrigin.Begin);
-                                                for (int i = 0; i < lengthRead; i++)
+                                                for (var i = 0; i < lengthRead; i++)
                                                 {
                                                     readBytes[i] = (byte)currentHandle.Buffer.ReadByte();
                                                 }
@@ -359,7 +359,7 @@ namespace uAlfat.Core
                                             {
                                                 var readBytes = new byte[numReadBytes];
                                                 currentHandle.Buffer.Seek(currentHandle.CursorPosition, SeekOrigin.Begin);
-                                                for (int i = 0; i < numReadBytes; i++)
+                                                for (var i = 0; i < numReadBytes; i++)
                                                 {
                                                     readBytes[i] = (byte)currentHandle.Buffer.ReadByte();
                                                 }
@@ -444,7 +444,7 @@ namespace uAlfat.Core
                                             Bus.Read(readDataBytes);
                                         }
 
-                                        for (int i = 0; i < readDataBytes.Length; i++)
+                                        for (var i = 0; i < readDataBytes.Length; i++)
                                         {
                                             currentHandle.Buffer.WriteByte(readDataBytes[i]);
                                         }
@@ -540,15 +540,15 @@ namespace uAlfat.Core
                         {
                             var fileName = cmd.Parameters[0];
 
-                            for (int i = 0; i < storages.Size; i++)
+                            for (var i = 0; i < storages.Size; i++)
                             {
                                 var storage = storages.GetStorageByIndex(i);
                                 if (storage != null)
                                 {
-                                    fileName = currentPath + fileName;
+                                    fileName = this.CurrentPath + fileName;
                                     if (File.Exists(fileName))
                                     {
-                                        bool isExist = false;
+                                        var isExist = false;
                                         //check if it exist in handlelist
                                         foreach (var handle in handles.GetAll())
                                         {
@@ -594,15 +594,15 @@ namespace uAlfat.Core
                         {
                             var folderName = cmd.Parameters[0];
 
-                            for (int i = 0; i < storages.Size; i++)
+                            for (var i = 0; i < storages.Size; i++)
                             {
                                 var storage = storages.GetStorageByIndex(i);
                                 if (storage != null)
                                 {
-                                    folderName = currentPath + folderName;
+                                    folderName = this.CurrentPath + folderName;
                                     if (Directory.Exists(folderName))
                                     {
-                                        bool isExist = false;
+                                        var isExist = false;
                                         //check if it exist in handlelist
                                         foreach (var handle in handles.GetAll())
                                         {
@@ -645,17 +645,17 @@ namespace uAlfat.Core
 
                     try
                     {
-                        bool isFound = false;
-                        for (int i = 0; i < storages.Size; i++)
+                        var isFound = false;
+                        for (var i = 0; i < storages.Size; i++)
                         {
                             var storage = storages.GetStorageByIndex(i);
                             if (storage != null)
                             {
-                                var dir1 = new DirectoryInfo(currentPath);
+                                var dir1 = new DirectoryInfo(this.CurrentPath);
                                 if (dir1.Exists)
                                 {
                                     isFound = true;
-                                    fileExplorer.CurrentDirectory = currentPath;
+                                    fileExplorer.CurrentDirectory = this.CurrentPath;
                                     fileExplorer.Mode = FileExplorer.ExploreMode.Listing;
                                     fileExplorer.CurrentIndex = 0;
                                     fileExplorer.Clear();
@@ -782,7 +782,7 @@ namespace uAlfat.Core
                         switch (request)
                         {
                             case 'X':
-                                var tmp = exFatTimeStampConverter.ConvertToFatTime(DateTime.Now);
+                                var tmp = ExFatTimeStampConverter.ConvertToFatTime(DateTime.Now);
                                 result += $"${tmp}{Strings.NewLine}";
                                 break;
                             case 'F':
@@ -806,8 +806,8 @@ namespace uAlfat.Core
                         if (newdatestr.Length == 8)
                         {
                             //conversion 
-                            var newdate = exFatTimeStampConverter.ConvertToDatetime(newdatestr);
-                            if (TimerMode == TimerModes.Backup)
+                            var newdate = ExFatTimeStampConverter.ConvertToDatetime(newdatestr);
+                            if (this.TimerMode == TimerModes.Backup)
                             {
                                 var rtc = RtcController.GetDefault();
                                 Console.WriteLine($"rtc status : { (rtc.IsValid ? "valid" : "not valid") }");
@@ -830,7 +830,7 @@ namespace uAlfat.Core
                     if (cmd.ParamLength > 0)
                     {
                         var mode = cmd.Parameters[0].Trim()[0];
-                        TimerMode = mode == 'S' ? TimerModes.Shared : TimerModes.Backup;
+                        this.TimerMode = mode == 'S' ? TimerModes.Shared : TimerModes.Backup;
                         Bus.WriteLine(ResponseCode.Success);
 
                     }
@@ -847,20 +847,20 @@ namespace uAlfat.Core
                         {
                             var itemName = cmd.Parameters[0];
 
-                            for (int i = 0; i < storages.Size; i++)
+                            for (var i = 0; i < storages.Size; i++)
                             {
                                 var storage = storages.GetStorageByIndex(i);
                                 if (storage != null)
                                 {
-                                    itemName = currentPath + itemName;
+                                    itemName = this.CurrentPath + itemName;
                                     //check if File 
                                     if (File.Exists(itemName))
                                     {
-                                        FileInfo file = new FileInfo(itemName);
+                                        var file = new FileInfo(itemName);
                                         result += $"{ResponseCode.Success}{Strings.NewLine}";
                                         var lengths = "$" + Strings.LeadingZero(string.Format("{0:X}", file.Length), 8);
                                         var attrs = "$" + Strings.LeadingZero(string.Format("{0:X}", ItemResult.GetAttribute(file.Attributes)), 2);
-                                        var dates = "$" + exFatTimeStampConverter.ConvertToFatTime(file.LastWriteTime);
+                                        var dates = "$" + ExFatTimeStampConverter.ConvertToFatTime(file.LastWriteTime);
                                         result += $"{lengths} {attrs} {dates}{Strings.NewLine}";
 
                                         result += ResponseCode.Success;
@@ -868,12 +868,12 @@ namespace uAlfat.Core
                                     }
                                     else if (Directory.Exists(itemName)) //check if Directory
                                     {
-                                        DirectoryInfo dir = new DirectoryInfo(itemName);
+                                        var dir = new DirectoryInfo(itemName);
                                         result += $"{ResponseCode.Success}{Strings.NewLine}";
 
                                         var lengths = "$" + Strings.LeadingZero(string.Format("{0:X}", 0), 8);
                                         var attrs = "$" + Strings.LeadingZero(string.Format("{0:X}", ItemResult.GetAttribute(dir.Attributes)), 2);
-                                        var dates = "$" + exFatTimeStampConverter.ConvertToFatTime(dir.LastWriteTime);
+                                        var dates = "$" + ExFatTimeStampConverter.ConvertToFatTime(dir.LastWriteTime);
                                         result += $"{lengths} {attrs} {dates}{Strings.NewLine}";
                                         result += ResponseCode.Success;
                                         break;
@@ -903,15 +903,15 @@ namespace uAlfat.Core
                     if (cmd.ParamLength > 0)
                     {
                         var dirName = cmd.Parameters[0].Trim();
-                        for (int i = 0; i < storages.Size; i++)
+                        for (var i = 0; i < storages.Size; i++)
                         {
                             var storage = storages.GetStorageByIndex(i);
                             if (storage != null)
                             {
-                                var newPath = currentPath + dirName;
+                                var newPath = this.CurrentPath + dirName;
                                 if (Directory.Exists(newPath))
                                 {
-                                    currentPath = newPath + "\\";
+                                    this.CurrentPath = newPath + "\\";
                                     result = ResponseCode.Success;
                                 }
                                 else
@@ -933,12 +933,12 @@ namespace uAlfat.Core
 
                     {
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
-                        for (int i = 0; i < storages.Size; i++)
+                        for (var i = 0; i < storages.Size; i++)
                         {
                             var storage = storages.GetStorageByIndex(i);
                             if (storage != null)
                             {
-                                DriveInfo info = new DriveInfo(storage.Drive.Name);
+                                var info = new DriveInfo(storage.Drive.Name);
                                 var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalSize), 8);
                                 var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace), 8);
                                 result += $"{mediaBytes} {freeBytes}{Strings.NewLine}";
@@ -956,12 +956,12 @@ namespace uAlfat.Core
                         try
                         {
                             var dirName = cmd.Parameters[0].Trim();
-                            for (int i = 0; i < storages.Size; i++)
+                            for (var i = 0; i < storages.Size; i++)
                             {
                                 var storage = storages.GetStorageByIndex(i);
                                 if (storage != null)
                                 {
-                                    var newPath = currentPath + dirName;
+                                    var newPath = this.CurrentPath + dirName;
                                     if (!Directory.Exists(newPath))
                                     {
                                         Directory.CreateDirectory(newPath);
@@ -1001,7 +1001,7 @@ namespace uAlfat.Core
                     {
                         var key = cmd.Parameters[0].Trim();
                         var newBaudRate = 0;
-                        switch (powerMode)
+                        switch (this.PowerMode)
                         {
                             case PowerModes.Full:
                                 if (BaudRates.FullPower.Contains(key))
@@ -1075,8 +1075,8 @@ namespace uAlfat.Core
                         var mode = cmd.Parameters[0][0];
                         var newBaudRate = Convert.ToInt32("0x" + cmd.Parameters[0].Substring(1, cmd.Parameters[0].Length - 1).Trim(), 16);
                         Bus.WriteLine(ResponseCode.Success);
-                        powerMode = (PowerModes)mode;
-                        switch (powerMode)
+                        this.PowerMode = (PowerModes)mode;
+                        switch (this.PowerMode)
                         {
                             case PowerModes.Full:
                                 //do something
@@ -1088,7 +1088,7 @@ namespace uAlfat.Core
                                 break;
                             case PowerModes.Hibernate:
                                 //do something
-                                var ldrButton = GpioController.GetDefault().OpenPin(LDRPin);
+                                var ldrButton = GpioController.GetDefault().OpenPin(this.LDRPin);
                                 ldrButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
                                 ldrButton.ValueChanged += (GpioPin sender, GpioPinValueChangedEventArgs e) => { };
                                 Bus.WriteLine(ResponseCode.Success);
@@ -1105,39 +1105,39 @@ namespace uAlfat.Core
                     }
                     break;
                 default:
-                    Bus.WriteLine(string.IsNullOrEmpty(Data) ? ResponseCode.Success : ResponseCode.Unknown);
+                    Bus.WriteLine(string.IsNullOrEmpty(data) ? ResponseCode.Success : ResponseCode.Unknown);
                     break;
 
             }
             //echo
             if (IsEchoEnabled)
             {
-                Bus.WriteLine(Data);
+                Bus.WriteLine(data);
             }
         }
 
-        public bool ConnectSD(string MediaName)
+        public bool ConnectSD(string mediaName)
         {
-            if (!IsSDConnected)
+            if (!this.IsSDConnected)
             {
                 try
                 {
 
-                    var sd = StorageController.FromName(SDControllerName);
+                    var sd = StorageController.FromName(this.SDControllerName);
                     var drive = FileSystem.Mount(sd.Hdc);
-                    DriveInfo driveInfo = new DriveInfo(drive.Name);
-                    if (string.IsNullOrEmpty(currentPath))
-                        currentPath = driveInfo.RootDirectory.FullName;
-                    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = sd, Drive = drive, Name = MediaName });
-                    IsSDConnected = true;
+                    var driveInfo = new DriveInfo(drive.Name);
+                    if (string.IsNullOrEmpty(this.CurrentPath))
+                        this.CurrentPath = driveInfo.RootDirectory.FullName;
+                    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = sd, Drive = drive, Name = mediaName });
+                    this.IsSDConnected = true;
                 }
                 catch (Exception)
                 {
-                    IsSDConnected = false;
+                    this.IsSDConnected = false;
                     //throw;
                 }
             }
-            return IsSDConnected;
+            return this.IsSDConnected;
         }
         void InitUsbHost()
         {
@@ -1147,7 +1147,7 @@ namespace uAlfat.Core
                 UsbHostController.GetDefault();
 
                 UsbHost.OnConnectionChangedEvent +=
-                    UsbHostController_OnConnectionChangedEvent;
+                    this.UsbHostController_OnConnectionChangedEvent;
 
                 UsbHost.Enable();
             }
@@ -1179,9 +1179,9 @@ namespace uAlfat.Core
 
                             keyboard.KeyUp += Keyboard_KeyUp;
                             keyboard.KeyDown += Keyboard_KeyDown;
-                            IsKeyboardConnected = true;
-                            IsSDConnected = false;
-                            IsUsbDiskConnected = false;
+                            this.IsKeyboardConnected = true;
+                            this.IsSDConnected = false;
+                            this.IsUsbDiskConnected = false;
                             break;
 
                         case GHIElectronics.TinyCLR.Devices.UsbHost.BaseDevice.DeviceType.Mouse:
@@ -1192,7 +1192,7 @@ namespace uAlfat.Core
                         case GHIElectronics.TinyCLR.Devices.UsbHost.BaseDevice.
                             DeviceType.MassStorage:
 
-                            var storageController = StorageController.FromName(StorageControllerName);
+                            var storageController = StorageController.FromName(this.StorageControllerName);
 
                             var driver = GHIElectronics.TinyCLR.IO.FileSystem.
                                 Mount(storageController.Hdc);
@@ -1200,8 +1200,8 @@ namespace uAlfat.Core
                             var driveInfo = new System.IO.DriveInfo(driver.Name);
                             storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
                             storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
-                            if (string.IsNullOrEmpty(currentPath))
-                                currentPath = driveInfo.RootDirectory.FullName;
+                            if (string.IsNullOrEmpty(this.CurrentPath))
+                                this.CurrentPath = driveInfo.RootDirectory.FullName;
                             System.Diagnostics.Debug.WriteLine
                                 ("Free: " + driveInfo.TotalFreeSpace);
 
@@ -1216,15 +1216,15 @@ namespace uAlfat.Core
 
                             System.Diagnostics.Debug.WriteLine
                                 ("DriveFormat: " + driveInfo.DriveFormat);
-                            IsKeyboardConnected = false;
-                            IsSDConnected = false;
-                            IsUsbDiskConnected = true;
+                            this.IsKeyboardConnected = false;
+                            this.IsSDConnected = false;
+                            this.IsUsbDiskConnected = true;
                             break;
 
                         default:
-                            IsKeyboardConnected = false;
-                            IsSDConnected = false;
-                            IsUsbDiskConnected = false;
+                            this.IsKeyboardConnected = false;
+                            this.IsSDConnected = false;
+                            this.IsUsbDiskConnected = false;
                             //do nothing
 
                             break;
@@ -1233,17 +1233,17 @@ namespace uAlfat.Core
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Disconnected:
                     System.Diagnostics.Debug.WriteLine("Device Disconnected");
-                    IsKeyboardConnected = false;
-                    IsSDConnected = false;
-                    IsUsbDiskConnected = false;
+                    this.IsKeyboardConnected = false;
+                    this.IsSDConnected = false;
+                    this.IsUsbDiskConnected = false;
                     //Unmount filesystem if it was mounted.
                     break;
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Bad:
                     System.Diagnostics.Debug.WriteLine("Bad Device");
-                    IsKeyboardConnected = false;
-                    IsSDConnected = false;
-                    IsUsbDiskConnected = false;
+                    this.IsKeyboardConnected = false;
+                    this.IsSDConnected = false;
+                    this.IsUsbDiskConnected = false;
                     break;
             }
         }
@@ -1269,20 +1269,12 @@ namespace uAlfat.Core
         }
 
         private static void Mouse_CursorMoved(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.CursorMovedEventArgs e)
-        {
-
-            System.Diagnostics.Debug.WriteLine("Mouse moved to: " + e.NewPosition.X +
+            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.CursorMovedEventArgs e) => System.Diagnostics.Debug.WriteLine("Mouse moved to: " + e.NewPosition.X +
                  ", " + e.NewPosition.Y);
-        }
 
         private static void Mouse_ButtonChanged(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.ButtonChangedEventArgs args)
-        {
-
-            System.Diagnostics.Debug.WriteLine
+            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.ButtonChangedEventArgs args) => System.Diagnostics.Debug.WriteLine
                 ("Mouse button changed: " + ((object)args.Which).ToString());
-        }
 
 
     }
