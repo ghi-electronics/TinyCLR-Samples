@@ -1,19 +1,14 @@
-﻿using GHIElectronics.TinyCLR.Devices.Gpio;
+using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
 using GHIElectronics.TinyCLR.IO;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using System;
-using System.Collections;
-using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 
-namespace Alfat.Core
-{
+namespace Alfat.Core {
     public class AlfatModule
     {
         public int LDRPin { get; set; }
@@ -31,29 +26,29 @@ namespace Alfat.Core
         string StorageControllerName { get; set; }
         public static GHIElectronics.TinyCLR.Devices.UsbHost.UsbHostController UsbHost { set; get; }
         public static CommunicationsBus Bus { get; set; }
-        public AlfatModule(string UartPort,string StorageControllerName,string SDControllerName, int LdrPin = SC20260.GpioPin.PE3)
+        public AlfatModule(string uartPort,string storageControllerName,string sDControllerName, int ldrPin = SC20260.GpioPin.PE3)
         {
-            this.LDRPin = LdrPin;
+            this.LDRPin = ldrPin;
             IsEchoEnabled = false;
-            RTCMode = RTCModes.Backup;
+            this.RTCMode = RTCModes.Backup;
             fileExplorer = new FileExplorer();
             activeHandle = new ActiveHandle() { Mode=ActiveHandle.HandleMode.Idle };
             handles = new MediaHandler();
             storages = new StorageContainer();
-            Bus = new CommunicationsBus(UartPort);
-            Bus.DataReceived += ProcessCommand;
-            this.StorageControllerName = StorageControllerName;
-            this.SDControllerName = SDControllerName;
-            InitUsbHost();
+            Bus = new CommunicationsBus(uartPort);
+            Bus.DataReceived += this.ProcessCommand;
+            this.StorageControllerName = storageControllerName;
+            this.SDControllerName = sDControllerName;
+            this.InitUsbHost();
             Console.WriteLine("Alfat is ready");
         }
 
-        private void ProcessCommand(string Data)
+        private void ProcessCommand(string data)
         {
-            bool IsSuccess = false;
+            var isSuccess = false;
             var result = string.Empty;
             
-            var cmd = CommandParser.Parse(Data);
+            var cmd = CommandParser.Parse(data);
             string[] par1;
             //alfat commands
             switch (cmd.CommandPrefix)
@@ -68,8 +63,8 @@ namespace Alfat.Core
                             {
                                 case MediaTypes.D:
                                 case MediaTypes.M:
-                                    IsSuccess = ConnectSD(par1[0]);
-                                    if (IsSuccess)
+                                    isSuccess = this.ConnectSD(par1[0]);
+                                    if (isSuccess)
                                     {
                                         result = ResponseCode.Success;
                                     }
@@ -80,9 +75,9 @@ namespace Alfat.Core
                                     break;
                                 case MediaTypes.U0:
                                 case MediaTypes.U1:
-                                    if (IsUsbDiskConnected)
+                                    if (this.IsUsbDiskConnected)
                                     {
-                                        IsSuccess = true;
+                                        isSuccess = true;
                                         result = ResponseCode.Success;
                                     }
                                     else
@@ -92,9 +87,9 @@ namespace Alfat.Core
                                     break;
                                 case MediaTypes.K0:
                                 case MediaTypes.K1:
-                                    if (IsKeyboardConnected)
+                                    if (this.IsKeyboardConnected)
                                     {
-                                        IsSuccess = true;
+                                        isSuccess = true;
                                         result = ResponseCode.Success;
                                     }
                                     else
@@ -222,19 +217,19 @@ namespace Alfat.Core
                         if (handles.IsExist(handle))
                         {
                             //if write/append mode then flush
-                            var CurrentHandle = handles.GetHandle(handle);
-                            if (CurrentHandle.AccessType == FileAccessTypes.Write || CurrentHandle.AccessType == FileAccessTypes.Append)
+                            var currentHandle = handles.GetHandle(handle);
+                            if (currentHandle.AccessType == FileAccessTypes.Write || currentHandle.AccessType == FileAccessTypes.Append)
                             {
-                                var byteToWrite = new byte[CurrentHandle.CursorPosition];
-                                CurrentHandle.Buffer.Seek(0, SeekOrigin.Begin);
-                                for (int i = 0; i < byteToWrite.Length; i++)
+                                var byteToWrite = new byte[currentHandle.CursorPosition];
+                                currentHandle.Buffer.Seek(0, SeekOrigin.Begin);
+                                for (var i = 0; i < byteToWrite.Length; i++)
                                 {
-                                    byteToWrite[i] = (byte)CurrentHandle.Buffer.ReadByte();
+                                    byteToWrite[i] = (byte)currentHandle.Buffer.ReadByte();
                                 }
                                 try
                                 {
                                     //flush memory to file
-                                    File.WriteAllBytes(CurrentHandle.FileName, byteToWrite);
+                                    File.WriteAllBytes(currentHandle.FileName, byteToWrite);
                                 }
                                 catch(Exception ex)
                                 {
@@ -242,7 +237,7 @@ namespace Alfat.Core
                                 }
                             }
                             //make it available
-                            CurrentHandle.Buffer.Dispose();
+                            currentHandle.Buffer.Dispose();
                             var res = handles.RemoveHandle(handle);
                             result = res ? ResponseCode.Success : ResponseCode.InvalidHandle;
                         }
@@ -292,7 +287,7 @@ namespace Alfat.Core
                         {
                             try
                             {
-                                int numReadBytes = Convert.ToInt32("0x" + par1[1], 16);
+                                var numReadBytes = Convert.ToInt32("0x" + par1[1], 16);
                                 var handle = par1[0][0];
                                 var pad = par1[0][1];
                                 var currentHandle = handles.GetHandle(handle);
@@ -324,7 +319,7 @@ namespace Alfat.Core
                                                 var lengthRead = currentHandle.Buffer.Length - currentHandle.CursorPosition;//numReadBytes - currentHandle.Buffer.Length;
                                                 var readBytes = new byte[lengthRead];
                                                 currentHandle.Buffer.Seek(currentHandle.CursorPosition, SeekOrigin.Begin);
-                                                for (int i = 0; i < lengthRead; i++)
+                                                for (var i = 0; i < lengthRead; i++)
                                                 {
                                                     readBytes[i] = (byte)currentHandle.Buffer.ReadByte();
                                                 }
@@ -346,7 +341,7 @@ namespace Alfat.Core
                                             {
                                                 var readBytes = new byte[numReadBytes];
                                                 currentHandle.Buffer.Seek(currentHandle.CursorPosition, SeekOrigin.Begin);
-                                                for (int i = 0; i < numReadBytes; i++)
+                                                for (var i = 0; i < numReadBytes; i++)
                                                 {
                                                     readBytes[i] = (byte)currentHandle.Buffer.ReadByte();
                                                 }
@@ -433,7 +428,7 @@ namespace Alfat.Core
                                             Bus.Read(readDataBytes);
                                         }
                                        
-                                        for (int i = 0; i < readDataBytes.Length; i++)
+                                        for (var i = 0; i < readDataBytes.Length; i++)
                                         {
                                             currentHandle.Buffer.WriteByte(readDataBytes[i]);
                                         }
@@ -543,7 +538,7 @@ namespace Alfat.Core
                                 {
                                     if (File.Exists(fileName))
                                     {
-                                        bool isExist = false;
+                                        var isExist = false;
                                         //check if it exist in handlelist
                                         foreach (var handle in handles.GetAll())
                                         {
@@ -711,8 +706,8 @@ namespace Alfat.Core
                         if (newdatestr.Length == 8)
                         {
                             //conversion process here..
-                            var newdate = exFatTimeStampConverter.ConvertToDatetime(newdatestr);
-                            if (RTCMode == RTCModes.Backup)
+                            var newdate = ExFatTimeStampConverter.ConvertToDatetime(newdatestr);
+                            if (this.RTCMode == RTCModes.Backup)
                             {
                                 var rtc = RtcController.GetDefault();
                                 Console.WriteLine($"rtc status : { (rtc.IsValid ? "valid" : "not valid") }");
@@ -735,7 +730,7 @@ namespace Alfat.Core
                     if (cmd.ParamLength > 0)
                     {
                         var mode = cmd.Parameters[0].Trim()[0];
-                        RTCMode = mode == 'S' ? RTCModes.Shared : RTCModes.Backup;
+                        this.RTCMode = mode == 'S' ? RTCModes.Shared : RTCModes.Backup;
                         Bus.WriteLine(ResponseCode.Success);
 
                     }
@@ -779,7 +774,7 @@ namespace Alfat.Core
                                     //check if File 
                                     if (File.Exists(itemName))
                                     {
-                                        FileInfo file = new FileInfo(itemName);
+                                        var file = new FileInfo(itemName);
                                         result += $"{ResponseCode.Success}{Strings.NewLine}";
 
                                         var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", file.Length), 8);
@@ -794,7 +789,7 @@ namespace Alfat.Core
                                     }
                                     else if (Directory.Exists(itemName)) //check if Directory
                                     {
-                                        DirectoryInfo dir = new DirectoryInfo(itemName);
+                                        var dir = new DirectoryInfo(itemName);
                                         result += $"{ResponseCode.Success}{Strings.NewLine}";
 
                                         var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", 0), 8);
@@ -848,7 +843,7 @@ namespace Alfat.Core
                                 }
                                 else
                                 {
-                                    FileInfo info = new FileInfo(filename);
+                                    var info = new FileInfo(filename);
                                     if (info.Exists)
                                     {
                                         File.Move(info.FullName, info.Directory.FullName + "\\" + destination);
@@ -888,7 +883,7 @@ namespace Alfat.Core
                         }
                         else
                         {
-                            DriveInfo info = new DriveInfo(storage.Drive.Name);
+                            var info = new DriveInfo(storage.Drive.Name);
                             result += $"{ResponseCode.Success}{Strings.NewLine}";
                             var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace), 16);
                             result += $"{actBytes}{Strings.NewLine}";
@@ -935,7 +930,7 @@ namespace Alfat.Core
                                 {
                                     result += $"{ResponseCode.Success}{Strings.NewLine}";
                                     handleSrc.Buffer.Seek(startPosition, SeekOrigin.Begin);
-                                    for (int i = 0; i < dataSize; i++)
+                                    for (var i = 0; i < dataSize; i++)
                                     {
                                         //read from source
                                         handleSrc.CursorPosition = startPosition + i;
@@ -1033,7 +1028,7 @@ namespace Alfat.Core
                                 case 0:
                                     {
                                         //for now it's hardcoded
-                                        var ldrButton = GpioController.GetDefault().OpenPin(LDRPin);
+                                        var ldrButton = GpioController.GetDefault().OpenPin(this.LDRPin);
                                         ldrButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
                                         ldrButton.ValueChanged += (GpioPin sender, GpioPinValueChangedEventArgs e) =>{ };
                                         Bus.WriteLine(ResponseCode.Success);
@@ -1046,7 +1041,7 @@ namespace Alfat.Core
                                     
                                     {
                                         //for now it's hardcoded
-                                        var ldrButton = GpioController.GetDefault().OpenPin(LDRPin);
+                                        var ldrButton = GpioController.GetDefault().OpenPin(this.LDRPin);
                                         ldrButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
                                         ldrButton.ValueChanged += (GpioPin sender, GpioPinValueChangedEventArgs e) => { };
                                         Bus.WriteLine(ResponseCode.Success);
@@ -1070,35 +1065,35 @@ namespace Alfat.Core
                     }
                     break;
                 default:
-                    Bus.WriteLine(string.IsNullOrEmpty(Data) ? ResponseCode.Success : ResponseCode.Unknown);
+                    Bus.WriteLine(string.IsNullOrEmpty(data) ? ResponseCode.Success : ResponseCode.Unknown);
                     break;
             }
 
             //echo
             if (IsEchoEnabled)
             {
-                Bus.WriteLine(Data);
+                Bus.WriteLine(data);
             }
         }
 
-        public bool ConnectSD(string MediaName)
+        public bool ConnectSD(string mediaName)
         {
-            if (!IsSDConnected)
+            if (!this.IsSDConnected)
             {
                 try
                 {
-                    var sd = StorageController.FromName(SDControllerName);
+                    var sd = StorageController.FromName(this.SDControllerName);
                     var drive = FileSystem.Mount(sd.Hdc);
-                    DriveInfo driveInfo = new DriveInfo(drive.Name);
-                    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = sd, Drive = drive, Name = MediaName });
-                    IsSDConnected = true;
+                    var driveInfo = new DriveInfo(drive.Name);
+                    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = sd, Drive = drive, Name = mediaName });
+                    this.IsSDConnected = true;
                 }
                 catch (Exception)
                 {
-                    IsSDConnected = false;
+                    this.IsSDConnected = false;
                 }
             }
-            return IsSDConnected;
+            return this.IsSDConnected;
         }
         void InitUsbHost()
         {
@@ -1108,7 +1103,7 @@ namespace Alfat.Core
                 UsbHostController.GetDefault();
 
                 UsbHost.OnConnectionChangedEvent +=
-                    UsbHostController_OnConnectionChangedEvent;
+                    this.UsbHostController_OnConnectionChangedEvent;
 
                 UsbHost.Enable();
             }
@@ -1140,9 +1135,9 @@ namespace Alfat.Core
 
                             keyboard.KeyUp += Keyboard_KeyUp;
                             keyboard.KeyDown += Keyboard_KeyDown;
-                            IsKeyboardConnected = true;
-                            IsSDConnected = false;
-                            IsUsbDiskConnected = false;
+                            this.IsKeyboardConnected = true;
+                            this.IsSDConnected = false;
+                            this.IsUsbDiskConnected = false;
                             break;
 
                         case GHIElectronics.TinyCLR.Devices.UsbHost.BaseDevice.DeviceType.Mouse:
@@ -1153,7 +1148,7 @@ namespace Alfat.Core
                         case GHIElectronics.TinyCLR.Devices.UsbHost.BaseDevice.
                             DeviceType.MassStorage:
 
-                            var storageController = StorageController.FromName(StorageControllerName);
+                            var storageController = StorageController.FromName(this.StorageControllerName);
 
                             var driver = GHIElectronics.TinyCLR.IO.FileSystem.
                                 Mount(storageController.Hdc);
@@ -1176,15 +1171,15 @@ namespace Alfat.Core
 
                             System.Diagnostics.Debug.WriteLine
                                 ("DriveFormat: " + driveInfo.DriveFormat);
-                            IsKeyboardConnected = false;
-                            IsSDConnected = false;
-                            IsUsbDiskConnected = true;
+                            this.IsKeyboardConnected = false;
+                            this.IsSDConnected = false;
+                            this.IsUsbDiskConnected = true;
                             break;
 
                         default:
-                            IsKeyboardConnected = false;
-                            IsSDConnected = false;
-                            IsUsbDiskConnected = false;
+                            this.IsKeyboardConnected = false;
+                            this.IsSDConnected = false;
+                            this.IsUsbDiskConnected = false;
                             //do nothing
                             
                             break;
@@ -1193,17 +1188,17 @@ namespace Alfat.Core
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Disconnected:
                     System.Diagnostics.Debug.WriteLine("Device Disconnected");
-                    IsKeyboardConnected = false;
-                    IsSDConnected = false;
-                    IsUsbDiskConnected = false;
+                    this.IsKeyboardConnected = false;
+                    this.IsSDConnected = false;
+                    this.IsUsbDiskConnected = false;
                     //Unmount filesystem if it was mounted.
                     break;
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Bad:
                     System.Diagnostics.Debug.WriteLine("Bad Device");
-                    IsKeyboardConnected = false;
-                    IsSDConnected = false;
-                    IsUsbDiskConnected = false;
+                    this.IsKeyboardConnected = false;
+                    this.IsSDConnected = false;
+                    this.IsUsbDiskConnected = false;
                     break;
             }
         }
@@ -1229,21 +1224,13 @@ namespace Alfat.Core
         }
 
         private static void Mouse_CursorMoved(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.CursorMovedEventArgs e)
-        {
-
-            System.Diagnostics.Debug.WriteLine("Mouse moved to: " + e.NewPosition.X +
+            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.CursorMovedEventArgs e) => System.Diagnostics.Debug.WriteLine("Mouse moved to: " + e.NewPosition.X +
                  ", " + e.NewPosition.Y);
-        }
 
         private static void Mouse_ButtonChanged(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.ButtonChangedEventArgs args)
-        {
-
-            System.Diagnostics.Debug.WriteLine
+            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.ButtonChangedEventArgs args) => System.Diagnostics.Debug.WriteLine
                 ("Mouse button changed: " + ((object)args.Which).ToString());
-        }
 
-       
+
     }
 }

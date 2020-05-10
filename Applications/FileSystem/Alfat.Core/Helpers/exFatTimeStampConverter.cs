@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Text;
 using System.Threading;
 
 namespace Alfat.Core
 {
-    public class exFatTimeStampConverter
+    public class ExFatTimeStampConverter
     {
         public static string ConvertToFatTime(DateTime timestamp)
         {
@@ -28,10 +28,10 @@ namespace Alfat.Core
         }
         public static string ByteToHex(int b)
         {
-            const string hex = "0123456789ABCDEF";
-            int lowNibble = b & 0x0F;
-            int highNibble = (b & 0xF0) >> 4;
-            string s = new string(new char[] { hex[highNibble], hex[lowNibble] });
+            const string Hex = "0123456789ABCDEF";
+            var lowNibble = b & 0x0F;
+            var highNibble = (b & 0xF0) >> 4;
+            var s = new string(new char[] { Hex[highNibble], Hex[lowNibble] });
             return s;
         }
         public static DateTime ConvertToDatetime(string timestamp)
@@ -76,9 +76,9 @@ namespace Alfat.Core
         }
         public static string ReverseString(string s)
         {
-            char[] array = new char[s.Length];
-            int forward = 0;
-            for (int i = s.Length - 1; i >= 0; i--)
+            var array = new char[s.Length];
+            var forward = 0;
+            for (var i = s.Length - 1; i >= 0; i--)
             {
                 array[forward++] = s[i];
             }
@@ -102,12 +102,12 @@ namespace Alfat.Core
         }
         public static string IntToBinaryString(int number)
         {
-            const int mask = 1;
+            const int Mask = 1;
             var binary = string.Empty;
             while (number > 0)
             {
                 // Logical AND the number and prepend it to the result string
-                binary = (number & mask) + binary;
+                binary = (number & Mask) + binary;
                 number = number >> 1;
             }
 
@@ -115,20 +115,20 @@ namespace Alfat.Core
         }
         private static string Hex2Binary(string hexvalue)
         {
-            string binaryval = "";
+            var binaryval = "";
             binaryval = IntToBinaryString(Convert.ToInt32(hexvalue, 16));
             return binaryval;
         }
         public static string ByteConvert(int num)
         {
-            int[] p = new int[8];
-            string pa = "";
-            for (int ii = 0; ii <= 7; ii = ii + 1)
+            var p = new int[8];
+            var pa = "";
+            for (var ii = 0; ii <= 7; ii = ii + 1)
             {
                 p[7 - ii] = num % 2;
                 num = num / 2;
             }
-            for (int ii = 0; ii <= 7; ii = ii + 1)
+            for (var ii = 0; ii <= 7; ii = ii + 1)
             {
                 pa += p[ii].ToString();
             }

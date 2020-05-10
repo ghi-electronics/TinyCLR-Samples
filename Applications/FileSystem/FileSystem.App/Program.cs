@@ -1,4 +1,4 @@
-﻿using uAlfat.Core;
+using uAlfat.Core;
 using GHIElectronics.TinyCLR.Pins;
 using System;
 using System.Collections;

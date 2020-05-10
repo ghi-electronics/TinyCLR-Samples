@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -23,8 +23,8 @@ namespace Alfat.Core
         public long Size { get; set; }
         public MediaHandle()
         {
-            Buffer = new MemoryStream();
-            CursorPosition = 0;
+            this.Buffer = new MemoryStream();
+            this.CursorPosition = 0;
         }
 
     }

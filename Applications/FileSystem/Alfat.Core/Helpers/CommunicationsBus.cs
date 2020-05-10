@@ -1,4 +1,4 @@
-﻿using GHIElectronics.TinyCLR.Devices.Uart;
+using GHIElectronics.TinyCLR.Devices.Uart;
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -16,50 +16,44 @@ namespace Alfat.Core
         private UartController serialPort;
         private bool disposed;
         public event IncomingDataEventHandler DataReceived;
-        public delegate void IncomingDataEventHandler(string Data);
+        public delegate void IncomingDataEventHandler(string data);
         public enum CommunicationsProtocal
         {
             Uart,
             Spi,
             I2C
         }
-        public void SetBaudRate(int BaudRate)
-        {
-            serialPort.SetActiveSettings(BaudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
-        }
-        public CommunicationsBus(string UartPort,int BaudRate = 115200)
+        public void SetBaudRate(int baudRate) => this.serialPort.SetActiveSettings(baudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
+        public CommunicationsBus(string uartPort,int baudRate = 115200)
         {
             this.disposed = false;
             this.commandFile = null;
             this.protocal = CommunicationsProtocal.Uart;
 
-            serialPort = UartController.FromName(UartPort);
+            this.serialPort = UartController.FromName(uartPort);
 
-            serialPort.SetActiveSettings(BaudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
+            this.serialPort.SetActiveSettings(baudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
 
-            serialPort.Enable();
+            this.serialPort.Enable();
 
-            serialPort.DataReceived += serialPort_DataReceived;
+            this.serialPort.DataReceived += this.SerialPort_DataReceived;
 
         }
-        private void serialPort_DataReceived(UartController sender, DataReceivedEventArgs e)
+        private void SerialPort_DataReceived(UartController sender, DataReceivedEventArgs e)
         {
             var rxBuffer = new byte[e.Count];
-            var bytesReceived = serialPort.Read(rxBuffer, 0, e.Count);
+            var bytesReceived = this.serialPort.Read(rxBuffer, 0, e.Count);
             var dataStr = Encoding.UTF8.GetString(rxBuffer, 0, bytesReceived);
             Debug.WriteLine(dataStr);
-            TempData += dataStr;
+            this.TempData += dataStr;
             if (dataStr.IndexOf("\n") > -1)
             {
-                DataReceived?.Invoke(TempData.Trim());
-                TempData = string.Empty;
+                DataReceived?.Invoke(this.TempData.Trim());
+                this.TempData = string.Empty;
             }
             
         }
-        public CommunicationsBus(string portName, StreamReader commandFile) : this(portName)
-        {
-            this.commandFile = commandFile;
-        }
+        public CommunicationsBus(string portName, StreamReader commandFile) : this(portName) => this.commandFile = commandFile;
 
         public void Dispose()
         {
@@ -149,7 +143,7 @@ namespace Alfat.Core
 
                 case CommunicationsProtocal.Uart:
                     
-                    byte[] databytes = UTF8Encoding.UTF8.GetBytes(line+"\n");
+                    var databytes = UTF8Encoding.UTF8.GetBytes(line+"\n");
                     this.serialPort.Write(databytes);
 
                     break;
@@ -173,10 +167,10 @@ namespace Alfat.Core
         {
             if (this.serialPort != null)
             {
-                if (serialPort.BytesToRead > 0)
+                if (this.serialPort.BytesToRead > 0)
                 {
-                    var rxBuffer = new byte[serialPort.BytesToRead];
-                    var bytesReceived = serialPort.Read(rxBuffer, 0, serialPort.BytesToRead);
+                    var rxBuffer = new byte[this.serialPort.BytesToRead];
+                    var bytesReceived = this.serialPort.Read(rxBuffer, 0, this.serialPort.BytesToRead);
                     var dataStr = Encoding.UTF8.GetString(rxBuffer, 0, bytesReceived);
                     return dataStr;
                 }

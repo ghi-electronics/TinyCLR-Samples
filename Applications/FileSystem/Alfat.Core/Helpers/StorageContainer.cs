@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Text;
 using System.Threading;
@@ -7,23 +7,20 @@ namespace Alfat.Core
 {
     public class StorageContainer
     {
-        Hashtable Containers;
-        public StorageContainer()
-        {
-            Containers = new Hashtable();
-        }
+        Hashtable containers;
+        public StorageContainer() => this.containers = new Hashtable();
 
         public bool AddStorage(StorageInfo info)
         {
             try
             {
-                if (Containers.Contains(info.Name))
+                if (this.containers.Contains(info.Name))
                 {
-                    Containers[info.Name] = info;
+                    this.containers[info.Name] = info;
                 }
                 else
                 {
-                    Containers.Add(info.Name, info);
+                    this.containers.Add(info.Name, info);
                 }
                
                 return true;
@@ -35,21 +32,21 @@ namespace Alfat.Core
             
         }
 
-        public StorageInfo GetStorage(string Name)
+        public StorageInfo GetStorage(string name)
         {
-            if (Containers.Contains(Name))
+            if (this.containers.Contains(name))
             {
-                return Containers[Name] as StorageInfo;
+                return this.containers[name] as StorageInfo;
             }
             return null;
         }
 
-        public bool RemoveStorage(string Name)
+        public bool RemoveStorage(string name)
         {
 
-            if (Containers.Contains(Name))
+            if (this.containers.Contains(name))
             {
-                Containers.Remove(Name);
+                this.containers.Remove(name);
                 return true;
             }
             return false;

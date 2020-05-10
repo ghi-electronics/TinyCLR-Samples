@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,23 +15,23 @@ namespace Alfat.Core
         /// <summary>
         /// Split string command from user to understand the context
         /// </summary>
-        /// <param name="Data"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        public static CommandParser Parse(string Data)
+        public static CommandParser Parse(string data)
         {
-            if (!string.IsNullOrEmpty(Data))
+            if (!string.IsNullOrEmpty(data))
             {
                 
-                var splitLine = Regex.Split("\n",Data, RegexOptions.IgnoreCase);
-                Data = splitLine[0];
+                var splitLine = Regex.Split("\n",data, RegexOptions.IgnoreCase);
+                data = splitLine[0];
                 var nextLine = string.Empty;
                 if (splitLine.Length > 1)
                     nextLine = splitLine[1];
-                var splitted = Data.Split(' ');
+                var splitted = data.Split(' ');
                 if (splitted.Length > 0)
                 {
                     var param = new string[splitted.Length - 1];
-                    for (int i = 1; i < splitted.Length; i++)
+                    for (var i = 1; i < splitted.Length; i++)
                     {
                         param[i - 1] = splitted[i];
                     }
