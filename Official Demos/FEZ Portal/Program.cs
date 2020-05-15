@@ -82,13 +82,15 @@ namespace FEZ_Portal {
 
             SelectPage = new SelectPage();
             ConnectPage = new ConnectPage("");
+            SplashPage = new SplashPage();
 
             WpfWindow = Program.CreateWindow(displayController);
-            WpfWindow.Child = SelectPage.Elements;
+            WpfWindow.Child = SplashPage.Elements;
             WpfWindow.Visibility = Visibility.Visible;
 
             app.Run(WpfWindow);
         }
+        public static SplashPage SplashPage { get; set; }
         public static SelectPage SelectPage { get; set; }
         public static ConnectPage ConnectPage { get; set; }
         public static Window WpfWindow { get; set; }

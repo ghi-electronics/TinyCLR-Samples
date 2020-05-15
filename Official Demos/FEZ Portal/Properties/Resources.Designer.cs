@@ -25,6 +25,10 @@ namespace FEZ_Portal.Properties
                 return Resources.manager;
             }
         }
+        internal static System.Drawing.Bitmap GetBitmap(Resources.BitmapResources id)
+        {
+            return ((System.Drawing.Bitmap)(ResourceManager.GetObject(((short)(id)))));
+        }
         internal static System.Drawing.Font GetFont(Resources.FontResources id)
         {
             return ((System.Drawing.Font)(ResourceManager.GetObject(((short)(id)))));
@@ -34,6 +38,11 @@ namespace FEZ_Portal.Properties
         {
             ArialBlack = 8558,
             NinaB = 18060,
+        }
+        [System.SerializableAttribute()]
+        internal enum BitmapResources : short
+        {
+            logo = 17715,
         }
     }
 }
