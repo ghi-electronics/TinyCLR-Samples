@@ -1,5 +1,4 @@
-﻿//Sorry about the ugly code -- just getting started.
-using GHIElectronics.TinyCLR.Devices.Adc;
+﻿using GHIElectronics.TinyCLR.Devices.Adc;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Pins;
@@ -16,12 +15,10 @@ namespace FezBitWeather {
             windSpeedCount = 0;
 
 
-
-            //Rain gauge is connected to P2 (PA5 on REV A, PA0 on REV B).
+            //Rain gauge is connected to P2 (PA5 on FEZ Bit Rev A, PA0 on Rev B).
             var rainGauge = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PA5);
             rainGauge.SetDriveMode(GpioPinDriveMode.InputPullUp);
             rainGauge.ValueChanged += RainGauge_ValueChanged;
-
 
 
             //Wind direction is connected to P1 (PA3).
@@ -45,10 +42,9 @@ namespace FezBitWeather {
             Debug.WriteLine("Wind is out of the: " + windDirectionText[windDirectionIndex]);
 
 
-
             //Wind speed sensor is connected to P8 (PE8).
             var windSpeed = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PE8);
-            var windSpeedMeasurementTime = 1; //In seconds.
+            var windSpeedMeasurementTime = 4; //In seconds.
 
             windSpeed.SetDriveMode(GpioPinDriveMode.InputPullUp);
             windSpeed.ValueChanged += WindSpeed_ValueChanged;
@@ -56,7 +52,6 @@ namespace FezBitWeather {
             windSpeedCount = 0;
             Thread.Sleep(windSpeedMeasurementTime * 1000);
             Debug.WriteLine("Wind speed: " + (windSpeedCount * 1.492 / 4 / windSpeedMeasurementTime).ToString("D1") + " MPH");
-
 
 
             //Humidity/temp sensor is BME280. SDA connected to P20, SCL connected to P19.
@@ -68,8 +63,6 @@ namespace FezBitWeather {
             //temp_msb = 0xFA.
             //press_lsb = 0xF8.
             //press_msb = 0xF7.
-
-            
 
             var settings = new I2cConnectionSettings(0x76, 400_000); //The slave's address and the bus speed.
             var controller = I2cController.FromName(SC20100.I2cBus.I2c1);
@@ -86,18 +79,12 @@ namespace FezBitWeather {
 
             device.WriteRead(writeBuffer, readBuffer);
 
-
-            //Thread.Sleep(2000);
-
             byte[] writeBuffer2 = new byte[] { 0xF7 };
             byte[] readBuffer2 = new byte[8];
 
             device.WriteRead(writeBuffer2, readBuffer2);
-
-            Debug.WriteLine("Try #2");
-            for (int i = 0; i < readBuffer2.Length; i++) {
-                Debug.WriteLine(readBuffer2[i].ToString());
-            }
+            
+            //Pressure, temperature and humidity are in readBuffer2 array, but must be corrected and calculated using trimming factors.
 
             var led = GpioController.GetDefault().OpenPin(SC20100.GpioPin.PB0);
             led.SetDriveMode(GpioPinDriveMode.Output);
