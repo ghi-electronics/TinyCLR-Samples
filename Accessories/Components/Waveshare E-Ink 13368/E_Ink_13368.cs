@@ -8,7 +8,7 @@ namespace GHIElectronics.TinyCLR.Drivers.Waveshare {
     //13 bytes vertically,
     //Resolution is 212 x 104.
     class E_Ink_13368 {
-        //Derived from epd2in13b_V2.cpp
+        //Derived from epd2in13b_V2.cpp found here: https://github.com/waveshare/e-Paper/tree/master/Arduino
         private static GpioPin dc, busy;
         private static SpiDevice eInkSpi;
         private static int displayWidth = 212, displayHeight = 104;
@@ -55,9 +55,8 @@ namespace GHIElectronics.TinyCLR.Drivers.Waveshare {
             sendCommand(new byte[] { 0x04 });   //Power on.
             waitWhileBusy();
 
-            sendCommand(new byte[] { 0x00 });   //Panel setting.
-            sendData(new byte[] { 0x0F });
-            sendData(new byte[] { 0x89 });
+            sendCommand(new byte[] { 0x00 });
+            sendData(new byte[] { 0x0F, 0x89 });
 
             sendCommand(new byte[] { 0x61 });
             sendData(new byte[] { 0x68, 0x00, 0xD4 });
@@ -80,71 +79,26 @@ namespace GHIElectronics.TinyCLR.Drivers.Waveshare {
             }
         }
 
-        public void SetPixel(int xCoord, int yCoord) {
-
-        }
-
         public void DrawBuffer(byte[] buffer) {
-            //For each pixel:
-            //    If R<16 and G<32 and B<16 use black.
-            //    If R>15 and G<32 and B<16 use red.
-            //    All other pixels are white.
+            //For each pixel in input buffer:
+            //    TinyCLR graphics buffer data is always RGB565.
+            //    First byte (lower array index, always even) for each pixel is G2 G1 G0 B4 B3 B2 B1 B0.
+            //    Second byte (higher array index, always odd) for each pixel is R4 R3 R2 R1 R0 G5 G4 G3.
 
-            //Display is 212 x 13 bytes (212 x 104).
+            //    If pixel R<16 and G<32 and B<16, display pixel as black.
+            //    If pixel R>15 and G<32 and B<16 display pixel as red.
+            //    All other pixels are displayed as white.
+
+            //Display is 212 x 13 bytes (212 x 104 pixels).
             if (buffer.Length != ((displayWidth * displayHeight) << 1)) throw new ArgumentOutOfRangeException();
 
             //Do red first. Red always overwrites black -- order doesn't matter.
             sendCommand(new byte[] { 0x13 }); //Tell display data that follows is red.
-            int x, y, yBase, red, green, blue, firstByte, secondByte;
-            byte dataByte;
-
-            //Todo: Get rid of duplicate code for red and black.
-            for (int byteIndex = 0; byteIndex < displayWidth * displayHeight >> 3; byteIndex++) {
-                dataByte = 0;
-                x = displayWidth - 1 - byteIndex / 13;
-                yBase = (byteIndex % 13) << 3;
-
-                for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
-                    y = yBase + 7 - bitIndex;
-
-                    firstByte = buffer[x * 2 + y * displayWidth * 2];
-                    secondByte = buffer[x * 2 + y * displayWidth * 2 + 1];
-
-                    red = secondByte >> 3;
-                    green = firstByte >> 5 + (secondByte & 0b00000111) << 3;
-                    blue = firstByte & 0b00011111;
-
-                    if (red > 15 && green < 32 && blue < 16) {
-                        dataByte += (byte)Math.Pow(2.0, bitIndex); //Todo: Don't use Math.Pow.
-                    }
-                }
-                sendData(new byte[] { (byte)~dataByte });
-            }
+            writeImage(buffer, EinkColor.Red);
 
             //Do black.
             sendCommand(new byte[] { 0x10 }); //Tell display data that follows is black.
-
-            for (int byteIndex = 0; byteIndex < displayWidth * displayHeight >> 3; byteIndex++) {
-                dataByte = 0;
-                x = displayWidth - 1 - byteIndex / 13;
-                yBase = (byteIndex % 13) << 3;
-
-                for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
-                    y = yBase + 7 - bitIndex;
-
-                    firstByte = buffer[x * 2 + y * displayWidth * 2];
-                    secondByte = buffer[x * 2 + y * displayWidth * 2 + 1];
-
-                    red = secondByte >> 3;
-                    green = firstByte >> 5 + (secondByte & 0b00000111) << 3;
-                    blue = firstByte & 0b00011111;
-
-                    if (red < 16 && green < 32 && blue < 16) {
-                        dataByte += (byte)Math.Pow(2.0, bitIndex);
-                    }
-                }
-                sendData(new byte[] { (byte)~dataByte });
-            }
+            writeImage(buffer, EinkColor.Black);
         }
 
         public void DrawNativeBuffer(byte[] buffer, EinkColor color) {
@@ -162,6 +116,34 @@ namespace GHIElectronics.TinyCLR.Drivers.Waveshare {
             waitWhileBusy();
         }
 
+        private void writeImage(byte[] buffer, EinkColor color) {
+            int x, y, yBase, red, green, blue, firstByte, secondByte, bitMask;
+            byte dataByte;
+
+            for (int byteIndex = 0; byteIndex < displayWidth * displayHeight >> 3; byteIndex++) {
+                dataByte = 0;
+                x = displayWidth - 1 - byteIndex / 13;
+                yBase = (byteIndex % 13) << 3;
+                bitMask = 1;
+
+                for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
+                    y = yBase + 7 - bitIndex;
+
+                    firstByte = buffer[x * 2 + y * displayWidth * 2];
+                    secondByte = buffer[x * 2 + y * displayWidth * 2 + 1];
+
+                    red = secondByte >> 3;
+                    green = firstByte >> 5 + (secondByte & 0b00000111) << 3;
+                    blue = firstByte & 0b00011111;
+
+                    if (color == EinkColor.Red && red > 15 && green < 32 && blue < 16) dataByte += (byte)bitMask;
+                    if (color == EinkColor.Black && red < 16 && green < 32 && blue < 16) dataByte += (byte)bitMask;
+                    bitMask <<= 1;
+                }
+
+                sendData(new byte[] { (byte)~dataByte });
+            }
+        }
 
         private void waitWhileBusy() {
             //Busy pin will sometimes go high for a very short duration when still busy. Wait until you get 5 "not busy" in a row.
