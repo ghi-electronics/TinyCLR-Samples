@@ -24,8 +24,7 @@ namespace uAlfat.Core
             I2C
         }
         public void SetBaudRate(int baudRate) => this.serialPort.SetActiveSettings(baudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
-        public CommunicationsBus(string uartPort,int baudRate = 115200)
-        {
+        public CommunicationsBus(string uartPort,int baudRate = 9600) {
             this.disposed = false;
             this.commandFile = null;
             this.protocal = CommunicationsProtocal.Uart;

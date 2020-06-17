@@ -1,3 +1,4 @@
+using Alfat.Core.Properties;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
@@ -41,8 +42,14 @@ namespace Alfat.Core {
             this.SDControllerName = sDControllerName;
             this.InitUsbHost();
             Console.WriteLine("Alfat is ready");
+            this.PrintStartUpMessage();
         }
-
+        void PrintStartUpMessage() {
+            var appVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var bootVer = Resources.GetString(Resources.StringResources.BOOTLOADER_VER);
+            Bus.WriteLine($"GHI Electronics, LLC{Strings.NewLine} ----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} ALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
+            Console.WriteLine($"GHI Electronics, LLC{Strings.NewLine} ----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} ALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
+        }
         private void ProcessCommand(string data)
         {
             var isSuccess = false;
@@ -1150,27 +1157,36 @@ namespace Alfat.Core {
 
                             var storageController = StorageController.FromName(this.StorageControllerName);
 
-                            var driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                            IDriveProvider driver;
+                            try {
+                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
                                 Mount(storageController.Hdc);
+                            }
+                            catch {
+                                FileSystem.Unmount(storageController.Hdc);
+                                driver = GHIElectronics.TinyCLR.IO.FileSystem.Mount(storageController.Hdc);
+                            }
+                            if (driver != null) {
 
-                            var driveInfo = new System.IO.DriveInfo(driver.Name);
-                            storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
-                            storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
-                            
-                            System.Diagnostics.Debug.WriteLine
-                                ("Free: " + driveInfo.TotalFreeSpace);
+                                var driveInfo = new System.IO.DriveInfo(driver.Name);
+                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
+                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("TotalSize: " + driveInfo.TotalSize);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("Free: " + driveInfo.TotalFreeSpace);
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("VolumeLabel:" + driveInfo.VolumeLabel);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("TotalSize: " + driveInfo.TotalSize);
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("RootDirectory: " + driveInfo.RootDirectory);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("VolumeLabel:" + driveInfo.VolumeLabel);
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("DriveFormat: " + driveInfo.DriveFormat);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("RootDirectory: " + driveInfo.RootDirectory);
+
+                                System.Diagnostics.Debug.WriteLine
+                                    ("DriveFormat: " + driveInfo.DriveFormat);
+                            }
                             this.IsKeyboardConnected = false;
                             this.IsSDConnected = false;
                             this.IsUsbDiskConnected = true;
