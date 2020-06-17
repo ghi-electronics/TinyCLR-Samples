@@ -10,11 +10,13 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using uAlfat.Core.Properties;
 
 namespace uAlfat.Core
 {
     public class uAlfatModule
     {
+        
         public enum PowerModes
         {
             Full = 'F', Reduced = 'R', Hibernate = 'H'
@@ -53,7 +55,15 @@ namespace uAlfat.Core
             this.StorageControllerName = storageControllerName;
             this.SDControllerName = sDControllerName;
             this.InitUsbHost();
-            Console.WriteLine("uAlfat is ready");
+            //Console.WriteLine("uAlfat is ready");
+            this.PrintStartUpMessage();
+        }
+
+        void PrintStartUpMessage() {
+            var appVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var bootVer = Resources.GetString(Resources.StringResources.BOOTLOADER_VER);
+            //Bus.WriteLine($"GHI Electronics, LLC{Strings.NewLine} ----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} μALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
+            Console.WriteLine($"GHI Electronics, LLC{Strings.NewLine} ----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} μALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
         }
 
         private void ProcessCommand(string data)

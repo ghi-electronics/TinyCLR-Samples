@@ -1,3 +1,4 @@
+using Alfat.Core.Properties;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
@@ -41,8 +42,14 @@ namespace Alfat.Core {
             this.SDControllerName = sDControllerName;
             this.InitUsbHost();
             Console.WriteLine("Alfat is ready");
+            this.PrintStartUpMessage();
         }
-
+        void PrintStartUpMessage() {
+            var appVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var bootVer = Resources.GetString(Resources.StringResources.BOOTLOADER_VER);
+            Bus.WriteLine($"GHI Electronics, LLC{Strings.NewLine} ----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} ALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
+            Console.WriteLine($"GHI Electronics, LLC{Strings.NewLine} ----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} ALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
+        }
         private void ProcessCommand(string data)
         {
             var isSuccess = false;
