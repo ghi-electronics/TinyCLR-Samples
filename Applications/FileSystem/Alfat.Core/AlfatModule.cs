@@ -1157,27 +1157,36 @@ namespace Alfat.Core {
 
                             var storageController = StorageController.FromName(this.StorageControllerName);
 
-                            var driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                            IDriveProvider driver;
+                            try {
+                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
                                 Mount(storageController.Hdc);
+                            }
+                            catch {
+                                FileSystem.Unmount(storageController.Hdc);
+                                driver = GHIElectronics.TinyCLR.IO.FileSystem.Mount(storageController.Hdc);
+                            }
+                            if (driver != null) {
 
-                            var driveInfo = new System.IO.DriveInfo(driver.Name);
-                            storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
-                            storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
-                            
-                            System.Diagnostics.Debug.WriteLine
-                                ("Free: " + driveInfo.TotalFreeSpace);
+                                var driveInfo = new System.IO.DriveInfo(driver.Name);
+                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
+                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("TotalSize: " + driveInfo.TotalSize);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("Free: " + driveInfo.TotalFreeSpace);
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("VolumeLabel:" + driveInfo.VolumeLabel);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("TotalSize: " + driveInfo.TotalSize);
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("RootDirectory: " + driveInfo.RootDirectory);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("VolumeLabel:" + driveInfo.VolumeLabel);
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("DriveFormat: " + driveInfo.DriveFormat);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("RootDirectory: " + driveInfo.RootDirectory);
+
+                                System.Diagnostics.Debug.WriteLine
+                                    ("DriveFormat: " + driveInfo.DriveFormat);
+                            }
                             this.IsKeyboardConnected = false;
                             this.IsSDConnected = false;
                             this.IsUsbDiskConnected = true;

@@ -1203,29 +1203,38 @@ namespace uAlfat.Core
                             DeviceType.MassStorage:
 
                             var storageController = StorageController.FromName(this.StorageControllerName);
+                            IDriveProvider driver;
+                            try {
+                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                                    Mount(storageController.Hdc);
+                            }
+                            catch (Exception ex) {
+                                //ummount -> then mount
+                                FileSystem.Unmount(storageController.Hdc);
+                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                                  Mount(storageController.Hdc);
+                            }
+                            if (driver != null) {
+                                var driveInfo = new System.IO.DriveInfo(driver.Name);
+                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
+                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
+                                if (string.IsNullOrEmpty(this.CurrentPath))
+                                    this.CurrentPath = driveInfo.RootDirectory.FullName;
+                                System.Diagnostics.Debug.WriteLine
+                                    ("Free: " + driveInfo.TotalFreeSpace);
 
-                            var driver = GHIElectronics.TinyCLR.IO.FileSystem.
-                                Mount(storageController.Hdc);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("TotalSize: " + driveInfo.TotalSize);
 
-                            var driveInfo = new System.IO.DriveInfo(driver.Name);
-                            storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
-                            storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
-                            if (string.IsNullOrEmpty(this.CurrentPath))
-                                this.CurrentPath = driveInfo.RootDirectory.FullName;
-                            System.Diagnostics.Debug.WriteLine
-                                ("Free: " + driveInfo.TotalFreeSpace);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("VolumeLabel:" + driveInfo.VolumeLabel);
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("TotalSize: " + driveInfo.TotalSize);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("RootDirectory: " + driveInfo.RootDirectory);
 
-                            System.Diagnostics.Debug.WriteLine
-                                ("VolumeLabel:" + driveInfo.VolumeLabel);
-
-                            System.Diagnostics.Debug.WriteLine
-                                ("RootDirectory: " + driveInfo.RootDirectory);
-
-                            System.Diagnostics.Debug.WriteLine
-                                ("DriveFormat: " + driveInfo.DriveFormat);
+                                System.Diagnostics.Debug.WriteLine
+                                    ("DriveFormat: " + driveInfo.DriveFormat);
+                            }
                             this.IsKeyboardConnected = false;
                             this.IsSDConnected = false;
                             this.IsUsbDiskConnected = true;
