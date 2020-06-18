@@ -949,8 +949,9 @@ namespace uAlfat.Core
                             if (storage != null)
                             {
                                 var info = new DriveInfo(storage.Drive.Name);
-                                var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalSize), 8);
-                                var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace), 8);
+                                //size in sectors, divided by 512
+                                var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalSize/512), 8);
+                                var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace/512), 8);
                                 result += $"{mediaBytes} {freeBytes}{Strings.NewLine}";
                                 break;
                             }
@@ -1031,6 +1032,7 @@ namespace uAlfat.Core
                         }
                         if (newBaudRate > 0)
                         {
+                            //send success code and delay before set the new baud rate
                             Bus.WriteLine(ResponseCode.Success);
                             Thread.Sleep(100);
                             Bus.SetBaudRate(newBaudRate);
@@ -1253,6 +1255,14 @@ namespace uAlfat.Core
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Disconnected:
                     System.Diagnostics.Debug.WriteLine("Device Disconnected");
+                    //unmount if there is usb disk connected
+                    if (this.IsUsbDiskConnected) {
+                        var storageController = StorageController.FromName(this.StorageControllerName);
+                        FileSystem.Unmount(storageController.Hdc);
+                        //remove from list
+                        storages.RemoveStorage(MediaTypes.U0);
+                        storages.RemoveStorage(MediaTypes.U1);
+                    }
                     this.IsKeyboardConnected = false;
                     this.IsSDConnected = false;
                     this.IsUsbDiskConnected = false;

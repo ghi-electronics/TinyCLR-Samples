@@ -892,7 +892,8 @@ namespace Alfat.Core {
                         {
                             var info = new DriveInfo(storage.Drive.Name);
                             result += $"{ResponseCode.Success}{Strings.NewLine}";
-                            var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace), 16);
+                            //size in sectors, divided by 512
+                            var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace/512), 16);
                             result += $"{actBytes}{Strings.NewLine}";
                             result += ResponseCode.Success;
                         }
@@ -1204,6 +1205,14 @@ namespace Alfat.Core {
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Disconnected:
                     System.Diagnostics.Debug.WriteLine("Device Disconnected");
+                    //unmount if there is usb disk connected
+                    if (this.IsUsbDiskConnected) {
+                        var storageController = StorageController.FromName(this.StorageControllerName);
+                        FileSystem.Unmount(storageController.Hdc);
+                        //remove from list
+                        storages.RemoveStorage(MediaTypes.U0);
+                        storages.RemoveStorage(MediaTypes.U1);
+                    }
                     this.IsKeyboardConnected = false;
                     this.IsSDConnected = false;
                     this.IsUsbDiskConnected = false;
