@@ -33,6 +33,7 @@ namespace uAlfat.Core
         static StorageContainer storages;
         string SDControllerName { get; set; }
         public bool IsUsbDiskConnected { get; set; }
+        public bool IsUsbDiskInitialized { get; set; }
         public bool IsSDConnected { get; set; }
         public bool IsKeyboardConnected { get; set; }
         string StorageControllerName { get; set; }
@@ -127,7 +128,7 @@ namespace uAlfat.Core
                         if (isSuccess)
                             Bus.WriteLine(ResponseCode.Success);
                         else
-                            Bus.WriteLine(ResponseCode.NoSDCard);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_NO_USB);
                     }
                     break;
                 case CommandTypes.DetectUsb:

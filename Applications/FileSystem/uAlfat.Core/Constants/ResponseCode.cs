@@ -37,6 +37,7 @@ namespace uAlfat.Core
         public static string OnlySPI = "!41";
         public static string FlushSignalDetected = "!60";
         public static string NoSDCard = "!70";
+        public static string ERROR_COMMANDER_NO_USB = "!7D";
         public static string KeyboardNotDetect = "!71";
         public static string KeyboardNotInit = "!72";
 
