@@ -54,6 +54,9 @@ namespace uAlfat.Core
 
             this.serialPort.SetActiveSettings(uartSetting);
 
+            this.serialPort.WriteBufferSize = 16 * 1024;
+            this.serialPort.ReadBufferSize = 16 * 1024;
+
             this.serialPort.Enable();
 
             this.serialPort.DataReceived += this.SerialPort_DataReceived;
@@ -139,6 +142,7 @@ namespace uAlfat.Core
             }
         }
 
+        public int ByteToWrite => this.serialPort != null ? this.serialPort.BytesToRead : 0;
         public void Write(byte[] data) => this.Write(data, 0, data.Length);
 
         public void Write(byte[] data, int offset, int count) {

@@ -317,8 +317,8 @@ namespace uAlfat.Core {
                                             var actualByteToRead = (int)Math.Min(currentHandle.Buffer.Length, numReadBytes);
                                             var numberOfPad = numReadBytes - actualByteToRead;
 
-                                            var block = numReadBytes / DataBlockSize;
-                                            var remain = numReadBytes % DataBlockSize;
+                                            var block = actualByteToRead / DataBlockSize;
+                                            var remain = actualByteToRead % DataBlockSize;
 
                                             while (block > 0) {
                                                 currentHandle.Buffer.Read(this.dataBlock, 0, DataBlockSize);
@@ -328,13 +328,15 @@ namespace uAlfat.Core {
 
                                             if (remain > 0) {
                                                 currentHandle.Buffer.Read(this.dataBlock, 0, remain);
-                                                Bus.Write(this.dataBlock, 0, remain);                                                
+                                                Bus.Write(this.dataBlock, 0, remain);
+
                                             }
 
                                             if (numberOfPad > 0) {
                                                 var dataPad = new byte[1] { (byte)pad };
                                                 for (var i = 0; i < numberOfPad; i++) {
                                                     Bus.Write(dataPad);
+
                                                 }
                                             }
                                            
