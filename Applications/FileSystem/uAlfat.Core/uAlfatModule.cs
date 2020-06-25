@@ -720,12 +720,12 @@ namespace uAlfat.Core
                             }
                             else
                             {
-                                result = ResponseCode.EndOfFile;
+                                result = ResponseCode.ERROR_ENDOF_FILEFOLDER_LIST;
                             }
                         }
                         else
                         {
-                            result = ResponseCode.EndOfFile;
+                            result = ResponseCode.ERROR_ENDOF_FILEFOLDER_LIST;
                         }
                         Bus.WriteLine(result);
                     }
@@ -775,12 +775,12 @@ namespace uAlfat.Core
                             }
                             else
                             {
-                                result = ResponseCode.EndOfFile;
+                                result = ResponseCode.ERROR_ENDOF_FILEFOLDER_LIST;
                             }
                         }
                         else
                         {
-                            result = ResponseCode.EndOfFile;
+                            result = ResponseCode.ERROR_ENDOF_FILEFOLDER_LIST;
                         }
                         Bus.WriteLine(result);
                     }

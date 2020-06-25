@@ -8,7 +8,7 @@ namespace uAlfat.Core
     public class ResponseCode
     {
         public static string Success = "!00";
-        public static string ERROR_COMMANDER_INCORRECT_CMD_PARAMETER = "!68";
+        
         public static string FailToWrite = "!03";
         public static string EndOfFile = "!04";
         public static string MediaNotInitialize = "!10";
@@ -36,9 +36,13 @@ namespace uAlfat.Core
         public static string OnlySPI = "!41";
         public static string FlushSignalDetected = "!60";
         public static string NoSDCard = "!70";
-        public static string ERROR_COMMANDER_NO_USB = "!7D";
+        
         public static string KeyboardNotDetect = "!71";
         public static string KeyboardNotInit = "!72";
+
+        public static string ERROR_COMMANDER_INCORRECT_CMD_PARAMETER = "!68";
+        public static string ERROR_COMMANDER_NO_USB = "!7D";
+        public static string ERROR_ENDOF_FILEFOLDER_LIST = "!4D";
 
     }
 }
