@@ -26,7 +26,7 @@ namespace uAlfat.Core
         public long CursorPosition => this.Buffer == null ? 0 : this.Buffer.Position;
 
 
-        public long Size { get; set; }
+        public long Size => this.Buffer == null ? 0 : this.Buffer.Length;
         public MediaHandle() {
         }
 

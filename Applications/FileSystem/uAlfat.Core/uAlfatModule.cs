@@ -167,9 +167,7 @@ namespace uAlfat.Core {
                                                         newHandle.AccessMode = FileMode.Open;
 
                                                         newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
-
-                                                        //newHandle.Buffer = new MemoryStream(contentBytes);
-                                                        newHandle.Size = contentBytes.Length;
+                                                        
                                                         result = ResponseCode.Success;
                                                     }
                                                     else {
@@ -474,8 +472,7 @@ namespace uAlfat.Core {
                                             result = ResponseCode.ERROR_FS_SEEK_OUTOF_LENGTH;
                                         }
                                         else {
-
-                                            currentHandle.Buffer.Seek(newPosition, SeekOrigin.Current);
+                                            currentHandle.Buffer.Seek(newPosition, SeekOrigin.Begin);                                            
                                             result = ResponseCode.Success;
                                         }
                                     }
