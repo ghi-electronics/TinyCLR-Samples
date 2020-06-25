@@ -66,7 +66,7 @@ namespace uAlfat.Core
             var dataStr = Encoding.UTF8.GetString(rxBuffer, 0, bytesReceived);
             Debug.WriteLine(dataStr);
             this.TempData += dataStr;
-            if (dataStr.IndexOf("\n") > -1)
+            if (dataStr.IndexOf(Strings.NewLine) > -1)
             {
                 DataReceived?.Invoke(this.TempData.Trim());
                 this.TempData = string.Empty;
