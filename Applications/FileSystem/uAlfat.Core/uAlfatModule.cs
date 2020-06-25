@@ -78,6 +78,7 @@ namespace uAlfat.Core
 
             var cmd = CommandParser.Parse(data);
             string[] par1;
+
             //alfat commands
             switch (cmd.CommandPrefix)
             {
@@ -236,19 +237,19 @@ namespace uAlfat.Core
                             }
                             catch
                             {
-                                result = ResponseCode.IncorrectParameter;
+                                result = ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER;
                             }
 
                             Bus.WriteLine(result);
                         }
                         else
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Close:
@@ -287,7 +288,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Tell:
@@ -312,7 +313,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Read:
@@ -401,19 +402,19 @@ namespace uAlfat.Core
                             }
                             catch
                             {
-                                result = ResponseCode.IncorrectParameter;
+                                result = ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER;
                             }
 
                             Bus.WriteLine(result);
                         }
                         else
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Write:
@@ -474,19 +475,19 @@ namespace uAlfat.Core
                             }
                             catch
                             {
-                                result = ResponseCode.IncorrectParameter;
+                                result = ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER;
                             }
 
                             Bus.WriteLine(result);
                         }
                         else
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Seek:
@@ -533,19 +534,19 @@ namespace uAlfat.Core
                             }
                             catch
                             {
-                                result = ResponseCode.IncorrectParameter;
+                                result = ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER;
                             }
 
                             Bus.WriteLine(result);
                         }
                         else
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Delete:
@@ -598,7 +599,7 @@ namespace uAlfat.Core
                         }
                         catch
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     break;
@@ -652,7 +653,7 @@ namespace uAlfat.Core
                         }
                         catch
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     break;
@@ -694,7 +695,7 @@ namespace uAlfat.Core
                     }
                     catch
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.NextResult:
@@ -811,7 +812,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.SetDateTime:
@@ -833,12 +834,12 @@ namespace uAlfat.Core
                         }
                         else
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.InitTimer:
@@ -851,7 +852,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
 
@@ -904,13 +905,13 @@ namespace uAlfat.Core
                         }
                         catch
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
 
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
 
                     break;
@@ -941,7 +942,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.GetMediaStatistic:
@@ -1001,7 +1002,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
 
                     break;
@@ -1045,13 +1046,13 @@ namespace uAlfat.Core
                         }
                         else
                         {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
 
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.FormatDrive:
@@ -1072,7 +1073,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.SetEcho:
@@ -1084,7 +1085,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.SetPowerMode:
@@ -1119,19 +1120,14 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 default:
                     Bus.WriteLine(string.IsNullOrEmpty(data) ? ResponseCode.Success : ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     break;
 
-            }
-            //echo
-            if (IsEchoEnabled)
-            {
-                Bus.WriteLine(data);
-            }
+            }            
         }
 
         public bool ConnectSD(string mediaName)

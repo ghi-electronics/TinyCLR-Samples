@@ -9,7 +9,6 @@ namespace uAlfat.Core
     {
         public static string Success = "!00";
         public static string ERROR_COMMANDER_INCORRECT_CMD_PARAMETER = "!68";
-        public static string IncorrectParameter = "!02";
         public static string FailToWrite = "!03";
         public static string EndOfFile = "!04";
         public static string MediaNotInitialize = "!10";

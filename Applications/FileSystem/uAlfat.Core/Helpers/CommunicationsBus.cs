@@ -64,6 +64,13 @@ namespace uAlfat.Core
             var rxBuffer = new byte[e.Count];
             var bytesReceived = this.serialPort.Read(rxBuffer, 0, e.Count);
             var dataStr = Encoding.UTF8.GetString(rxBuffer, 0, bytesReceived);
+            if (uAlfatModule.IsEchoEnabled) {
+                for (var i = 0; i < rxBuffer.Length; i++) {
+                    // send back whatever the host sent except for terminal line                    
+                    this.serialPort.Write(rxBuffer, i, 1);
+                }
+            }
+
             Debug.WriteLine(dataStr);
             this.TempData += dataStr;
             if (dataStr.IndexOf(Strings.NewLine) > -1)
@@ -164,7 +171,7 @@ namespace uAlfat.Core
 
                 case CommunicationsProtocal.Uart:
                     
-                    var databytes = UTF8Encoding.UTF8.GetBytes(line+"\n");
+                    var databytes = UTF8Encoding.UTF8.GetBytes(line+ Strings.NewLine);
                     this.serialPort.Write(databytes);
 
                     break;
