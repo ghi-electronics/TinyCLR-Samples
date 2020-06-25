@@ -1002,6 +1002,9 @@ namespace uAlfat.Core {
             return this.IsSDConnected;
         }
         void InitUsbHost() {
+
+            Thread.Sleep(1);
+
             if (UsbHost == null) {
                 UsbHost = GHIElectronics.TinyCLR.Devices.UsbHost.
                 UsbHostController.GetDefault();
