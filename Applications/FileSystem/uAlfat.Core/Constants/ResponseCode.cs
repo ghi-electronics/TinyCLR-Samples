@@ -14,7 +14,7 @@ namespace uAlfat.Core
         public static string MediaNotInitialize = "!10";
         public static string MediaInitFailed = "!11";
         public static string InsufficientFreeSpace = "!12";
-        public static string FileFolderNotExist = "!20";
+        
         public static string FailToOpen = "!21";
         public static string SeekingMustBeOpen = "!22";
         public static string SeekingOutsideFileSize = "!23";
@@ -43,6 +43,10 @@ namespace uAlfat.Core
         public static string ERROR_COMMANDER_INCORRECT_CMD_PARAMETER = "!68";
         public static string ERROR_COMMANDER_NO_USB = "!7D";
         public static string ERROR_ENDOF_FILEFOLDER_LIST = "!4D";
+        public static string ERROR_FAILED_OPEN_FILE = "!46";
+        public static string ERROR_FS_SEEK_READ_ONLY = "!48";
+        public static string ERROR_FS_SEEK_OUTOF_LENGTH = "!49";
+        public static string ERROR_FS_FILEFOLDER_NOT_EXIST = "!41";
 
     }
 }

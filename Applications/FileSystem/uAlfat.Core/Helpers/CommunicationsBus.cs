@@ -139,10 +139,10 @@ namespace uAlfat.Core
             }
         }
 
-        public void Write(byte[] data)
-        {
-            switch (this.protocal)
-            {
+        public void Write(byte[] data) => this.Write(data, 0, data.Length);
+
+        public void Write(byte[] data, int offset, int count) {
+            switch (this.protocal) {
                 case CommunicationsProtocal.I2C:
                     throw new NotImplementedException();
 
@@ -150,9 +150,9 @@ namespace uAlfat.Core
                     throw new NotImplementedException();
 
                 case CommunicationsProtocal.Uart:
-                    
-                        this.serialPort.Write(data, 0, data.Length);
-                   
+
+                    this.serialPort.Write(data, offset, count);
+
                     break;
             }
         }
@@ -215,21 +215,25 @@ namespace uAlfat.Core
             return string.Empty;
         }
 
-        public void Read(byte[] data)
-        {
-            if (this.serialPort != null)
-            {
+        public void Read(byte[] data) => this.Read(data, 0, data.Length);
+
+        public void Read(byte[] data, int offset, int count) {
+            if (data == null)
+                throw new ArgumentNullException();
+
+            if (offset + count > data.Length)
+                throw new ArgumentOutOfRangeException();
+
+            if (this.serialPort != null) {
                 var read = 0;
-                while (read < data.Length) {
-                    read += this.serialPort.Read(data, read, data.Length - read);
+                while (read < count) {
+                    read += this.serialPort.Read(data, offset + read, count - read);
                 }
             }
-            else if (this.commandFile != null)
-            {
+            else if (this.commandFile != null) {
                 throw new NotImplementedException();
             }
-            else
-            {
+            else {
                 throw new NotImplementedException();
             }
         }
