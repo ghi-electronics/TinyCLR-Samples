@@ -23,7 +23,18 @@ namespace Alfat.Core
             Spi,
             I2C
         }
-        public void SetBaudRate(int baudRate) => this.serialPort.SetActiveSettings(baudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
+        public void SetBaudRate(int baudRate) {
+            var uartSetting = new UartSetting() {
+                BaudRate = baudRate,
+                DataBits = 8,
+                Parity = UartParity.None,
+                StopBits = UartStopBitCount.One,
+                Handshaking = UartHandshake.None
+
+            };
+
+            this.serialPort.SetActiveSettings(uartSetting);
+        }
         public CommunicationsBus(string uartPort,int baudRate = 115200)
         {
             this.disposed = false;
@@ -32,7 +43,17 @@ namespace Alfat.Core
 
             this.serialPort = UartController.FromName(uartPort);
 
-            this.serialPort.SetActiveSettings(baudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
+            var uartSetting = new UartSetting() {
+                BaudRate = baudRate,
+                DataBits = 8,
+                Parity = UartParity.None,
+                StopBits = UartStopBitCount.One,
+                Handshaking = UartHandshake.None
+
+            };
+
+
+            this.serialPort.SetActiveSettings(uartSetting);
 
             this.serialPort.Enable();
 
