@@ -8,7 +8,7 @@ namespace uAlfat.Core
 {
     public class Strings
     {
-        public const string NewLine = "\n";
+        public const string NewLine = "\r";
 
         #region Public Methods
         /// <summary>
