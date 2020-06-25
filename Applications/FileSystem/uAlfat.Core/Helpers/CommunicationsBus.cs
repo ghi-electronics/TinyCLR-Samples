@@ -219,7 +219,10 @@ namespace uAlfat.Core
         {
             if (this.serialPort != null)
             {
-                this.serialPort.Read(data, 0, data.Length);
+                var read = 0;
+                while (read < data.Length) {
+                    read += this.serialPort.Read(data, read, data.Length - read);
+                }
             }
             else if (this.commandFile != null)
             {
