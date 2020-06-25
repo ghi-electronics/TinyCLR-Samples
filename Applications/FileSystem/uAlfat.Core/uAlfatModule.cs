@@ -54,7 +54,11 @@ namespace uAlfat.Core
             Bus.DataReceived += this.ProcessCommand;
             this.StorageControllerName = storageControllerName;
             this.SDControllerName = sDControllerName;
-            this.InitUsbHost();
+
+            // This takes ~ 1 second to initialize USB if exist. Move to different thread.
+            // Show message assp
+            new Thread(this.InitUsbHost).Start();
+
             Console.WriteLine("uAlfat is ready");
             this.PrintStartUpMessage();
         }
@@ -62,7 +66,7 @@ namespace uAlfat.Core
         void PrintStartUpMessage() {
             var appVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             var bootVer = Resources.GetString(Resources.StringResources.BOOTLOADER_VER);
-            Bus.WriteLine($"GHI Electronics, LLC{Strings.NewLine}----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} uALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
+            Bus.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} uALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
             Console.WriteLine($"GHI Electronics, LLC{Strings.NewLine}----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} uALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
         }
 
@@ -725,7 +729,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.Unknown);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.NextResult2:
@@ -780,7 +784,7 @@ namespace uAlfat.Core
                     }
                     else
                     {
-                        Bus.WriteLine(ResponseCode.Unknown);
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
 
                     break;
@@ -1118,7 +1122,7 @@ namespace uAlfat.Core
                     }
                     break;
                 default:
-                    Bus.WriteLine(string.IsNullOrEmpty(data) ? ResponseCode.Success : ResponseCode.Unknown);
+                    Bus.WriteLine(string.IsNullOrEmpty(data) ? ResponseCode.Success : ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     break;
 
             }
