@@ -74,7 +74,7 @@ namespace uAlfat.Core
                 }
             }
 
-            Debug.WriteLine(dataStr);
+            //Debug.WriteLine(dataStr);
             this.TempData += dataStr;
             if (dataStr.IndexOf(Strings.NewLine) > -1)
             {

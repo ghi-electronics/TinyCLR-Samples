@@ -60,7 +60,7 @@ namespace uAlfat.Core {
             this.SDControllerName = sDControllerName;
             this.dataBlock = new byte[DataBlockSize];
 
-            Console.WriteLine("uAlfat is ready");
+            //Console.WriteLine("uAlfat is ready");
             this.PrintStartUpMessage();
         }
 
@@ -68,7 +68,7 @@ namespace uAlfat.Core {
             var appVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             var bootVer = Resources.GetString(Resources.StringResources.BOOTLOADER_VER);
             Bus.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}{VersionNumber}{Strings.NewLine}{ResponseCode.Success}");
-            Console.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}   uALFAT(TM) 3.13{Strings.NewLine}{ResponseCode.Success}"); 
+            //Console.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}   uALFAT(TM) 3.13{Strings.NewLine}{ResponseCode.Success}"); 
         }
 
         string dataToProcess = string.Empty;
@@ -148,20 +148,20 @@ namespace uAlfat.Core {
                                     storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
                                     if (string.IsNullOrEmpty(this.CurrentPath))
                                         this.CurrentPath = driveInfo.RootDirectory.FullName;
-                                    System.Diagnostics.Debug.WriteLine
-                                        ("Free: " + driveInfo.TotalFreeSpace);
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("Free: " + driveInfo.TotalFreeSpace);
 
-                                    System.Diagnostics.Debug.WriteLine
-                                        ("TotalSize: " + driveInfo.TotalSize);
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("TotalSize: " + driveInfo.TotalSize);
 
-                                    System.Diagnostics.Debug.WriteLine
-                                        ("VolumeLabel:" + driveInfo.VolumeLabel);
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("VolumeLabel:" + driveInfo.VolumeLabel);
 
-                                    System.Diagnostics.Debug.WriteLine
-                                        ("RootDirectory: " + driveInfo.RootDirectory);
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("RootDirectory: " + driveInfo.RootDirectory);
 
-                                    System.Diagnostics.Debug.WriteLine
-                                        ("DriveFormat: " + driveInfo.DriveFormat);
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("DriveFormat: " + driveInfo.DriveFormat);
 
                                     this.IsUsbDiskInitialized = true;
                                     isSuccess = true;
@@ -1124,14 +1124,14 @@ namespace uAlfat.Core {
        (GHIElectronics.TinyCLR.Devices.UsbHost.UsbHostController sender,
        GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionEventArgs e) {
 
-            System.Diagnostics.Debug.WriteLine("e.Id = " + e.Id + " \n");
-            System.Diagnostics.Debug.WriteLine("e.InterfaceIndex = " + e.InterfaceIndex + " \n");
-            System.Diagnostics.Debug.WriteLine("e.PortNumber = " + e.PortNumber);
-            System.Diagnostics.Debug.WriteLine("e.Type = " + ((object)(e.Type)).
-                ToString() + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.Id = " + e.Id + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.InterfaceIndex = " + e.InterfaceIndex + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.PortNumber = " + e.PortNumber);
+            //System.Diagnostics.Debug.WriteLine("e.Type = " + ((object)(e.Type)).
+            //    ToString() + " \n");
 
-            System.Diagnostics.Debug.WriteLine("e.VendorId = " + e.VendorId + " \n");
-            System.Diagnostics.Debug.WriteLine("e.ProductId = " + e.ProductId + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.VendorId = " + e.VendorId + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.ProductId = " + e.ProductId + " \n");
 
             switch (e.DeviceStatus) {
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Connected:
@@ -1206,7 +1206,7 @@ namespace uAlfat.Core {
                     break;
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Disconnected:
-                    System.Diagnostics.Debug.WriteLine("Device Disconnected");
+                    //System.Diagnostics.Debug.WriteLine("Device Disconnected");
                     //unmount if there is usb disk connected
                     if (this.IsUsbDiskConnected && this.IsUsbDiskInitialized) {
                         var storageController = StorageController.FromName(this.StorageControllerName);
@@ -1223,7 +1223,7 @@ namespace uAlfat.Core {
                     break;
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Bad:
-                    System.Diagnostics.Debug.WriteLine("Bad Device");
+                    //System.Diagnostics.Debug.WriteLine("Bad Device");
                     this.IsKeyboardConnected = false;
                     this.IsSDConnected = false;
                     this.IsUsbDiskConnected = false;
@@ -1234,28 +1234,28 @@ namespace uAlfat.Core {
         private static void Keyboard_KeyDown(GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard
             sender, GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard.KeyboardEventArgs args) {
 
-            System.Diagnostics.Debug.WriteLine("Key pressed: " + ((object)args.Which).ToString());
-            System.Diagnostics.Debug.WriteLine("Key pressed ASCII: " +
-                ((object)args.ASCII).ToString());
+            //System.Diagnostics.Debug.WriteLine("Key pressed: " + ((object)args.Which).ToString());
+            //System.Diagnostics.Debug.WriteLine("Key pressed ASCII: " +
+            //    ((object)args.ASCII).ToString());
         }
 
         private static void Keyboard_KeyUp(GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard
             sender, GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard.KeyboardEventArgs args) {
 
-            System.Diagnostics.Debug.WriteLine
-                ("Key released: " + ((object)args.Which).ToString());
+            //System.Diagnostics.Debug.WriteLine
+            //    ("Key released: " + ((object)args.Which).ToString());
 
-            System.Diagnostics.Debug.WriteLine
-                ("Key released ASCII: " + ((object)args.ASCII).ToString());
+            //System.Diagnostics.Debug.WriteLine
+            //    ("Key released ASCII: " + ((object)args.ASCII).ToString());
         }
 
-        private static void Mouse_CursorMoved(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.CursorMovedEventArgs e) => System.Diagnostics.Debug.WriteLine("Mouse moved to: " + e.NewPosition.X +
-                 ", " + e.NewPosition.Y);
+        //private static void Mouse_CursorMoved(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
+        //    sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.CursorMovedEventArgs e) => System.Diagnostics.Debug.WriteLine("Mouse moved to: " + e.NewPosition.X +
+        //         ", " + e.NewPosition.Y);
 
-        private static void Mouse_ButtonChanged(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.ButtonChangedEventArgs args) => System.Diagnostics.Debug.WriteLine
-                ("Mouse button changed: " + ((object)args.Which).ToString());
+        //private static void Mouse_ButtonChanged(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
+        //    sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.ButtonChangedEventArgs args) => System.Diagnostics.Debug.WriteLine
+        //        ("Mouse button changed: " + ((object)args.Which).ToString());
 
 
     }
