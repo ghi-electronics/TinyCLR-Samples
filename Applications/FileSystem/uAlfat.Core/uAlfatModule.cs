@@ -40,6 +40,8 @@ namespace uAlfat.Core {
         public byte[] dataBlock;
         const int DataBlockSize = 4 * 1024;
 
+        const string VersionNumber = "   uALFAT(TM) 3.13";
+
         public uAlfatModule(string uartPort, string storageControllerName, string sDControllerName, int ldrPin = SC20260.GpioPin.PE3) {
             this.CurrentPath = string.Empty;
             this.PowerMode = PowerModes.Full;
@@ -67,7 +69,7 @@ namespace uAlfat.Core {
         void PrintStartUpMessage() {
             var appVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             var bootVer = Resources.GetString(Resources.StringResources.BOOTLOADER_VER);
-            Bus.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}   uALFAT(TM) 3.13{Strings.NewLine}{ResponseCode.Success}");
+            Bus.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}{VersionNumber}{Strings.NewLine}{ResponseCode.Success}");
             Console.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}   uALFAT(TM) 3.13{Strings.NewLine}{ResponseCode.Success}"); 
         }
 
@@ -875,7 +877,7 @@ namespace uAlfat.Core {
                     break;
                 case CommandTypes.GetVersionNo:
                     var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                    result = $"V{version}{Strings.NewLine}";
+                    result = $"{VersionNumber}{Strings.NewLine}";
                     result += ResponseCode.Success;
                     Bus.WriteLine(result);
 
