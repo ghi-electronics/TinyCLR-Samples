@@ -397,6 +397,8 @@ namespace uAlfat.Core {
                                         result = ResponseCode.MediaNotInitialize;
                                     }
                                     else {
+                                        result = ResponseCode.Success;
+                                        Bus.WriteLine(result);
 
                                         var block = numWriteBytes / DataBlockSize;
                                         var remain = numWriteBytes % DataBlockSize;
@@ -420,7 +422,7 @@ namespace uAlfat.Core {
 
                                         var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", numWriteBytes), 8);
 
-                                        result += actBytes + Strings.NewLine;
+                                        result = actBytes + Strings.NewLine;
                                         result += ResponseCode.Success;
                                     }
                                 }
