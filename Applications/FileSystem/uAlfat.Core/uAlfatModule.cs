@@ -12,13 +12,10 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using uAlfat.Core.Properties;
 
-namespace uAlfat.Core
-{
-    public class uAlfatModule
-    {
-        
-        public enum PowerModes
-        {
+namespace uAlfat.Core {
+    public class uAlfatModule {
+
+        public enum PowerModes {
             Full = 'F', Reduced = 'R', Hibernate = 'H'
         }
         public string CurrentPath { get; set; }
@@ -33,14 +30,21 @@ namespace uAlfat.Core
         static StorageContainer storages;
         string SDControllerName { get; set; }
         public bool IsUsbDiskConnected { get; set; }
+        public bool IsUsbDiskInitialized { get; set; }
+        public bool IsUsbHostInitialized { get; set; }
         public bool IsSDConnected { get; set; }
         public bool IsKeyboardConnected { get; set; }
         string StorageControllerName { get; set; }
-        public static GHIElectronics.TinyCLR.Devices.UsbHost.UsbHostController UsbHost
-        { set; get; }
+        public static GHIElectronics.TinyCLR.Devices.UsbHost.UsbHostController UsbHost { set; get; }
         public static CommunicationsBus Bus { get; set; }
-        public uAlfatModule(string uartPort, string storageControllerName, string sDControllerName, int ldrPin = SC20260.GpioPin.PE3)
-        {
+
+        public byte[] dataBlock;
+        const int DataBlockSize = 4 * 1024;
+        const int UsbHostConnectionTimeoutMillisecond = 2000;
+
+        const string VersionNumber = "   uALFAT(TM) 3.13";
+
+        public uAlfatModule(string uartPort, string storageControllerName, string sDControllerName, int ldrPin = SC20260.GpioPin.PE3) {
             this.CurrentPath = string.Empty;
             this.PowerMode = PowerModes.Full;
             this.LDRPin = ldrPin;
@@ -51,53 +55,70 @@ namespace uAlfat.Core
             handles = new MediaHandler();
             storages = new StorageContainer();
             Bus = new CommunicationsBus(uartPort);
-            Bus.DataReceived += this.ProcessCommand;
+            Bus.DataReceived += this.ProcessCommandEvent;
             this.StorageControllerName = storageControllerName;
             this.SDControllerName = sDControllerName;
-            this.InitUsbHost();
-            Console.WriteLine("uAlfat is ready");
+            this.dataBlock = new byte[DataBlockSize];
+
+            //Console.WriteLine("uAlfat is ready");
             this.PrintStartUpMessage();
         }
 
         void PrintStartUpMessage() {
             var appVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             var bootVer = Resources.GetString(Resources.StringResources.BOOTLOADER_VER);
-            Bus.WriteLine($"GHI Electronics, LLC{Strings.NewLine}----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} uALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
-            Console.WriteLine($"GHI Electronics, LLC{Strings.NewLine}----------------------------- {Strings.NewLine} Boot Loader {bootVer} {Strings.NewLine} uALFAT(TM) {appVer} {Strings.NewLine}{ResponseCode.Success}");
+            Bus.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}{VersionNumber}{Strings.NewLine}{ResponseCode.Success}");
+            //Console.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}   uALFAT(TM) 3.13{Strings.NewLine}{ResponseCode.Success}"); 
         }
 
-        private void ProcessCommand(string data)
-        {
+        string dataToProcess = string.Empty;
+        bool newData = false;
+
+        public void Run() {
+            while (true) {
+                if (this.newData == false) {
+
+                    Thread.Sleep(1);
+                    continue;
+                }
+
+                this.ProcessCommand(this.dataToProcess);
+
+                this.newData = false;
+            }
+        }
+
+        private void ProcessCommandEvent(string data) {
+            this.dataToProcess = data;
+
+            this.newData = true;
+        }
+
+        private void ProcessCommand(string data) {
             var isSuccess = false;
             var result = string.Empty;
 
             var cmd = CommandParser.Parse(data);
             string[] par1;
+
             //alfat commands
-            switch (cmd.CommandPrefix)
-            {
-                case CommandTypes.Init:
-                    {
+            switch (cmd.CommandPrefix) {
+                case CommandTypes.Init: {
                         //try connect sd card
                         isSuccess = this.ConnectSD(MediaTypes.D);
-                        if (isSuccess)
-                        {
+                        if (isSuccess) {
                             result = ResponseCode.Success;
                         }
-                        else
-                        {
+                        else {
                             result = ResponseCode.NoSDCard;
                         }
-                        if (!isSuccess)
-                        {
+                        if (!isSuccess) {
                             //try connect usb disk
-                            if (this.IsUsbDiskConnected)
-                            {
+                            if (this.IsUsbDiskConnected) {
                                 isSuccess = true;
                                 result = ResponseCode.Success;
                             }
-                            else
-                            {
+                            else {
                                 result = ResponseCode.NoSDCard;
                             }
                         }
@@ -107,36 +128,81 @@ namespace uAlfat.Core
                             Bus.WriteLine(ResponseCode.NoSDCard);
                     }
                     break;
-                case CommandTypes.MountUsb:
-                    {
-                        //try connect usb disk
-                        if (this.IsUsbDiskConnected)
-                        {
-                            isSuccess = true;
-                            result = ResponseCode.Success;
+                case CommandTypes.MountUsb: {
+                        if (!this.IsUsbHostInitialized) {
+                            this.InitUsbHost();
                         }
-                        else
-                        {
+
+                        //try connect usb disk
+                        if (this.IsUsbDiskConnected) {
+
+                            var storageController = StorageController.FromName(this.StorageControllerName);
+                            IDriveProvider driver;
+                            try {
+                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                                    Mount(storageController.Hdc);
+
+                                if (driver != null) {
+                                    var driveInfo = new System.IO.DriveInfo(driver.Name);
+                                    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
+                                    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
+                                    if (string.IsNullOrEmpty(this.CurrentPath))
+                                        this.CurrentPath = driveInfo.RootDirectory.FullName;
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("Free: " + driveInfo.TotalFreeSpace);
+
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("TotalSize: " + driveInfo.TotalSize);
+
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("VolumeLabel:" + driveInfo.VolumeLabel);
+
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("RootDirectory: " + driveInfo.RootDirectory);
+
+                                    //System.Diagnostics.Debug.WriteLine
+                                    //    ("DriveFormat: " + driveInfo.DriveFormat);
+
+                                    this.IsUsbDiskInitialized = true;
+                                    isSuccess = true;
+                                    result = ResponseCode.Success;
+                                }
+                            }
+                            catch (Exception ex) {
+                                //ummount -> then mount
+                                //FileSystem.Unmount(storageController.Hdc);
+                                //driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                                //  Mount(storageController.Hdc);
+                                this.IsUsbDiskInitialized = false;
+                                result = ResponseCode.ERROR_USB_INITIALIZE_FAILED;
+                            }
+                            
+
+                           
+                        }
+                        else {
+                            this.IsUsbDiskInitialized = false;
                             result = ResponseCode.NoSDCard;
                         }
 
                         if (isSuccess)
                             Bus.WriteLine(ResponseCode.Success);
                         else
-                            Bus.WriteLine(ResponseCode.NoSDCard);
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_NO_USB);
                     }
                     break;
-                case CommandTypes.DetectUsb:
-                    {
+                case CommandTypes.DetectUsb: {
+                        if (!this.IsUsbHostInitialized) {
+                            this.InitUsbHost();
+                        }
+
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
                         //try connect usb disk
-                        if (this.IsUsbDiskConnected)
-                        {
+                        if (this.IsUsbDiskConnected) {
                             isSuccess = true;
                             result += "$01" + Strings.NewLine;
                         }
-                        else
-                        {
+                        else {
                             result += "$00" + Strings.NewLine;
                         }
                         result += ResponseCode.Success;
@@ -145,79 +211,77 @@ namespace uAlfat.Core
                     }
                     break;
                 case CommandTypes.Open:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         par1 = cmd.Parameters[0].Trim().Split('>');
 
-                        if (par1.Length > 0)
-                        {
-                            try
-                            {
+                        if (par1.Length > 0) {
+                            try {
                                 var fileName = par1[1];
                                 var handle = par1[0][0];
                                 var accessType = par1[0][1];
 
                                 //is handle available
-                                if (handles.IsExist(handle))
-                                {
+                                if (handles.IsExist(handle)) {
                                     result = ResponseCode.HandleAlreadyUsed;
                                 }
-                                else
-                                {
+                                else {
                                     //has storage been init ?
-                                    for (var i = 0; i < storages.Size; i++)
-                                    {
+                                    for (var i = 0; i < storages.Size; i++) {
                                         var storage = storages.GetStorageByIndex(i);
-                                        if (storage != null)
-                                        {
+                                        if (storage != null) {
                                             fileName = $"{this.CurrentPath}{fileName}";
-                                            var newHandle = new MediaHandle() { AccessType = accessType, HandleName = handle, FileName = fileName, Media = storage.Name };
+                                            var newHandle = new MediaHandle() { HandleName = handle, FileName = fileName, Media = storage.Name };
 
-                                            switch (accessType)
-                                            {
+                                            switch (accessType) {
                                                 case FileAccessTypes.Read:
 
-                                                    if (File.Exists(fileName))
-                                                    {
+                                                    if (File.Exists(fileName)) {
                                                         var contentBytes = File.ReadAllBytes(fileName);
-                                                        newHandle.Buffer = new MemoryStream(contentBytes);
-                                                        newHandle.Size = contentBytes.Length;
+
+                                                        newHandle.AccessMode = FileMode.Open;
+
+                                                        newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
+                                                        
                                                         result = ResponseCode.Success;
                                                     }
-                                                    else
-                                                    {
-                                                        result = ResponseCode.FileFolderNotExist;
+                                                    else {
+                                                        result = ResponseCode.ERROR_FS_FILEFOLDER_NOT_EXIST;
                                                     }
                                                     break;
                                                 case FileAccessTypes.Write:
 
-                                                    if (File.Exists(fileName))
-                                                    {
+                                                    if (File.Exists(fileName)) {
                                                         result = ResponseCode.FileFolderExists;
                                                     }
-                                                    else
-                                                    {
-                                                        result = ResponseCode.Success;
+                                                    else {
+                                                        newHandle.AccessMode = FileMode.CreateNew;
+
+                                                        try {
+                                                            newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
+                                                            result = ResponseCode.Success;
+                                                        }
+
+                                                        catch {
+                                                            result = ResponseCode.ERROR_FAILED_OPEN_FILE;
+                                                        }
                                                     }
                                                     break;
                                                 case FileAccessTypes.Append:
 
-                                                    if (File.Exists(fileName))
-                                                    {
-                                                        var contentBytes = File.ReadAllBytes(fileName);
-                                                        newHandle.Buffer = new MemoryStream(contentBytes);
+                                                    if (File.Exists(fileName)) {                                                        
+                                                        newHandle.AccessMode = FileMode.Append;
+
+                                                        newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
                                                         //set to end of file
-                                                        newHandle.CursorPosition = contentBytes.Length - 1;
+                                                        newHandle.Buffer.Seek(0, SeekOrigin.End);
                                                         result = ResponseCode.Success;
                                                     }
-                                                    else
-                                                    {
-                                                        result = ResponseCode.FileFolderNotExist;
+                                                    else {
+                                                        result = ResponseCode.ERROR_FS_FILEFOLDER_NOT_EXIST;
                                                     }
                                                     break;
                                             }
-                                            if (result == ResponseCode.Success)
-                                            {
+                                            if (result == ResponseCode.Success) {
                                                 handles.AddHandle(newHandle);
                                             }
 
@@ -229,359 +293,312 @@ namespace uAlfat.Core
 
                                 }
                             }
-                            catch
-                            {
-                                result = ResponseCode.IncorrectParameter;
+                            catch {
+                                result = ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER;
                             }
 
                             Bus.WriteLine(result);
                         }
-                        else
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        else {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Close:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var handle = cmd.Parameters[0].Trim()[0];
 
-                        if (handles.IsExist(handle))
-                        {
+                        if (handles.IsExist(handle)) {
                             //if write/append mode then flush
                             var currentHandle = handles.GetHandle(handle);
-                            if (currentHandle.AccessType == FileAccessTypes.Write || currentHandle.AccessType == FileAccessTypes.Append)
-                            {
-                                var byteToWrite = new byte[currentHandle.CursorPosition];
-                                currentHandle.Buffer.Seek(0, SeekOrigin.Begin);
-                                for (var i = 0; i < byteToWrite.Length; i++)
-                                {
-                                    byteToWrite[i] = (byte)currentHandle.Buffer.ReadByte();
-                                }
 
-                                //flush memory to file
-                                File.WriteAllBytes(currentHandle.FileName, byteToWrite);
+                            var storage = storages.GetStorage(currentHandle.Media);
 
-                            }
-                            //make it available
+                            currentHandle.Buffer.Flush();
+
+                            FileSystem.Flush(storage.Controller.Hdc);
+
+                            currentHandle.Buffer.Close();
+
                             currentHandle.Buffer.Dispose();
                             var res = handles.RemoveHandle(handle);
                             result = res ? ResponseCode.Success : ResponseCode.InvalidHandle;
                         }
-                        else
-                        {
+                        else {
                             result = ResponseCode.InvalidHandle;
                         }
                         Bus.WriteLine(result);
 
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Tell:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var handle = cmd.Parameters[0].Trim()[0];
                         var currentHandle = handles.GetHandle(handle);
-                        if (currentHandle != null)
-                        {
+                        if (currentHandle != null) {
                             result = $"{ResponseCode.Success}{Strings.NewLine}";
                             //write current read position
                             var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", currentHandle.CursorPosition), 8);
                             result += $"{actBytes}{Strings.NewLine}";
                             result += ResponseCode.Success;
                         }
-                        else
-                        {
+                        else {
                             result = ResponseCode.InvalidHandle;
                         }
                         Bus.WriteLine(result);
 
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Read:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         par1 = cmd.Parameters[0].Split('>');
 
-                        if (par1.Length > 0)
-                        {
-                            try
-                            {
+                        if (par1.Length > 0) {
+                            try {
                                 var numReadBytes = Convert.ToInt32("0x" + par1[1], 16);
                                 var handle = par1[0][0];
                                 var pad = par1[0][1];
                                 var currentHandle = handles.GetHandle(handle);
                                 //is handle available
-                                if (currentHandle == null)
-                                {
+                                if (currentHandle == null) {
                                     result = ResponseCode.InvalidHandle;
                                 }
-                                else if (currentHandle.AccessType != FileAccessTypes.Read)
-                                {
+                                else if (currentHandle.AccessMode != FileMode.Open) {
                                     result = ResponseCode.HandleRequireRead;
                                 }
-                                else
-                                {
+                                else {
 
                                     //has storage been init ?
                                     var storage = storages.GetStorage(currentHandle.Media);
-                                    if (storage == null)
-                                    {
+                                    if (storage == null) {
                                         result = ResponseCode.MediaNotInitialize;
                                     }
-                                    else
-                                    {
-                                        if (currentHandle.Buffer.Length > 0)
-                                        {
+                                    else {
+                                        if (currentHandle.Buffer.Length > 0) {
                                             result = ResponseCode.Success + Strings.NewLine;
-                                            if (currentHandle.Buffer.Length < numReadBytes + currentHandle.CursorPosition)
-                                            {
-                                                var lengthRead = currentHandle.Buffer.Length - currentHandle.CursorPosition; //numReadBytes - currentHandle.Buffer.Length;
-                                                var readBytes = new byte[lengthRead];
-                                                currentHandle.Buffer.Seek(currentHandle.CursorPosition, SeekOrigin.Begin);
-                                                for (var i = 0; i < lengthRead; i++)
-                                                {
-                                                    readBytes[i] = (byte)currentHandle.Buffer.ReadByte();
-                                                }
-                                                var numberOfPad = (numReadBytes + currentHandle.CursorPosition) - currentHandle.Buffer.Length;
-                                                //go to beginning of file
-                                                currentHandle.CursorPosition = 0;
-                                                var contentStr = Encoding.UTF8.GetString(readBytes);
-                                                //read data size
-                                                var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", contentStr.Length), 8);
-                                                //content
-                                                contentStr += Strings.GetFiller(pad, numberOfPad);
-                                                result += $"{contentStr}{actBytes}{Strings.NewLine}";
-                                            }
-                                            else
-                                            {
-                                                var readBytes = new byte[numReadBytes];
-                                                currentHandle.Buffer.Seek(currentHandle.CursorPosition, SeekOrigin.Begin);
-                                                for (var i = 0; i < numReadBytes; i++)
-                                                {
-                                                    readBytes[i] = (byte)currentHandle.Buffer.ReadByte();
-                                                }
-                                                currentHandle.CursorPosition += numReadBytes;
-                                                //reset to beginning of file
-                                                if (currentHandle.CursorPosition >= currentHandle.Buffer.Length)
-                                                    currentHandle.CursorPosition = 0;
-                                                //content
-                                                var contentStr = Encoding.UTF8.GetString(readBytes);
-                                                //read size
-                                                var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", numReadBytes), 8);
 
-                                                result += $"{contentStr}{actBytes}{Strings.NewLine}";
+                                            Bus.WriteLine(result);
+
+                                            var actualByteToRead = (int)Math.Min(currentHandle.Buffer.Length, numReadBytes);
+                                            var numberOfPad = numReadBytes - actualByteToRead;
+
+                                            var block = actualByteToRead / DataBlockSize;
+                                            var remain = actualByteToRead % DataBlockSize;
+
+                                            while (block > 0) {
+                                                currentHandle.Buffer.Read(this.dataBlock, 0, DataBlockSize);
+                                                Bus.Write(this.dataBlock);
+                                                block--;
+                                            }
+
+                                            if (remain > 0) {
+                                                currentHandle.Buffer.Read(this.dataBlock, 0, remain);
+                                                Bus.Write(this.dataBlock, 0, remain);
 
                                             }
+
+                                            if (numberOfPad > 0) {
+                                                var dataPad = new byte[1] { (byte)pad };
+                                                for (var i = 0; i < numberOfPad; i++) {
+                                                    Bus.Write(dataPad);
+
+                                                }
+                                            }
+                                           
+                                            var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", actualByteToRead), 8);
+                                            result = $"{actBytes}{Strings.NewLine}";
+
                                             result += ResponseCode.Success;
                                         }
-                                        else
-                                        {
-                                            result = ResponseCode.FileFolderNotExist;
+                                        else {
+                                            result = ResponseCode.ERROR_FS_FILEFOLDER_NOT_EXIST;
                                         }
+
+
                                     }
                                 }
                             }
-                            catch
-                            {
-                                result = ResponseCode.IncorrectParameter;
+                            catch {
+                                result = ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER;
                             }
 
                             Bus.WriteLine(result);
                         }
-                        else
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        else {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Write:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         par1 = cmd.Parameters[0].Split('>');
 
-                        if (par1.Length > 0)
-                        {
-                            try
-                            {
+                        if (par1.Length > 0) {
+                            try {
                                 var handle = par1[0][0];
                                 var numWriteBytes = Convert.ToInt32("0x" + par1[1], 16);
 
                                 var currentHandle = handles.GetHandle(handle);
                                 //is handle available
-                                if (currentHandle == null)
-                                {
+                                if (currentHandle == null) {
                                     result = ResponseCode.InvalidHandle;
                                 }
-                                else if (currentHandle.AccessType != FileAccessTypes.Write && currentHandle.AccessType != FileAccessTypes.Append)
-                                {
+                                else if (currentHandle.AccessMode != FileMode.Create
+                                    && currentHandle.AccessMode != FileMode.OpenOrCreate
+                                    && currentHandle.AccessMode != FileMode.Append
+                                    && currentHandle.AccessMode != FileMode.CreateNew
+                                    ) {
                                     result = ResponseCode.HandleRequireAppend;
                                 }
-                                else
-                                {
+                                else {
                                     //has storage been init ?
                                     var storage = storages.GetStorage(currentHandle.Media);
-                                    if (storage == null)
-                                    {
+                                    if (storage == null) {
                                         result = ResponseCode.MediaNotInitialize;
                                     }
-                                    else
-                                    {
-                                        var readDataBytes = new byte[numWriteBytes];
-                                        //read data to be written
-                                        if (cmd.NextLine != string.Empty)
-                                        {
-                                            readDataBytes = UTF8Encoding.UTF8.GetBytes(cmd.NextLine);
-                                        }
-                                        else
-                                        {
-                                            Bus.Read(readDataBytes);
+                                    else {
+                                        result = ResponseCode.Success;
+                                        Bus.WriteLine(result);
+
+                                        var block = numWriteBytes / DataBlockSize;
+                                        var remain = numWriteBytes % DataBlockSize;
+
+                                        while (block > 0) {
+                                            // Read data
+                                            Bus.Read(this.dataBlock);
+
+                                            // Write to file
+                                            currentHandle.Buffer.Write(this.dataBlock, 0, this.dataBlock.Length);
+
+                                            block--;
                                         }
 
-                                        for (var i = 0; i < readDataBytes.Length; i++)
-                                        {
-                                            currentHandle.Buffer.WriteByte(readDataBytes[i]);
-                                        }
-                                        currentHandle.CursorPosition += readDataBytes.Length;
-                                        currentHandle.Size = currentHandle.CursorPosition;
-                                        var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", readDataBytes.Length), 8);
+                                        if (remain > 0) {
 
-                                        result += actBytes + Strings.NewLine;
+                                            Bus.Read(this.dataBlock, 0, remain);
+                                            currentHandle.Buffer.Write(this.dataBlock, 0, remain);
+                                        }
+
+
+                                        var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", numWriteBytes), 8);
+
+                                        result = actBytes + Strings.NewLine;
                                         result += ResponseCode.Success;
                                     }
                                 }
                             }
-                            catch
-                            {
-                                result = ResponseCode.IncorrectParameter;
+                            catch {
+                                result = ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER;
                             }
 
                             Bus.WriteLine(result);
                         }
-                        else
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        else {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Seek:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         par1 = cmd.Parameters[0].Split('>');
 
-                        if (par1.Length > 0)
-                        {
-                            try
-                            {
+                        if (par1.Length > 0) {
+                            try {
                                 var handle = par1[0][0];
                                 long newPosition = Convert.ToInt32("0x" + par1[1], 16);
 
                                 var currentHandle = handles.GetHandle(handle);
                                 //is handle available
-                                if (currentHandle == null)
-                                {
+                                if (currentHandle == null) {
                                     result = ResponseCode.InvalidHandle;
                                 }
-                                else if (currentHandle.AccessType != FileAccessTypes.Read)
-                                {
+                                else if (currentHandle.AccessMode != FileMode.Open) {
                                     result = ResponseCode.HandleRequireRead;
                                 }
-                                else
-                                {
+                                else {
                                     //has storage been init ?
                                     var storage = storages.GetStorage(currentHandle.Media);
-                                    if (storage == null)
-                                    {
+                                    if (storage == null) {
                                         result = ResponseCode.MediaNotInitialize;
                                     }
-                                    else
-                                    {
+                                    else {
                                         //if new position > file size, go to EOF
-                                        if (newPosition > currentHandle.Size)
-                                            newPosition = currentHandle.Size;
+                                        //if (newPosition > currentHandle.Size)
+                                        //    newPosition = currentHandle.Size;
 
-                                        currentHandle.CursorPosition = newPosition;
+                                        //currentHandle.CursorPosition = newPosition;
 
-                                        result = ResponseCode.Success;
+                                        if (currentHandle.AccessMode != FileMode.Open) {
+                                            result = ResponseCode.ERROR_FS_SEEK_READ_ONLY;
+                                        }
+                                        else if (newPosition + currentHandle.Buffer.Position > currentHandle.Buffer.Length) {
+                                            result = ResponseCode.ERROR_FS_SEEK_OUTOF_LENGTH;
+                                        }
+                                        else {
+                                            currentHandle.Buffer.Seek(newPosition, SeekOrigin.Begin);                                            
+                                            result = ResponseCode.Success;
+                                        }
                                     }
                                 }
                             }
-                            catch
-                            {
-                                result = ResponseCode.IncorrectParameter;
+                            catch {
+                                result = ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER;
                             }
 
                             Bus.WriteLine(result);
                         }
-                        else
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        else {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.Delete:
-                    if (cmd.ParamLength > 0)
-                    {
-                        try
-                        {
+                    if (cmd.ParamLength > 0) {
+                        try {
                             var fileName = cmd.Parameters[0];
 
-                            for (var i = 0; i < storages.Size; i++)
-                            {
+                            for (var i = 0; i < storages.Size; i++) {
                                 var storage = storages.GetStorageByIndex(i);
-                                if (storage != null)
-                                {
+                                if (storage != null) {
                                     fileName = this.CurrentPath + fileName;
-                                    if (File.Exists(fileName))
-                                    {
+                                    if (File.Exists(fileName)) {
                                         var isExist = false;
                                         //check if it exist in handlelist
-                                        foreach (var handle in handles.GetAll())
-                                        {
-                                            if (fileName.ToLower() == handle.FileName.ToLower())
-                                            {
+                                        foreach (var handle in handles.GetAll()) {
+                                            if (fileName.ToLower() == handle.FileName.ToLower()) {
                                                 isExist = true;
                                                 break;
                                             }
                                         }
-                                        if (isExist)
-                                        {
+                                        if (isExist) {
                                             result = ResponseCode.HandleSourceNeedOpen;
                                         }
-                                        else
-                                        {
+                                        else {
                                             File.Delete(fileName);
                                             result = ResponseCode.Success;
                                         }
                                         break;
                                     }
-                                    else
-                                    {
-                                        result = ResponseCode.FileFolderNotExist;
+                                    else {
+                                        result = ResponseCode.ERROR_FS_FILEFOLDER_NOT_EXIST;
                                     }
 
                                 }
@@ -591,51 +608,40 @@ namespace uAlfat.Core
 
                             Bus.WriteLine(result);
                         }
-                        catch
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        catch {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     break;
                 case CommandTypes.DeleteFolder:
-                    if (cmd.ParamLength > 0)
-                    {
-                        try
-                        {
+                    if (cmd.ParamLength > 0) {
+                        try {
                             var folderName = cmd.Parameters[0];
 
-                            for (var i = 0; i < storages.Size; i++)
-                            {
+                            for (var i = 0; i < storages.Size; i++) {
                                 var storage = storages.GetStorageByIndex(i);
-                                if (storage != null)
-                                {
+                                if (storage != null) {
                                     folderName = this.CurrentPath + folderName;
-                                    if (Directory.Exists(folderName))
-                                    {
+                                    if (Directory.Exists(folderName)) {
                                         var isExist = false;
                                         //check if it exist in handlelist
-                                        foreach (var handle in handles.GetAll())
-                                        {
-                                            if (folderName.ToLower() == handle.FileName.ToLower())
-                                            {
+                                        foreach (var handle in handles.GetAll()) {
+                                            if (folderName.ToLower() == handle.FileName.ToLower()) {
                                                 isExist = true;
                                                 break;
                                             }
                                         }
-                                        if (isExist)
-                                        {
+                                        if (isExist) {
                                             result = ResponseCode.HandleSourceNeedOpen;
                                         }
-                                        else
-                                        {
+                                        else {
                                             Directory.Delete(folderName);
                                             result = ResponseCode.Success;
                                         }
                                         break;
                                     }
-                                    else
-                                    {
-                                        result = ResponseCode.FileFolderNotExist;
+                                    else {
+                                        result = ResponseCode.ERROR_FS_FILEFOLDER_NOT_EXIST;
                                     }
 
                                 }
@@ -645,36 +651,29 @@ namespace uAlfat.Core
 
                             Bus.WriteLine(result);
                         }
-                        catch
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        catch {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
                     break;
                 case CommandTypes.FileListing:
 
-                    try
-                    {
+                    try {
                         var isFound = false;
-                        for (var i = 0; i < storages.Size; i++)
-                        {
+                        for (var i = 0; i < storages.Size; i++) {
                             var storage = storages.GetStorageByIndex(i);
-                            if (storage != null)
-                            {
+                            if (storage != null) {
                                 var dir1 = new DirectoryInfo(this.CurrentPath);
-                                if (dir1.Exists)
-                                {
+                                if (dir1.Exists) {
                                     isFound = true;
                                     fileExplorer.CurrentDirectory = this.CurrentPath;
                                     fileExplorer.Mode = FileExplorer.ExploreMode.Listing;
                                     fileExplorer.CurrentIndex = 0;
                                     fileExplorer.Clear();
-                                    foreach (var file in dir1.GetFiles())
-                                    {
+                                    foreach (var file in dir1.GetFiles()) {
                                         fileExplorer.AddFile(file);
                                     }
-                                    foreach (var dir in dir1.GetDirectories())
-                                    {
+                                    foreach (var dir in dir1.GetDirectories()) {
                                         fileExplorer.AddDirectory(dir);
                                     }
                                     result = ResponseCode.Success;
@@ -687,20 +686,16 @@ namespace uAlfat.Core
                         else
                             Bus.WriteLine(result);
                     }
-                    catch
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    catch {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.NextResult:
-                    if (fileExplorer.Mode != FileExplorer.ExploreMode.Idle)
-                    {
+                    if (fileExplorer.Mode != FileExplorer.ExploreMode.Idle) {
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
-                        if (fileExplorer.CurrentIndex < fileExplorer.Count)
-                        {
+                        if (fileExplorer.CurrentIndex < fileExplorer.Count) {
                             var item = fileExplorer.GetByIndex(fileExplorer.CurrentIndex);
-                            if (item != null)
-                            {
+                            if (item != null) {
                                 //attributes
                                 var attrs = Strings.LeadingZero(string.Format("{0:X}", item.Attribute), 2);
 
@@ -712,32 +707,26 @@ namespace uAlfat.Core
                                 fileExplorer.CurrentIndex++;
                                 result += ResponseCode.Success;
                             }
-                            else
-                            {
-                                result = ResponseCode.EndOfFile;
+                            else {
+                                result = ResponseCode.ERROR_ENDOF_FILEFOLDER_LIST;
                             }
                         }
-                        else
-                        {
-                            result = ResponseCode.EndOfFile;
+                        else {
+                            result = ResponseCode.ERROR_ENDOF_FILEFOLDER_LIST;
                         }
                         Bus.WriteLine(result);
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.Unknown);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.NextResult2:
 
-                    if (fileExplorer.Mode != FileExplorer.ExploreMode.Idle)
-                    {
+                    if (fileExplorer.Mode != FileExplorer.ExploreMode.Idle) {
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
-                        if (fileExplorer.CurrentIndex < fileExplorer.Count)
-                        {
+                        if (fileExplorer.CurrentIndex < fileExplorer.Count) {
                             var item = fileExplorer.GetByIndex(fileExplorer.CurrentIndex);
-                            if (item != null)
-                            {
+                            if (item != null) {
                                 //attributes
                                 var attrs = "$" + Strings.LeadingZero(string.Format("{0:X}", item.Attribute), 2);
 
@@ -749,8 +738,7 @@ namespace uAlfat.Core
 
                                 result += $"{attrs} {size} {namebytes}{Strings.NewLine}";
                                 var typeName = string.Empty;
-                                if (cmd.ParamLength > 0)
-                                {
+                                if (cmd.ParamLength > 0) {
                                     typeName = cmd.Parameters[0].Trim();
                                 }
                                 if (typeName == "A") //ASCII
@@ -767,30 +755,25 @@ namespace uAlfat.Core
                                 fileExplorer.CurrentIndex++;
                                 result += ResponseCode.Success;
                             }
-                            else
-                            {
-                                result = ResponseCode.EndOfFile;
+                            else {
+                                result = ResponseCode.ERROR_ENDOF_FILEFOLDER_LIST;
                             }
                         }
-                        else
-                        {
-                            result = ResponseCode.EndOfFile;
+                        else {
+                            result = ResponseCode.ERROR_ENDOF_FILEFOLDER_LIST;
                         }
                         Bus.WriteLine(result);
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.Unknown);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
 
                     break;
                 case CommandTypes.GetDateTime:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var request = cmd.Parameters[0].Trim()[0];
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
-                        switch (request)
-                        {
+                        switch (request) {
                             case 'X':
                                 var tmp = ExFatTimeStampConverter.ConvertToFatTime(DateTime.Now);
                                 result += $"${tmp}{Strings.NewLine}";
@@ -804,21 +787,17 @@ namespace uAlfat.Core
                         Bus.WriteLine(result);
 
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.SetDateTime:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var newdatestr = cmd.Parameters[0].Trim();
-                        if (newdatestr.Length == 8)
-                        {
+                        if (newdatestr.Length == 8) {
                             //conversion 
                             var newdate = ExFatTimeStampConverter.ConvertToDatetime(newdatestr);
-                            if (this.TimerMode == TimerModes.Backup)
-                            {
+                            if (this.TimerMode == TimerModes.Backup) {
                                 var rtc = RtcController.GetDefault();
                                 Console.WriteLine($"rtc status : { (rtc.IsValid ? "valid" : "not valid") }");
                                 rtc.Now = newdate;
@@ -826,46 +805,37 @@ namespace uAlfat.Core
                             SystemTime.SetTime(newdate);
                             Bus.WriteLine(ResponseCode.Success);
                         }
-                        else
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        else {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.InitTimer:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var mode = cmd.Parameters[0].Trim()[0];
                         this.TimerMode = mode == 'S' ? TimerModes.Shared : TimerModes.Backup;
                         Bus.WriteLine(ResponseCode.Success);
 
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
 
                 case CommandTypes.FindFile:
-                    if (cmd.ParamLength > 0)
-                    {
-                        try
-                        {
+                    if (cmd.ParamLength > 0) {
+                        try {
                             var itemName = cmd.Parameters[0];
 
-                            for (var i = 0; i < storages.Size; i++)
-                            {
+                            for (var i = 0; i < storages.Size; i++) {
                                 var storage = storages.GetStorageByIndex(i);
-                                if (storage != null)
-                                {
+                                if (storage != null) {
                                     itemName = this.CurrentPath + itemName;
                                     //check if File 
-                                    if (File.Exists(itemName))
-                                    {
+                                    if (File.Exists(itemName)) {
                                         var file = new FileInfo(itemName);
                                         result += $"{ResponseCode.Success}{Strings.NewLine}";
                                         var lengths = "$" + Strings.LeadingZero(string.Format("{0:X}", file.Length), 8);
@@ -888,45 +858,37 @@ namespace uAlfat.Core
                                         result += ResponseCode.Success;
                                         break;
                                     }
-                                    else
-                                    {
-                                        result = ResponseCode.FileFolderNotExist;
+                                    else {
+                                        result = ResponseCode.ERROR_FS_FILEFOLDER_NOT_EXIST;
                                     }
                                 }
 
                             }
                             Bus.WriteLine(result);
                         }
-                        catch
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        catch {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
 
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
 
                     break;
                 case CommandTypes.ChangeDirectory:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var dirName = cmd.Parameters[0].Trim();
-                        for (var i = 0; i < storages.Size; i++)
-                        {
+                        for (var i = 0; i < storages.Size; i++) {
                             var storage = storages.GetStorageByIndex(i);
-                            if (storage != null)
-                            {
+                            if (storage != null) {
                                 var newPath = this.CurrentPath + dirName;
-                                if (Directory.Exists(newPath))
-                                {
+                                if (Directory.Exists(newPath)) {
                                     this.CurrentPath = newPath + "\\";
                                     result = ResponseCode.Success;
                                 }
-                                else
-                                {
-                                    result = ResponseCode.FileFolderNotExist;
+                                else {
+                                    result = ResponseCode.ERROR_FS_FILEFOLDER_NOT_EXIST;
                                 }
                                 break;
                             }
@@ -934,52 +896,53 @@ namespace uAlfat.Core
                         if (string.IsNullOrEmpty(result)) result = ResponseCode.MediaNotInitialize;
                         Bus.WriteLine(result);
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
-                case CommandTypes.GetMediaStatistic:
-
-                    {
+                case CommandTypes.GetMediaStatistic: {                        
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
-                        for (var i = 0; i < storages.Size; i++)
-                        {
-                            var storage = storages.GetStorageByIndex(i);
-                            if (storage != null)
-                            {
-                                var info = new DriveInfo(storage.Drive.Name);
-                                //size in sectors, divided by 512
-                                var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalSize/512), 8);
-                                var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace/512), 8);
-                                result += $"{mediaBytes} {freeBytes}{Strings.NewLine}";
-                                break;
+                        if (storages.Size > 0) {
+
+                            for (var i = 0; i < storages.Size; i++) {
+                                var storage = storages.GetStorageByIndex(i);
+                                if (storage != null) {
+                                    var info = new DriveInfo(storage.Drive.Name);
+                                    //size in sectors, divided by 512
+                                    var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalSize / 512), 8);
+                                    var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace / 512), 8);
+                                    result += $"{mediaBytes} {freeBytes}{Strings.NewLine}";
+                                    break;
+                                }
                             }
                         }
+                        else {
+                            var totalSize = 0;
+                            var totalFreeSpace = 0;
+
+                            var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", totalSize / 512), 8);
+                            var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", totalFreeSpace / 512), 8);
+                            result += $"{mediaBytes} {freeBytes}{Strings.NewLine}";
+                        }
+
                         result += ResponseCode.Success;
                         Bus.WriteLine(result);
                     }
 
                     break;
                 case CommandTypes.MakeDirectory:
-                    if (cmd.ParamLength > 0)
-                    {
-                        try
-                        {
+                    if (cmd.ParamLength > 0) {
+                        try {
                             var dirName = cmd.Parameters[0].Trim();
-                            for (var i = 0; i < storages.Size; i++)
-                            {
+                            for (var i = 0; i < storages.Size; i++) {
                                 var storage = storages.GetStorageByIndex(i);
-                                if (storage != null)
-                                {
+                                if (storage != null) {
                                     var newPath = this.CurrentPath + dirName;
-                                    if (!Directory.Exists(newPath))
-                                    {
+                                    if (!Directory.Exists(newPath)) {
                                         Directory.CreateDirectory(newPath);
                                         result = ResponseCode.Success;
                                     }
-                                    else
-                                    {
+                                    else {
                                         result = ResponseCode.FileFolderExists;
                                     }
                                     break;
@@ -987,42 +950,36 @@ namespace uAlfat.Core
                             }
                             if (string.IsNullOrEmpty(result)) result = ResponseCode.MediaNotInitialize;
                         }
-                        catch (Exception ex)
-                        {
+                        catch (Exception ex) {
                             result = ResponseCode.FailToWrite;
                         }
 
                         Bus.WriteLine(result);
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
 
                     break;
                 case CommandTypes.GetVersionNo:
                     var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                    result = $"V{version}{Strings.NewLine}";
+                    result = $"{VersionNumber}{Strings.NewLine}";
                     result += ResponseCode.Success;
                     Bus.WriteLine(result);
 
                     break;
                 case CommandTypes.SetBaudRate:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var key = cmd.Parameters[0].Trim();
                         var newBaudRate = 0;
-                        switch (this.PowerMode)
-                        {
+                        switch (this.PowerMode) {
                             case PowerModes.Full:
-                                if (BaudRates.FullPower.Contains(key))
-                                {
+                                if (BaudRates.FullPower.Contains(key)) {
                                     newBaudRate = (int)BaudRates.FullPower[key];
                                 }
                                 break;
                             case PowerModes.Reduced:
-                                if (BaudRates.ReducedPower.Contains(key))
-                                {
+                                if (BaudRates.ReducedPower.Contains(key)) {
                                     newBaudRate = (int)BaudRates.ReducedPower[key];
                                 }
                                 break;
@@ -1030,67 +987,56 @@ namespace uAlfat.Core
                                 //do nothing
                                 break;
                         }
-                        if (newBaudRate > 0)
-                        {
+                        if (newBaudRate > 0) {
                             //send success code and delay before set the new baud rate
                             Bus.WriteLine(ResponseCode.Success);
                             Thread.Sleep(100);
                             Bus.SetBaudRate(newBaudRate);
                             Bus.WriteLine(ResponseCode.Success);
                         }
-                        else
-                        {
-                            Bus.WriteLine(ResponseCode.IncorrectParameter);
+                        else {
+                            Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
 
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.FormatDrive:
-                    if (cmd.ParamLength == 3)
-                    {
+                    if (cmd.ParamLength == 3) {
                         var media = Strings.Replace(cmd.Parameters[2].Trim(), ":", string.Empty);
                         var storage = storages.GetStorage(media);
-                        if (storage == null)
-                        {
+                        if (storage == null) {
                             result = ResponseCode.MediaNotInitialize;
                         }
-                        else
-                        {
+                        else {
                             //code for format drive here...
                             result = ResponseCode.Success;
                         }
                         Bus.WriteLine(result);
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.SetEcho:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var echoVal = int.Parse(cmd.Parameters[0].Trim());
                         IsEchoEnabled = echoVal == 1;
                         Bus.WriteLine(ResponseCode.Success);
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 case CommandTypes.SetPowerMode:
-                    if (cmd.ParamLength > 0)
-                    {
+                    if (cmd.ParamLength > 0) {
                         var mode = cmd.Parameters[0][0];
                         var newBaudRate = Convert.ToInt32("0x" + cmd.Parameters[0].Substring(1, cmd.Parameters[0].Length - 1).Trim(), 16);
                         Bus.WriteLine(ResponseCode.Success);
                         this.PowerMode = (PowerModes)mode;
-                        switch (this.PowerMode)
-                        {
+                        switch (this.PowerMode) {
                             case PowerModes.Full:
                                 //do something
                                 Bus.WriteLine(ResponseCode.Success);
@@ -1112,29 +1058,20 @@ namespace uAlfat.Core
 
 
                     }
-                    else
-                    {
-                        Bus.WriteLine(ResponseCode.IncorrectParameter);
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
                 default:
-                    Bus.WriteLine(string.IsNullOrEmpty(data) ? ResponseCode.Success : ResponseCode.Unknown);
+                    Bus.WriteLine(string.IsNullOrEmpty(data) ? ResponseCode.Success : ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     break;
 
             }
-            //echo
-            if (IsEchoEnabled)
-            {
-                Bus.WriteLine(data);
-            }
         }
 
-        public bool ConnectSD(string mediaName)
-        {
-            if (!this.IsSDConnected)
-            {
-                try
-                {
+        public bool ConnectSD(string mediaName) {
+            if (!this.IsSDConnected) {
+                try {
 
                     var sd = StorageController.FromName(this.SDControllerName);
                     var drive = FileSystem.Mount(sd.Hdc);
@@ -1144,18 +1081,20 @@ namespace uAlfat.Core
                     storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = sd, Drive = drive, Name = mediaName });
                     this.IsSDConnected = true;
                 }
-                catch (Exception)
-                {
+                catch (Exception) {
                     this.IsSDConnected = false;
                     //throw;
                 }
             }
             return this.IsSDConnected;
         }
-        void InitUsbHost()
-        {
-            if (UsbHost == null)
-            {
+        void InitUsbHost() {
+            if (this.IsUsbHostInitialized)
+                return;
+
+            Thread.Sleep(1);
+
+            if (UsbHost == null) {
                 UsbHost = GHIElectronics.TinyCLR.Devices.UsbHost.
                 UsbHostController.GetDefault();
 
@@ -1163,27 +1102,40 @@ namespace uAlfat.Core
                     this.UsbHostController_OnConnectionChangedEvent;
 
                 UsbHost.Enable();
+
+                this.IsUsbHostInitialized = true;
+
+                var timeout = DateTime.Now;
+
+                while (this.IsKeyboardConnected == false &&
+                    this.IsUsbDiskConnected == false
+                    ) {
+                    var duration = DateTime.Now - timeout;
+
+
+                    if (duration.TotalMilliseconds > UsbHostConnectionTimeoutMillisecond)
+                        break;
+
+                    Thread.Sleep(1);
+                }
             }
         }
         private void UsbHostController_OnConnectionChangedEvent
        (GHIElectronics.TinyCLR.Devices.UsbHost.UsbHostController sender,
-       GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionEventArgs e)
-        {
+       GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionEventArgs e) {
 
-            System.Diagnostics.Debug.WriteLine("e.Id = " + e.Id + " \n");
-            System.Diagnostics.Debug.WriteLine("e.InterfaceIndex = " + e.InterfaceIndex + " \n");
-            System.Diagnostics.Debug.WriteLine("e.PortNumber = " + e.PortNumber);
-            System.Diagnostics.Debug.WriteLine("e.Type = " + ((object)(e.Type)).
-                ToString() + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.Id = " + e.Id + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.InterfaceIndex = " + e.InterfaceIndex + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.PortNumber = " + e.PortNumber);
+            //System.Diagnostics.Debug.WriteLine("e.Type = " + ((object)(e.Type)).
+            //    ToString() + " \n");
 
-            System.Diagnostics.Debug.WriteLine("e.VendorId = " + e.VendorId + " \n");
-            System.Diagnostics.Debug.WriteLine("e.ProductId = " + e.ProductId + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.VendorId = " + e.VendorId + " \n");
+            //System.Diagnostics.Debug.WriteLine("e.ProductId = " + e.ProductId + " \n");
 
-            switch (e.DeviceStatus)
-            {
+            switch (e.DeviceStatus) {
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Connected:
-                    switch (e.Type)
-                    {
+                    switch (e.Type) {
                         case GHIElectronics.TinyCLR.Devices.UsbHost.BaseDevice.
                             DeviceType.Keyboard:
 
@@ -1205,39 +1157,39 @@ namespace uAlfat.Core
                         case GHIElectronics.TinyCLR.Devices.UsbHost.BaseDevice.
                             DeviceType.MassStorage:
 
-                            var storageController = StorageController.FromName(this.StorageControllerName);
-                            IDriveProvider driver;
-                            try {
-                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
-                                    Mount(storageController.Hdc);
-                            }
-                            catch (Exception ex) {
-                                //ummount -> then mount
-                                FileSystem.Unmount(storageController.Hdc);
-                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
-                                  Mount(storageController.Hdc);
-                            }
-                            if (driver != null) {
-                                var driveInfo = new System.IO.DriveInfo(driver.Name);
-                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
-                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
-                                if (string.IsNullOrEmpty(this.CurrentPath))
-                                    this.CurrentPath = driveInfo.RootDirectory.FullName;
-                                System.Diagnostics.Debug.WriteLine
-                                    ("Free: " + driveInfo.TotalFreeSpace);
+                            //var storageController = StorageController.FromName(this.StorageControllerName);
+                            //IDriveProvider driver;
+                            //try {
+                            //    driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                            //        Mount(storageController.Hdc);
+                            //}
+                            //catch (Exception ex) {
+                            //    //ummount -> then mount
+                            //    FileSystem.Unmount(storageController.Hdc);
+                            //    driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                            //      Mount(storageController.Hdc);
+                            //}
+                            //if (driver != null) {
+                            //    var driveInfo = new System.IO.DriveInfo(driver.Name);
+                            //    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
+                            //    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
+                            //    if (string.IsNullOrEmpty(this.CurrentPath))
+                            //        this.CurrentPath = driveInfo.RootDirectory.FullName;
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("Free: " + driveInfo.TotalFreeSpace);
 
-                                System.Diagnostics.Debug.WriteLine
-                                    ("TotalSize: " + driveInfo.TotalSize);
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("TotalSize: " + driveInfo.TotalSize);
 
-                                System.Diagnostics.Debug.WriteLine
-                                    ("VolumeLabel:" + driveInfo.VolumeLabel);
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("VolumeLabel:" + driveInfo.VolumeLabel);
 
-                                System.Diagnostics.Debug.WriteLine
-                                    ("RootDirectory: " + driveInfo.RootDirectory);
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("RootDirectory: " + driveInfo.RootDirectory);
 
-                                System.Diagnostics.Debug.WriteLine
-                                    ("DriveFormat: " + driveInfo.DriveFormat);
-                            }
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("DriveFormat: " + driveInfo.DriveFormat);
+                            //}
                             this.IsKeyboardConnected = false;
                             this.IsSDConnected = false;
                             this.IsUsbDiskConnected = true;
@@ -1254,9 +1206,9 @@ namespace uAlfat.Core
                     break;
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Disconnected:
-                    System.Diagnostics.Debug.WriteLine("Device Disconnected");
+                    //System.Diagnostics.Debug.WriteLine("Device Disconnected");
                     //unmount if there is usb disk connected
-                    if (this.IsUsbDiskConnected) {
+                    if (this.IsUsbDiskConnected && this.IsUsbDiskInitialized) {
                         var storageController = StorageController.FromName(this.StorageControllerName);
                         FileSystem.Unmount(storageController.Hdc);
                         //remove from list
@@ -1266,11 +1218,12 @@ namespace uAlfat.Core
                     this.IsKeyboardConnected = false;
                     this.IsSDConnected = false;
                     this.IsUsbDiskConnected = false;
+                    this.IsUsbDiskInitialized = false;
                     //Unmount filesystem if it was mounted.
                     break;
 
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Bad:
-                    System.Diagnostics.Debug.WriteLine("Bad Device");
+                    //System.Diagnostics.Debug.WriteLine("Bad Device");
                     this.IsKeyboardConnected = false;
                     this.IsSDConnected = false;
                     this.IsUsbDiskConnected = false;
@@ -1279,32 +1232,30 @@ namespace uAlfat.Core
         }
 
         private static void Keyboard_KeyDown(GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard.KeyboardEventArgs args)
-        {
+            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard.KeyboardEventArgs args) {
 
-            System.Diagnostics.Debug.WriteLine("Key pressed: " + ((object)args.Which).ToString());
-            System.Diagnostics.Debug.WriteLine("Key pressed ASCII: " +
-                ((object)args.ASCII).ToString());
+            //System.Diagnostics.Debug.WriteLine("Key pressed: " + ((object)args.Which).ToString());
+            //System.Diagnostics.Debug.WriteLine("Key pressed ASCII: " +
+            //    ((object)args.ASCII).ToString());
         }
 
         private static void Keyboard_KeyUp(GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard.KeyboardEventArgs args)
-        {
+            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Keyboard.KeyboardEventArgs args) {
 
-            System.Diagnostics.Debug.WriteLine
-                ("Key released: " + ((object)args.Which).ToString());
+            //System.Diagnostics.Debug.WriteLine
+            //    ("Key released: " + ((object)args.Which).ToString());
 
-            System.Diagnostics.Debug.WriteLine
-                ("Key released ASCII: " + ((object)args.ASCII).ToString());
+            //System.Diagnostics.Debug.WriteLine
+            //    ("Key released ASCII: " + ((object)args.ASCII).ToString());
         }
 
-        private static void Mouse_CursorMoved(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.CursorMovedEventArgs e) => System.Diagnostics.Debug.WriteLine("Mouse moved to: " + e.NewPosition.X +
-                 ", " + e.NewPosition.Y);
+        //private static void Mouse_CursorMoved(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
+        //    sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.CursorMovedEventArgs e) => System.Diagnostics.Debug.WriteLine("Mouse moved to: " + e.NewPosition.X +
+        //         ", " + e.NewPosition.Y);
 
-        private static void Mouse_ButtonChanged(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
-            sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.ButtonChangedEventArgs args) => System.Diagnostics.Debug.WriteLine
-                ("Mouse button changed: " + ((object)args.Which).ToString());
+        //private static void Mouse_ButtonChanged(GHIElectronics.TinyCLR.Devices.UsbHost.Mouse
+        //    sender, GHIElectronics.TinyCLR.Devices.UsbHost.Mouse.ButtonChangedEventArgs args) => System.Diagnostics.Debug.WriteLine
+        //        ("Mouse button changed: " + ((object)args.Which).ToString());
 
 
     }

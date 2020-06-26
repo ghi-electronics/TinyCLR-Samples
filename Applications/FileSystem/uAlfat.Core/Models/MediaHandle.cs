@@ -12,24 +12,25 @@ namespace uAlfat.Core
     public class MediaHandle
     {
         public char HandleName { get; set; }
-        public char AccessType { get; set; }
+        //public char AccessType { get; set; }
         public string FileName { get; set; }
         public string Media { get; set; }
       
         /// <summary>
         /// buffer for reading/writing file
         /// </summary>
-        public MemoryStream Buffer { get; set; }
+        public FileStream Buffer { get; set; }
         /// <summary>
         /// pointer
         /// </summary>
-        public long CursorPosition { get; set; }
-        public long Size { get; set; }
-        public MediaHandle()
-        {
-            this.Buffer = new MemoryStream();
-            this.CursorPosition = 0;
+        public long CursorPosition => this.Buffer == null ? 0 : this.Buffer.Position;
+
+
+        public long Size => this.Buffer == null ? 0 : this.Buffer.Length;
+        public MediaHandle() {
         }
+
+        public FileMode AccessMode { get; set; }
 
     }
 }

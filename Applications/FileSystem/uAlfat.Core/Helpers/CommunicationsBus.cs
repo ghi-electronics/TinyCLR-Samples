@@ -23,7 +23,19 @@ namespace uAlfat.Core
             Spi,
             I2C
         }
-        public void SetBaudRate(int baudRate) => this.serialPort.SetActiveSettings(baudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
+        public void SetBaudRate(int baudRate) {
+
+            var uartSetting = new UartSetting() {
+                BaudRate = baudRate,
+                DataBits = 8,
+                Parity = UartParity.None,
+                StopBits = UartStopBitCount.One,
+                Handshaking = UartHandshake.None
+
+            };
+
+            this.serialPort.SetActiveSettings(uartSetting);
+        }
         public CommunicationsBus(string uartPort,int baudRate = 9600) {
             this.disposed = false;
             this.commandFile = null;
@@ -31,7 +43,19 @@ namespace uAlfat.Core
 
             this.serialPort = UartController.FromName(uartPort);
 
-            this.serialPort.SetActiveSettings(baudRate, 8, UartParity.None, UartStopBitCount.One, UartHandshake.None);
+            var uartSetting = new UartSetting() {
+                BaudRate = baudRate,
+                DataBits = 8,
+                Parity = UartParity.None,
+                StopBits = UartStopBitCount.One,
+                Handshaking = UartHandshake.None
+
+            };
+
+            this.serialPort.SetActiveSettings(uartSetting);
+
+            this.serialPort.WriteBufferSize = 16 * 1024;
+            this.serialPort.ReadBufferSize = 16 * 1024;
 
             this.serialPort.Enable();
 
@@ -43,9 +67,16 @@ namespace uAlfat.Core
             var rxBuffer = new byte[e.Count];
             var bytesReceived = this.serialPort.Read(rxBuffer, 0, e.Count);
             var dataStr = Encoding.UTF8.GetString(rxBuffer, 0, bytesReceived);
-            Debug.WriteLine(dataStr);
+            if (uAlfatModule.IsEchoEnabled) {
+                for (var i = 0; i < rxBuffer.Length; i++) {
+                    // send back whatever the host sent except for terminal line                    
+                    this.serialPort.Write(rxBuffer, i, 1);
+                }
+            }
+
+            //Debug.WriteLine(dataStr);
             this.TempData += dataStr;
-            if (dataStr.IndexOf("\n") > -1)
+            if (dataStr.IndexOf(Strings.NewLine) > -1)
             {
                 DataReceived?.Invoke(this.TempData.Trim());
                 this.TempData = string.Empty;
@@ -111,10 +142,11 @@ namespace uAlfat.Core
             }
         }
 
-        public void Write(byte[] data)
-        {
-            switch (this.protocal)
-            {
+        public int ByteToWrite => this.serialPort != null ? this.serialPort.BytesToRead : 0;
+        public void Write(byte[] data) => this.Write(data, 0, data.Length);
+
+        public void Write(byte[] data, int offset, int count) {
+            switch (this.protocal) {
                 case CommunicationsProtocal.I2C:
                     throw new NotImplementedException();
 
@@ -122,9 +154,9 @@ namespace uAlfat.Core
                     throw new NotImplementedException();
 
                 case CommunicationsProtocal.Uart:
-                    
-                        this.serialPort.Write(data, 0, data.Length);
-                   
+
+                    this.serialPort.Write(data, offset, count);
+
                     break;
             }
         }
@@ -143,7 +175,7 @@ namespace uAlfat.Core
 
                 case CommunicationsProtocal.Uart:
                     
-                    var databytes = UTF8Encoding.UTF8.GetBytes(line+"\n");
+                    var databytes = UTF8Encoding.UTF8.GetBytes(line+ Strings.NewLine);
                     this.serialPort.Write(databytes);
 
                     break;
@@ -187,18 +219,25 @@ namespace uAlfat.Core
             return string.Empty;
         }
 
-        public void Read(byte[] data)
-        {
-            if (this.serialPort != null)
-            {
-                this.serialPort.Read(data, 0, data.Length);
+        public void Read(byte[] data) => this.Read(data, 0, data.Length);
+
+        public void Read(byte[] data, int offset, int count) {
+            if (data == null)
+                throw new ArgumentNullException();
+
+            if (offset + count > data.Length)
+                throw new ArgumentOutOfRangeException();
+
+            if (this.serialPort != null) {
+                var read = 0;
+                while (read < count) {
+                    read += this.serialPort.Read(data, offset + read, count - read);
+                }
             }
-            else if (this.commandFile != null)
-            {
+            else if (this.commandFile != null) {
                 throw new NotImplementedException();
             }
-            else
-            {
+            else {
                 throw new NotImplementedException();
             }
         }
