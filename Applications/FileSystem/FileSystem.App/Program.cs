@@ -18,7 +18,7 @@ namespace FileSystem.App
 
             //uAlfat testing
             var module = new uAlfatModule(SC20260.UartPort.Uart5, SC20260.StorageController.UsbHostMassStorage, SC20260.StorageController.SdCard);
-            Thread.Sleep(-1);
+            module.Run();
         }
     }
 }
