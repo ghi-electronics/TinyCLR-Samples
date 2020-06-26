@@ -31,6 +31,7 @@ namespace uAlfat.Core {
         string SDControllerName { get; set; }
         public bool IsUsbDiskConnected { get; set; }
         public bool IsUsbDiskInitialized { get; set; }
+        public bool IsUsbHostInitialized { get; set; }
         public bool IsSDConnected { get; set; }
         public bool IsKeyboardConnected { get; set; }
         string StorageControllerName { get; set; }
@@ -39,6 +40,7 @@ namespace uAlfat.Core {
 
         public byte[] dataBlock;
         const int DataBlockSize = 4 * 1024;
+        const int UsbHostConnectionTimeoutMillisecond = 2000;
 
         const string VersionNumber = "   uALFAT(TM) 3.13";
 
@@ -53,14 +55,10 @@ namespace uAlfat.Core {
             handles = new MediaHandler();
             storages = new StorageContainer();
             Bus = new CommunicationsBus(uartPort);
-            Bus.DataReceived += this.ProcessCommand;
+            Bus.DataReceived += this.ProcessCommandEvent;
             this.StorageControllerName = storageControllerName;
             this.SDControllerName = sDControllerName;
             this.dataBlock = new byte[DataBlockSize];
-
-            // This takes ~ 1 second to initialize USB if exist. Move to different thread.
-            // Show message assp
-            new Thread(this.InitUsbHost).Start();
 
             Console.WriteLine("uAlfat is ready");
             this.PrintStartUpMessage();
@@ -71,6 +69,29 @@ namespace uAlfat.Core {
             var bootVer = Resources.GetString(Resources.StringResources.BOOTLOADER_VER);
             Bus.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}{VersionNumber}{Strings.NewLine}{ResponseCode.Success}");
             Console.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}   uALFAT(TM) 3.13{Strings.NewLine}{ResponseCode.Success}"); 
+        }
+
+        string dataToProcess = string.Empty;
+        bool newData = false;
+
+        public void Run() {
+            while (true) {
+                if (this.newData == false) {
+
+                    Thread.Sleep(1);
+                    continue;
+                }
+
+                this.ProcessCommand(this.dataToProcess);
+
+                this.newData = false;
+            }
+        }
+
+        private void ProcessCommandEvent(string data) {
+            this.dataToProcess = data;
+
+            this.newData = true;
         }
 
         private void ProcessCommand(string data) {
@@ -108,12 +129,59 @@ namespace uAlfat.Core {
                     }
                     break;
                 case CommandTypes.MountUsb: {
+                        if (!this.IsUsbHostInitialized) {
+                            this.InitUsbHost();
+                        }
+
                         //try connect usb disk
                         if (this.IsUsbDiskConnected) {
-                            isSuccess = true;
-                            result = ResponseCode.Success;
+
+                            var storageController = StorageController.FromName(this.StorageControllerName);
+                            IDriveProvider driver;
+                            try {
+                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                                    Mount(storageController.Hdc);
+
+                                if (driver != null) {
+                                    var driveInfo = new System.IO.DriveInfo(driver.Name);
+                                    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
+                                    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
+                                    if (string.IsNullOrEmpty(this.CurrentPath))
+                                        this.CurrentPath = driveInfo.RootDirectory.FullName;
+                                    System.Diagnostics.Debug.WriteLine
+                                        ("Free: " + driveInfo.TotalFreeSpace);
+
+                                    System.Diagnostics.Debug.WriteLine
+                                        ("TotalSize: " + driveInfo.TotalSize);
+
+                                    System.Diagnostics.Debug.WriteLine
+                                        ("VolumeLabel:" + driveInfo.VolumeLabel);
+
+                                    System.Diagnostics.Debug.WriteLine
+                                        ("RootDirectory: " + driveInfo.RootDirectory);
+
+                                    System.Diagnostics.Debug.WriteLine
+                                        ("DriveFormat: " + driveInfo.DriveFormat);
+
+                                    this.IsUsbDiskInitialized = true;
+                                    isSuccess = true;
+                                    result = ResponseCode.Success;
+                                }
+                            }
+                            catch (Exception ex) {
+                                //ummount -> then mount
+                                //FileSystem.Unmount(storageController.Hdc);
+                                //driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                                //  Mount(storageController.Hdc);
+                                this.IsUsbDiskInitialized = false;
+                                result = ResponseCode.ERROR_USB_INITIALIZE_FAILED;
+                            }
+                            
+
+                           
                         }
                         else {
+                            this.IsUsbDiskInitialized = false;
                             result = ResponseCode.NoSDCard;
                         }
 
@@ -124,6 +192,10 @@ namespace uAlfat.Core {
                     }
                     break;
                 case CommandTypes.DetectUsb: {
+                        if (!this.IsUsbHostInitialized) {
+                            this.InitUsbHost();
+                        }
+
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
                         //try connect usb disk
                         if (this.IsUsbDiskConnected) {
@@ -828,19 +900,31 @@ namespace uAlfat.Core {
                         Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
-                case CommandTypes.GetMediaStatistic: {
+                case CommandTypes.GetMediaStatistic: {                        
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
-                        for (var i = 0; i < storages.Size; i++) {
-                            var storage = storages.GetStorageByIndex(i);
-                            if (storage != null) {
-                                var info = new DriveInfo(storage.Drive.Name);
-                                //size in sectors, divided by 512
-                                var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalSize / 512), 8);
-                                var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace / 512), 8);
-                                result += $"{mediaBytes} {freeBytes}{Strings.NewLine}";
-                                break;
+                        if (storages.Size > 0) {
+
+                            for (var i = 0; i < storages.Size; i++) {
+                                var storage = storages.GetStorageByIndex(i);
+                                if (storage != null) {
+                                    var info = new DriveInfo(storage.Drive.Name);
+                                    //size in sectors, divided by 512
+                                    var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalSize / 512), 8);
+                                    var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", info.TotalFreeSpace / 512), 8);
+                                    result += $"{mediaBytes} {freeBytes}{Strings.NewLine}";
+                                    break;
+                                }
                             }
                         }
+                        else {
+                            var totalSize = 0;
+                            var totalFreeSpace = 0;
+
+                            var mediaBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", totalSize / 512), 8);
+                            var freeBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", totalFreeSpace / 512), 8);
+                            result += $"{mediaBytes} {freeBytes}{Strings.NewLine}";
+                        }
+
                         result += ResponseCode.Success;
                         Bus.WriteLine(result);
                     }
@@ -1005,6 +1089,8 @@ namespace uAlfat.Core {
             return this.IsSDConnected;
         }
         void InitUsbHost() {
+            if (this.IsUsbHostInitialized)
+                return;
 
             Thread.Sleep(1);
 
@@ -1016,6 +1102,22 @@ namespace uAlfat.Core {
                     this.UsbHostController_OnConnectionChangedEvent;
 
                 UsbHost.Enable();
+
+                this.IsUsbHostInitialized = true;
+
+                var timeout = DateTime.Now;
+
+                while (this.IsKeyboardConnected == false &&
+                    this.IsUsbDiskConnected == false
+                    ) {
+                    var duration = DateTime.Now - timeout;
+
+
+                    if (duration.TotalMilliseconds > UsbHostConnectionTimeoutMillisecond)
+                        break;
+
+                    Thread.Sleep(1);
+                }
             }
         }
         private void UsbHostController_OnConnectionChangedEvent
@@ -1055,39 +1157,39 @@ namespace uAlfat.Core {
                         case GHIElectronics.TinyCLR.Devices.UsbHost.BaseDevice.
                             DeviceType.MassStorage:
 
-                            var storageController = StorageController.FromName(this.StorageControllerName);
-                            IDriveProvider driver;
-                            try {
-                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
-                                    Mount(storageController.Hdc);
-                            }
-                            catch (Exception ex) {
-                                //ummount -> then mount
-                                FileSystem.Unmount(storageController.Hdc);
-                                driver = GHIElectronics.TinyCLR.IO.FileSystem.
-                                  Mount(storageController.Hdc);
-                            }
-                            if (driver != null) {
-                                var driveInfo = new System.IO.DriveInfo(driver.Name);
-                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
-                                storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
-                                if (string.IsNullOrEmpty(this.CurrentPath))
-                                    this.CurrentPath = driveInfo.RootDirectory.FullName;
-                                System.Diagnostics.Debug.WriteLine
-                                    ("Free: " + driveInfo.TotalFreeSpace);
+                            //var storageController = StorageController.FromName(this.StorageControllerName);
+                            //IDriveProvider driver;
+                            //try {
+                            //    driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                            //        Mount(storageController.Hdc);
+                            //}
+                            //catch (Exception ex) {
+                            //    //ummount -> then mount
+                            //    FileSystem.Unmount(storageController.Hdc);
+                            //    driver = GHIElectronics.TinyCLR.IO.FileSystem.
+                            //      Mount(storageController.Hdc);
+                            //}
+                            //if (driver != null) {
+                            //    var driveInfo = new System.IO.DriveInfo(driver.Name);
+                            //    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U0 });
+                            //    storages.AddStorage(new StorageInfo() { DriveLetter = driveInfo.RootDirectory.FullName[0], Controller = storageController, Drive = driver, Name = MediaTypes.U1 });
+                            //    if (string.IsNullOrEmpty(this.CurrentPath))
+                            //        this.CurrentPath = driveInfo.RootDirectory.FullName;
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("Free: " + driveInfo.TotalFreeSpace);
 
-                                System.Diagnostics.Debug.WriteLine
-                                    ("TotalSize: " + driveInfo.TotalSize);
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("TotalSize: " + driveInfo.TotalSize);
 
-                                System.Diagnostics.Debug.WriteLine
-                                    ("VolumeLabel:" + driveInfo.VolumeLabel);
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("VolumeLabel:" + driveInfo.VolumeLabel);
 
-                                System.Diagnostics.Debug.WriteLine
-                                    ("RootDirectory: " + driveInfo.RootDirectory);
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("RootDirectory: " + driveInfo.RootDirectory);
 
-                                System.Diagnostics.Debug.WriteLine
-                                    ("DriveFormat: " + driveInfo.DriveFormat);
-                            }
+                            //    System.Diagnostics.Debug.WriteLine
+                            //        ("DriveFormat: " + driveInfo.DriveFormat);
+                            //}
                             this.IsKeyboardConnected = false;
                             this.IsSDConnected = false;
                             this.IsUsbDiskConnected = true;
@@ -1106,7 +1208,7 @@ namespace uAlfat.Core {
                 case GHIElectronics.TinyCLR.Devices.UsbHost.DeviceConnectionStatus.Disconnected:
                     System.Diagnostics.Debug.WriteLine("Device Disconnected");
                     //unmount if there is usb disk connected
-                    if (this.IsUsbDiskConnected) {
+                    if (this.IsUsbDiskConnected && this.IsUsbDiskInitialized) {
                         var storageController = StorageController.FromName(this.StorageControllerName);
                         FileSystem.Unmount(storageController.Hdc);
                         //remove from list
@@ -1116,6 +1218,7 @@ namespace uAlfat.Core {
                     this.IsKeyboardConnected = false;
                     this.IsSDConnected = false;
                     this.IsUsbDiskConnected = false;
+                    this.IsUsbDiskInitialized = false;
                     //Unmount filesystem if it was mounted.
                     break;
 

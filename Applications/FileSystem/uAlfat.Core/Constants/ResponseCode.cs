@@ -48,5 +48,9 @@ namespace uAlfat.Core
         public static string ERROR_FS_SEEK_OUTOF_LENGTH = "!49";
         public static string ERROR_FS_FILEFOLDER_NOT_EXIST = "!41";
 
+        public static string ERROR_USB_INITIALIZE_FAILED = "!81";
+
+        public static string ERROR_MEDIA_NOT_INITIALIZED = "!02";
+
     }
 }
