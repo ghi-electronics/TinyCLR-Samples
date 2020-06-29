@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Text;
 using System.Threading;
@@ -142,6 +142,11 @@ namespace uAlfat.Core
         /// for delete folder
         /// </summary>
         public const string DeleteFolder = "E";
+
+        /// <summary>
+        /// for Flush media
+        /// </summary>
+        public const string Flush = "F";
 
     }
 }
