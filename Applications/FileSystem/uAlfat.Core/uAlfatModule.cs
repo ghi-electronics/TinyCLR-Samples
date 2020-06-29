@@ -176,9 +176,9 @@ namespace uAlfat.Core {
                                 this.IsUsbDiskInitialized = false;
                                 result = ResponseCode.ERROR_USB_INITIALIZE_FAILED;
                             }
-                            
 
-                           
+
+
                         }
                         else {
                             this.IsUsbDiskInitialized = false;
@@ -241,7 +241,7 @@ namespace uAlfat.Core {
                                                         newHandle.AccessMode = FileMode.Open;
 
                                                         newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
-                                                        
+
                                                         result = ResponseCode.Success;
                                                     }
                                                     else {
@@ -268,7 +268,7 @@ namespace uAlfat.Core {
                                                     break;
                                                 case FileAccessTypes.Append:
 
-                                                    if (File.Exists(fileName)) {                                                        
+                                                    if (File.Exists(fileName)) {
                                                         newHandle.AccessMode = FileMode.Append;
 
                                                         newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
@@ -302,6 +302,32 @@ namespace uAlfat.Core {
                         else {
                             Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                         }
+                    }
+                    else {
+                        Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
+                    }
+                    break;
+                case CommandTypes.Flush:
+                    if (cmd.ParamLength > 0) {
+                        var handle = cmd.Parameters[0].Trim()[0];
+
+                        if (handles.IsExist(handle)) {
+                            //if write/append mode then flush
+                            result = ResponseCode.Success;
+
+                            var currentHandle = handles.GetHandle(handle);
+
+                            var storage = storages.GetStorage(currentHandle.Media);
+
+                            currentHandle.Buffer.Flush();
+
+                            FileSystem.Flush(storage.Controller.Hdc);
+                        }
+                        else {
+                            result = ResponseCode.InvalidHandle;
+                        }
+                        Bus.WriteLine(result);
+
                     }
                     else {
                         Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
@@ -413,7 +439,7 @@ namespace uAlfat.Core {
 
                                                 }
                                             }
-                                           
+
                                             var actBytes = "$" + Strings.LeadingZero(string.Format("{0:X}", actualByteToRead), 8);
                                             result = $"{actBytes}{Strings.NewLine}";
 
@@ -550,7 +576,7 @@ namespace uAlfat.Core {
                                             result = ResponseCode.ERROR_FS_SEEK_OUTOF_LENGTH;
                                         }
                                         else {
-                                            currentHandle.Buffer.Seek(newPosition, SeekOrigin.Begin);                                            
+                                            currentHandle.Buffer.Seek(newPosition, SeekOrigin.Begin);
                                             result = ResponseCode.Success;
                                         }
                                     }
@@ -900,7 +926,7 @@ namespace uAlfat.Core {
                         Bus.WriteLine(ResponseCode.ERROR_COMMANDER_INCORRECT_CMD_PARAMETER);
                     }
                     break;
-                case CommandTypes.GetMediaStatistic: {                        
+                case CommandTypes.GetMediaStatistic: {
                         result = $"{ResponseCode.Success}{Strings.NewLine}";
                         if (storages.Size > 0) {
 
