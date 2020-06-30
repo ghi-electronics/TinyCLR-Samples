@@ -44,6 +44,13 @@ namespace Demos {
 
             mainWindow.RegisterWindow(networkWindow); // Register to MainWindow
 
+            // Create Wifi Window
+            var iconImageWifi = Resources.GetBitmap(Resources.BitmapResources.Wifi); // Icon
+            var iconTextWifi = "Wifi";
+            var wifiWindow = new WifiWindow(iconImageWifi, iconTextWifi, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(wifiWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
