@@ -33,9 +33,13 @@ namespace Demos {
         private string dns2 = "DNS2       : ";
 
         private NetworkController networkController;
+        private GpioPin resetPin;
 
         public EthernetWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
- 
+            var gpioController = GpioController.GetDefault();
+
+            this.resetPin = gpioController.OpenPin(SC20260.GpioPin.PG3);
+            this.resetPin.SetDriveMode(GpioPinDriveMode.Output);
         }
 
         private void CreateWindow() {
@@ -47,7 +51,7 @@ namespace Demos {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
 
             this.canvas.Children.Clear();
-      
+
 
             this.ipAddressLable = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.ipAddress) {
                 ForeColor = Colors.White,
@@ -84,19 +88,14 @@ namespace Demos {
             // Enable TopBar
             Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
             this.canvas.Children.Add(this.TopBar);
-        }        
-    
+        }
+
         private void CreateEthernet() {
 
-            var gpioController = GpioController.GetDefault();
-
-            var resetPin = gpioController.OpenPin(SC20260.GpioPin.PG3);
-            resetPin.SetDriveMode(GpioPinDriveMode.Output);
-
-            resetPin.Write(GpioPinValue.Low);
+            this.resetPin.Write(GpioPinValue.Low);
             Thread.Sleep(100);
 
-            resetPin.Write(GpioPinValue.High);
+            this.resetPin.Write(GpioPinValue.High);
             Thread.Sleep(100);
 
             this.networkController = NetworkController.FromName("GHIElectronics.TinyCLR.NativeApis.STM32H7.EthernetEmacController\\0");
@@ -118,7 +117,7 @@ namespace Demos {
             this.networkController.SetAsDefaultController();
 
             this.networkController.NetworkAddressChanged += this.NetworkController_NetworkAddressChanged;
-            this.networkController.NetworkLinkConnectedChanged += this.NetworkController_NetworkLinkConnectedChanged;            
+            this.networkController.NetworkLinkConnectedChanged += this.NetworkController_NetworkLinkConnectedChanged;
         }
 
         private void NetworkController_NetworkLinkConnectedChanged(NetworkController sender, NetworkLinkConnectedChangedEventArgs e) {
