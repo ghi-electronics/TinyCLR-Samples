@@ -44,6 +44,27 @@ namespace Demos {
 
             mainWindow.RegisterWindow(networkWindow); // Register to MainWindow
 
+            // Create Wifi Window
+            var iconImageWifi = Resources.GetBitmap(Resources.BitmapResources.Wifi); // Icon
+            var iconTextWifi = "Wifi";
+            var wifiWindow = new WifiWindow(iconImageWifi, iconTextWifi, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(wifiWindow); // Register to MainWindow
+
+            // Create Sd Window
+            var iconImageSd = Resources.GetBitmap(Resources.BitmapResources.Sd); // Icon
+            var iconTextSd = "Sd";
+            var sdWindow = new SdWindow(iconImageSd, iconTextSd, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(sdWindow); // Register to MainWindow
+
+            // Create Sd Window
+            var iconImageUsb = Resources.GetBitmap(Resources.BitmapResources.Usb); // Icon
+            var iconTextUsb = "Usb";
+            var usbdWindow = new UsbWindow(iconImageUsb, iconTextUsb, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(usbdWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text

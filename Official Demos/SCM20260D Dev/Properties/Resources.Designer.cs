@@ -53,6 +53,9 @@ namespace Demos.Properties
             Template = -21726,
             settingImage = -17023,
             Ethernet = -16161,
+            Usb = 1556,
+            Sd = 12737,
+            Wifi = 17372,
         }
     }
 }

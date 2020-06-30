@@ -40,6 +40,9 @@
     <Compile Include="Utils\BottomBar.cs" />
     <Compile Include="Windows\ApplicationWindow.cs" />
     <Compile Include="Display.cs" />
+    <Compile Include="Windows\Sd.cs" />
+    <Compile Include="Windows\Usb.cs" />
+    <Compile Include="Windows\WifiWindow.cs" />
     <Compile Include="Windows\EthernetWindow.cs" />
     <Compile Include="Utils\Icon.cs" />
     <Compile Include="MainWindow.cs" />
@@ -119,6 +122,15 @@
     <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.UI.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wifi.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Usb.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sd.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
