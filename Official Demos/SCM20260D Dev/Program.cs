@@ -53,17 +53,24 @@ namespace Demos {
 
             // Create Sd Window
             var iconImageSd = Resources.GetBitmap(Resources.BitmapResources.Sd); // Icon
-            var iconTextSd = "Sd";
+            var iconTextSd = "Sd Card";
             var sdWindow = new SdWindow(iconImageSd, iconTextSd, Display.Width, Display.Height);
 
             mainWindow.RegisterWindow(sdWindow); // Register to MainWindow
 
-            // Create Sd Window
+            // Create Usb Window
             var iconImageUsb = Resources.GetBitmap(Resources.BitmapResources.Usb); // Icon
             var iconTextUsb = "Usb";
             var usbdWindow = new UsbWindow(iconImageUsb, iconTextUsb, Display.Width, Display.Height);
 
             mainWindow.RegisterWindow(usbdWindow); // Register to MainWindow
+
+            // Create CanFd Window
+            var iconImageCanFd = Resources.GetBitmap(Resources.BitmapResources.Canfd); // Icon
+            var iconTextCanFd = "CAN FD";
+            var canFdWindow = new CanFdWindow(iconImageCanFd, iconTextCanFd, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(canFdWindow); // Register to MainWindow
 
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon

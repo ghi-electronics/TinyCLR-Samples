@@ -131,13 +131,15 @@ namespace Demos {
                 Height = 30,
             };
 
-            this.connectButton.Click += this.ConnectButton_Click;
+            this.connectButton.Click += this.ConnectButton_Click;            
 
             OnScreenKeyboard.Font = this.font;
 
             this.networkController = NetworkController.FromName("GHIElectronics.TinyCLR.NativeApis.ATWINC15xx.NetworkController");
 
             this.isWifiConnected = false;
+
+            
         }
 
 
