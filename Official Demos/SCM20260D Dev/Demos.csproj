@@ -41,6 +41,7 @@
     <Compile Include="Windows\ApplicationWindow.cs" />
     <Compile Include="Display.cs" />
     <Compile Include="Windows\CanfdWindow.cs" />
+    <Compile Include="Windows\QspiWindow.cs" />
     <Compile Include="Windows\Sd.cs" />
     <Compile Include="Windows\Usb.cs" />
     <Compile Include="Windows\WifiWindow.cs" />
@@ -147,6 +148,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Canfd.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Qspi.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

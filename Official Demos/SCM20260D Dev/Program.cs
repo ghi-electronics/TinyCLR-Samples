@@ -72,6 +72,13 @@ namespace Demos {
 
             mainWindow.RegisterWindow(canFdWindow); // Register to MainWindow
 
+            // Create QSpi Window
+            var iconImageQspi = Resources.GetBitmap(Resources.BitmapResources.Qspi); // Icon
+            var iconTextQspi = "Quad Spi";
+            var qspiFdWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(qspiFdWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
