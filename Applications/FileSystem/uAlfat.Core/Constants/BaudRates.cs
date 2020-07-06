@@ -15,7 +15,7 @@ namespace uAlfat.Core
         static BaudRates()
         {
             FullPower = new Hashtable {
-                { "CDEF", 9600 },
+                { "DCEF", 9600 },
                 { "6EEF", 19200 },
                 { "37EF", 38400 },
                 { "43F2", 57600 },
