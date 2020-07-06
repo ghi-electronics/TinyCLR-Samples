@@ -236,8 +236,6 @@ namespace uAlfat.Core {
                                                 case FileAccessTypes.Read:
 
                                                     if (File.Exists(fileName)) {
-                                                        var contentBytes = File.ReadAllBytes(fileName);
-
                                                         newHandle.AccessMode = FileMode.Open;
 
                                                         newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
