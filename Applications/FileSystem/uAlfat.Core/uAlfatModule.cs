@@ -41,6 +41,7 @@ namespace uAlfat.Core {
         public byte[] dataBlock;
         const int DataBlockSize = 4 * 1024;
         const int UsbHostConnectionTimeoutMillisecond = 2000;
+        const int MaxHandle = 4;
 
         const string VersionNumber = "   uALFAT(TM) 3.13";
 
@@ -136,9 +137,39 @@ namespace uAlfat.Core {
                         //try connect usb disk
                         if (this.IsUsbDiskConnected) {
 
-                            var storageController = StorageController.FromName(this.StorageControllerName);
-                            IDriveProvider driver;
                             try {
+                                var storageController = StorageController.FromName(this.StorageControllerName);
+                                IDriveProvider driver;
+
+                                if (this.IsUsbDiskInitialized) {
+                                    for (var h = 0; h < MaxHandle; h++) {
+                                        var handle = (char)(h + '0');
+
+                                        if (handles.IsExist(handle)) {
+                                            //if write/append mode then flush
+                                            var currentHandle = handles.GetHandle(handle);
+
+                                            var storage = storages.GetStorage(currentHandle.Media);
+
+                                            currentHandle.Buffer.Flush();
+
+                                            FileSystem.Flush(storage.Controller.Hdc);
+
+                                            currentHandle.Buffer.Close();
+
+                                            currentHandle.Buffer.Dispose();
+                                            var res = handles.RemoveHandle(handle);
+                                            result = res ? ResponseCode.Success : ResponseCode.InvalidHandle;
+                                        }
+                                    }
+
+                                    FileSystem.Unmount(storageController.Hdc);
+
+                                    this.IsUsbDiskInitialized = false;
+
+                                    Thread.Sleep(1);
+                                }
+
                                 driver = GHIElectronics.TinyCLR.IO.FileSystem.
                                     Mount(storageController.Hdc);
 
