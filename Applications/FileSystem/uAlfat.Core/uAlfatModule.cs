@@ -900,7 +900,7 @@ namespace uAlfat.Core {
                                         var file = new FileInfo(itemName);
                                         result += $"{ResponseCode.Success}{Strings.NewLine}";
                                         var lengths = "$" + Strings.LeadingZero(string.Format("{0:X}", file.Length), 8);
-                                        var attrs = "$" + Strings.LeadingZero(string.Format("{0:X}", ItemResult.GetAttribute(file.Attributes)), 2);
+                                        var attrs = "$" + ((int)(file.Attributes)).ToString("x2");
                                         var dates = "$" + ExFatTimeStampConverter.ConvertToFatTime(file.LastWriteTime);
                                         result += $"{lengths} {attrs} {dates}{Strings.NewLine}";
 
@@ -913,7 +913,7 @@ namespace uAlfat.Core {
                                         result += $"{ResponseCode.Success}{Strings.NewLine}";
 
                                         var lengths = "$" + Strings.LeadingZero(string.Format("{0:X}", 0), 8);
-                                        var attrs = "$" + Strings.LeadingZero(string.Format("{0:X}", ItemResult.GetAttribute(dir.Attributes)), 2);
+                                        var attrs = "$" + ((int)(dir.Attributes)).ToString("x2");
                                         var dates = "$" + ExFatTimeStampConverter.ConvertToFatTime(dir.LastWriteTime);
                                         result += $"{lengths} {attrs} {dates}{Strings.NewLine}";
                                         result += ResponseCode.Success;
