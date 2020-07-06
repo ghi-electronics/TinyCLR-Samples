@@ -648,6 +648,9 @@ namespace uAlfat.Core {
                                         }
                                         else {
                                             File.Delete(fileName);
+
+                                            FileSystem.Flush(storage.Controller.Hdc);
+
                                             result = ResponseCode.Success;
                                         }
                                         break;
@@ -691,6 +694,9 @@ namespace uAlfat.Core {
                                         }
                                         else {
                                             Directory.Delete(folderName);
+
+                                            FileSystem.Flush(storage.Controller.Hdc);
+
                                             result = ResponseCode.Success;
                                         }
                                         break;
