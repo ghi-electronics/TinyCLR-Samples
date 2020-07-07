@@ -100,6 +100,13 @@ namespace Demos {
 
             mainWindow.RegisterWindow(uartWindow); // Register to MainWindow
 
+            // Create Buzzer Window
+            var iconImageCamera = Resources.GetBitmap(Resources.BitmapResources.Camera); // Icon
+            var iconTextCamera = "Camera";
+            var cameraWindow = new CameraWindow(iconImageCamera, iconTextCamera, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(cameraWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text

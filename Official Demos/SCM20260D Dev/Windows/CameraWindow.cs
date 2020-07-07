@@ -4,9 +4,11 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
+using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
 using GHIElectronics.TinyCLR.Devices.Uart;
+using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -14,7 +16,7 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class UartWindow : ApplicationWindow {
+    public class CameraWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
         private Text instructionLabel1;
@@ -26,15 +28,16 @@ namespace Demos {
         private Text instructionLabel7;
         private Text instructionLabel8;
 
-        private string instruction1 = " This will test UART5 only: ";
-        private string instruction2 = " - Connect UART5 to PC.";
-        private string instruction3 = " - Open TeraTerm application.";
-        private string instruction4 = " - Baudrate: 115200, DataBit 8, StopBit: One, Parity: None, ";
-        private string instruction5 = "   Flow Control: None. ";
-        private string instruction6 = " - Whatever you typed on TeraTerm, SITCore will back these data +1 ";
-        private string instruction7 = " Example: Type 123... on TeraTerm, you will get back 234... ";
-        
-        private string instruction8 = " Press Test button when you ready.";
+
+        private string instruction1 = " This will test Camera module: ";
+        private string instruction2 = " - Connect Camera module to Camare Interface";
+        private string instruction3 = " ";
+        private string instruction4 = "  Press Test button when you ready.";
+        private string instruction5 = "  ";
+        private string instruction6 = "  ";
+        private string instruction7 = "  ";
+
+        private string instruction8 = " ";
 
         private Button testButton;
 
@@ -42,9 +45,9 @@ namespace Demos {
 
         private bool isRuning;
 
-        public object PwmController { get; private set; }        
+        public object PwmController { get; private set; }
 
-        public UartWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public CameraWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
@@ -203,57 +206,51 @@ create_button:
 
             this.isRuning = true;
 
-            var startX = 20;
-            var startY = 40;
-            var offsetY = 30;
+
+            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
 
-            using (var uart5 = UartController.FromName(SC20260.UartPort.Uart5)) {
 
-                var setting = new UartSetting() {
-                    BaudRate = 115200
-                };
+            try {
 
-                uart5.SetActiveSettings(setting);
-                uart5.Enable();
+                var ov9655 = new Ov9655(i2cController);
 
-                var totalReceived = 0;
-                var totalSent = 0;
+                var id = ov9655.ReadId();
+
+                byte[] data = null;
+                UnmanagedBuffer unmangedBuffer = null;
+
+                if (Memory.UnmanagedMemory.FreeBytes != 0) {
+                    unmangedBuffer = new UnmanagedBuffer(640 * 480 * 2);
+                    data = unmangedBuffer.Bytes;
+                }
+                else {
+                    data = new byte[640 * 480 * 2];
+                }
+
+                ov9655.SetResolution(Ov9655.Resolution.Vga);
+                var displayController = Display.DisplayController;
 
                 while (this.isRuning) {
+                    try {
+                        ov9655.Capture(data, 500);
 
-                    startX = 20;
-                    startY = 40;
-
-                    this.UpdateStatusText("Total received: " + totalReceived, startX, startY, true); startY += offsetY;
-                    this.UpdateStatusText("Total sent: " + totalSent,  startX, startY, false); startY += offsetY;
-                    this.UpdateStatusText("Listening data...", startX, startY, false); startY += offsetY;
-
-                    while (uart5.BytesToRead == 0) {
-                        Thread.Sleep(10);
+                        displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, data, 0);
                     }
-                    
-                    var byteToRead = uart5.BytesToRead > uart5.ReadBufferSize ? uart5.ReadBufferSize : uart5.BytesToRead;
+                    catch {
 
-                    var read = new byte[byteToRead];
-
-
-                    this.UpdateStatusText("Receiving... " + byteToRead + " byte(s)", startX, startY, false); startY += offsetY;
-                    totalReceived +=uart5.Read(read);
-
-                    
-
-                    for (var i = 0; i < read.Length; i++) {
-                        var write = new byte[1] { (byte)(read[i] + 1) };
-                        totalSent +=uart5.Write(write);
-
-                        uart5.Flush();
                     }
 
-                    
-                    this.UpdateStatusText("Writing back... " + byteToRead + " byte(s)", startX, startY, false); startY += offsetY;
+                    Thread.Sleep(10);
 
                 }
+
+                if (unmangedBuffer != null) {
+                    unmangedBuffer.Dispose();
+                }
+            }
+            catch {
+
             }
 
 
