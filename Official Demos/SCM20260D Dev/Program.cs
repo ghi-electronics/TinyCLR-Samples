@@ -75,9 +75,16 @@ namespace Demos {
             // Create QSpi Window
             var iconImageQspi = Resources.GetBitmap(Resources.BitmapResources.Qspi); // Icon
             var iconTextQspi = "Quad Spi";
-            var qspiFdWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height);
+            var qspiWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height);
 
-            mainWindow.RegisterWindow(qspiFdWindow); // Register to MainWindow
+            mainWindow.RegisterWindow(qspiWindow); // Register to MainWindow
+
+            // Create Buzzer Window
+            var iconImageBuzzer = Resources.GetBitmap(Resources.BitmapResources.Piezo); // Icon
+            var iconTextBuzzer = "Buzzer";
+            var buzzerWindow = new BuzzerWindow(iconImageBuzzer, iconTextBuzzer, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(buzzerWindow); // Register to MainWindow
 
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon

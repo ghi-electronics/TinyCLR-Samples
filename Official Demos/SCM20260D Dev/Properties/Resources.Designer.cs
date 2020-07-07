@@ -41,6 +41,7 @@ namespace Demos.Properties
             settingImage = -17023,
             Canfd = -16516,
             Ethernet = -16161,
+            Piezo = -5876,
             Usb = 1556,
             Sd = 12737,
             Wifi = 17372,
