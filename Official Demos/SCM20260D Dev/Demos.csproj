@@ -45,6 +45,7 @@
     <Compile Include="Windows\QspiWindow.cs" />
     <Compile Include="Windows\RtcWindow.cs" />
     <Compile Include="Windows\Sd.cs" />
+    <Compile Include="Windows\UartWindow.cs" />
     <Compile Include="Windows\Usb.cs" />
     <Compile Include="Windows\WifiWindow.cs" />
     <Compile Include="Windows\EthernetWindow.cs" />
