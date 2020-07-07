@@ -102,10 +102,17 @@ namespace Demos {
            
             // Create Adc Window
             var iconImageAdc = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
-            var iconTextAdc = "Adc";
+            var iconTextAdc = "ADC";
             var adcWindow = new AdcWindow(iconImageAdc, iconTextAdc, Display.Width, Display.Height);
 
             mainWindow.RegisterWindow(adcWindow); // Register to MainWindow
+
+            // Create Dac Window
+            var iconImageDac = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
+            var iconTextDac = "DAC";
+            var dacWindow = new DacWindow(iconImageDac, iconTextDac, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(dacWindow); // Register to MainWindow
 
             // Create Camera Window
             var iconImageCamera = Resources.GetBitmap(Resources.BitmapResources.Camera); // Icon

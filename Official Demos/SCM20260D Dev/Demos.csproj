@@ -44,6 +44,7 @@
     <Compile Include="Windows\Buzzer.cs" />
     <Compile Include="Windows\CameraWindow.cs" />
     <Compile Include="Windows\CanfdWindow.cs" />
+    <Compile Include="Windows\Dac.cs" />
     <Compile Include="Windows\QspiWindow.cs" />
     <Compile Include="Windows\RtcWindow.cs" />
     <Compile Include="Windows\Sd.cs" />
@@ -101,6 +102,9 @@
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Devices.Can, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Can.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Can.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Dac, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Dac.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Dac.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Devices.Display, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Display.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Display.dll</HintPath>
