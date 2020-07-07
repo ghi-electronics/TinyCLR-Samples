@@ -6,6 +6,7 @@ using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
+using GHIElectronics.TinyCLR.Devices.Uart;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -13,7 +14,7 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class UartcWindow : ApplicationWindow {
+    public class UartWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
         private Text instructionLabel1;
@@ -29,10 +30,11 @@ namespace Demos {
         private string instruction1 = " This will test UART5 only: ";
         private string instruction2 = " - Connect UART5 to PC.";
         private string instruction3 = " - Open TeraTerm application.";
-        private string instruction4 = " - Config Uart: Baudrate: 115200, DataBit 8, StopBit: One, Parity: None, Flow Control: None";
-        private string instruction5 = " - Whatever you typed on TeraTerm, SITCore will receive and send back these data + 1 ";
-        private string instruction6 = " Example: Type 123... on TeraTerm, you will see 234... the the screen";
-        private string instruction7 = "    ";
+        private string instruction4 = " - Baudrate: 115200, DataBit 8, StopBit: One, Parity: None, ";
+        private string instruction5 = "   Flow Control: None. ";
+        private string instruction6 = " - Whatever you typed on TeraTerm, SITCore will back these data +1 ";
+        private string instruction7 = " Example: Type 123... on TeraTerm, you will get back 234... ";
+        
         private string instruction8 = " Press Test button when you ready.";
 
         private Button testButton;
@@ -40,12 +42,12 @@ namespace Demos {
         private Font font;
 
         private bool isRuning;
-       
+
         public object PwmController { get; private set; }
 
         const int ChargeVbatTimeout = 30; // 30 seconds
 
-        public UartcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public UartWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
@@ -79,7 +81,7 @@ namespace Demos {
             this.instructionLabel8 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction8) {
                 ForeColor = Colors.White,
             };
-           
+
 
 create_button:
 
@@ -104,7 +106,7 @@ create_button:
             }
 
             this.testButton.Click += this.TestButton_Click;
-           
+
         }
 
         private void TestButton_Click(object sender, RoutedEventArgs e) {
@@ -209,7 +211,53 @@ create_button:
             var offsetY = 30;
 
 
-           //using (var uart5 = )
+            using (var uart5 = UartController.FromName(SC20260.UartPort.Uart5)) {
+
+                var setting = new UartSetting() {
+                    BaudRate = 115200
+                };
+
+                uart5.SetActiveSettings(setting);
+                uart5.Enable();
+
+                var totalReceived = 0;
+                var totalSent = 0;
+
+                while (this.isRuning) {
+
+                    startX = 20;
+                    startY = 40;
+
+                    this.UpdateStatusText("Total received: " + totalReceived, startX, startY, true); startY += offsetY;
+                    this.UpdateStatusText("Total sent: " + totalSent,  startX, startY, false); startY += offsetY;
+                    this.UpdateStatusText("Listening data...", startX, startY, false); startY += offsetY;
+
+                    while (uart5.BytesToRead == 0) {
+                        Thread.Sleep(10);
+                    }
+                    
+                    var byteToRead = uart5.BytesToRead > uart5.ReadBufferSize ? uart5.ReadBufferSize : uart5.BytesToRead;
+
+                    var read = new byte[byteToRead];
+
+
+                    this.UpdateStatusText("Receiving... " + byteToRead + " byte(s)", startX, startY, false); startY += offsetY;
+                    totalReceived +=uart5.Read(read);
+
+                    
+
+                    for (var i = 0; i < read.Length; i++) {
+                        var write = new byte[1] { (byte)(read[i] + 1) };
+                        totalSent +=uart5.Write(write);
+
+                        uart5.Flush();
+                    }
+
+                    
+                    this.UpdateStatusText("Writing back... " + byteToRead + " byte(s)", startX, startY, false); startY += offsetY;
+
+                }
+            }
 
 
             this.isRuning = false;

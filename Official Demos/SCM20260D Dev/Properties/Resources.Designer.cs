@@ -43,6 +43,7 @@ namespace Demos.Properties
             Ethernet = -16161,
             Piezo = -5876,
             Usb = 1556,
+            Uart = 11521,
             Sd = 12737,
             Rtc = 14704,
             Wifi = 17372,
