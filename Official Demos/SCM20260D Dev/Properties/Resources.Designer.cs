@@ -44,6 +44,7 @@ namespace Demos.Properties
             Piezo = -5876,
             Usb = 1556,
             Sd = 12737,
+            Rtc = 14704,
             Wifi = 17372,
         }
         [System.SerializableAttribute()]

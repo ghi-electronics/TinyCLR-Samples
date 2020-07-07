@@ -86,6 +86,13 @@ namespace Demos {
 
             mainWindow.RegisterWindow(buzzerWindow); // Register to MainWindow
 
+            // Create Buzzer Window
+            var iconImageRtc = Resources.GetBitmap(Resources.BitmapResources.Rtc); // Icon
+            var iconTextRtc = "Rtc";
+            var rtcWindow = new RtcWindow(iconImageRtc, iconTextRtc, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(rtcWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
