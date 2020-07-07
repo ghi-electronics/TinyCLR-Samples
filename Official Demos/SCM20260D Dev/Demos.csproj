@@ -44,6 +44,7 @@
     <Compile Include="Windows\Buzzer.cs" />
     <Compile Include="Windows\CameraWindow.cs" />
     <Compile Include="Windows\CanfdWindow.cs" />
+    <Compile Include="Windows\ColorWindow.cs" />
     <Compile Include="Windows\Dac.cs" />
     <Compile Include="Windows\Pwm.cs" />
     <Compile Include="Windows\QspiWindow.cs" />
@@ -194,6 +195,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Pwm.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Color.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

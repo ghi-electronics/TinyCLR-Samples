@@ -129,6 +129,13 @@ namespace Demos {
 
             mainWindow.RegisterWindow(cameraWindow); // Register to MainWindow
 
+            // Create Camera Window
+            var iconImageColor = Resources.GetBitmap(Resources.BitmapResources.Color); // Icon
+            var iconTextColor = "Color";
+            var colorWindow = new ColorWindow(iconImageColor, iconTextColor, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(colorWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
