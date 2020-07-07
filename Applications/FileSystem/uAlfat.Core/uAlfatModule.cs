@@ -279,21 +279,17 @@ namespace uAlfat.Core {
                                                     break;
                                                 case FileAccessTypes.Write:
 
-                                                    if (File.Exists(fileName)) {
-                                                        result = ResponseCode.FileFolderExists;
-                                                    }
-                                                    else {
-                                                        newHandle.AccessMode = FileMode.CreateNew;
+                                                    newHandle.AccessMode = FileMode.Create;
 
-                                                        try {
-                                                            newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
-                                                            result = ResponseCode.Success;
-                                                        }
-
-                                                        catch {
-                                                            result = ResponseCode.ERROR_FAILED_OPEN_FILE;
-                                                        }
+                                                    try {
+                                                        newHandle.Buffer = new FileStream(fileName, newHandle.AccessMode);
+                                                        result = ResponseCode.Success;
                                                     }
+
+                                                    catch {
+                                                        result = ResponseCode.ERROR_FAILED_OPEN_FILE;
+                                                    }
+
                                                     break;
                                                 case FileAccessTypes.Append:
 
