@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.Storage;
+using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
@@ -156,21 +157,16 @@ namespace Demos {
         private string status = string.Empty;
 
         private void ThreadTest() {
+
             this.isRuning = true;
             var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
 
             var drive = storeController.Provider;
 
-
-
-
-
             drive.Open();
 
 
-
             var sectorSize = drive.Descriptor.RegionSizes[0];
-            var totalSize = drive.Descriptor.RegionCount * drive.Descriptor.RegionSizes[0];
 
             var textWrite = System.Text.UTF8Encoding.UTF8.GetBytes("this is for test");
             var dataRead = new byte[sectorSize];
@@ -235,6 +231,7 @@ _again:
 
                         goto _return;
                     }
+
                 }
             }
 
@@ -249,7 +246,9 @@ _again:
 
 
 _return:
+            drive.Close();
             this.isRuning = false;
+
             return;
 
         }
