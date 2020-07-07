@@ -102,14 +102,22 @@ namespace Demos {
            
             // Create Adc Window
             var iconImageAdc = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
-            var iconTextAdc = "ADC";
+            var iconTextAdc = "Adc";
             var adcWindow = new AdcWindow(iconImageAdc, iconTextAdc, Display.Width, Display.Height);
 
             mainWindow.RegisterWindow(adcWindow); // Register to MainWindow
 
+            // Create Pwm Window
+            var iconImagePwm = Resources.GetBitmap(Resources.BitmapResources.Pwm); // Icon
+            var iconTextPwm = "Pwm";
+            var pwmWindow = new PwmWindow(iconImagePwm, iconTextPwm, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(pwmWindow); // Register to MainWindow
+
+
             // Create Dac Window
             var iconImageDac = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
-            var iconTextDac = "DAC";
+            var iconTextDac = "Dac";
             var dacWindow = new DacWindow(iconImageDac, iconTextDac, Display.Width, Display.Height);
 
             mainWindow.RegisterWindow(dacWindow); // Register to MainWindow
