@@ -4,7 +4,9 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
+using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
+using GHIElectronics.TinyCLR.Devices.Uart;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -12,7 +14,7 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class QspiWindow : ApplicationWindow {
+    public class UartWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
         private Text instructionLabel1;
@@ -20,13 +22,19 @@ namespace Demos {
         private Text instructionLabel3;
         private Text instructionLabel4;
         private Text instructionLabel5;
-        private Text statusLabel;
+        private Text instructionLabel6;
+        private Text instructionLabel7;
+        private Text instructionLabel8;
 
-        private string instruction1 = "This test will Erase/Write/Read:";
-        private string instruction2 = " - 8 frist sectors";
-        private string instruction3 = " - 8 last sectors";
-        private string instruction4 = "All exist data on these sectors will be erased!";
-        private string instruction5 = "Press Test button when you ready.";
+        private string instruction1 = " This will test UART5 only: ";
+        private string instruction2 = " - Connect UART5 to PC.";
+        private string instruction3 = " - Open TeraTerm application.";
+        private string instruction4 = " - Baudrate: 115200, DataBit 8, StopBit: One, Parity: None, ";
+        private string instruction5 = "   Flow Control: None. ";
+        private string instruction6 = " - Whatever you typed on TeraTerm, SITCore will back these data +1 ";
+        private string instruction7 = " Example: Type 123... on TeraTerm, you will get back 234... ";
+        
+        private string instruction8 = " Press Test button when you ready.";
 
         private Button testButton;
 
@@ -34,8 +42,10 @@ namespace Demos {
 
         private bool isRuning;
 
-        public QspiWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-            this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
+        public object PwmController { get; private set; }        
+
+        public UartWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+            this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
                 ForeColor = Colors.White,
@@ -57,25 +67,44 @@ namespace Demos {
                 ForeColor = Colors.White,
             };
 
-            this.statusLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, string.Empty) {
+            this.instructionLabel6 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction6) {
                 ForeColor = Colors.White,
             };
 
-            this.testButton = new Button() {
-                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Start Test!") {
-                    ForeColor = Colors.Black,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                },
-                Width = 100,
-                Height = 30,
+            this.instructionLabel7 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction7) {
+                ForeColor = Colors.White,
             };
 
+            this.instructionLabel8 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction8) {
+                ForeColor = Colors.White,
+            };
+
+
+create_button:
+
+            try {
+                this.testButton = new Button {
+                    Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Start Test!") {
+                        ForeColor = Colors.Black,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    },
+
+                    Width = 100,
+                    Height = 30
+                };
+            }
+            catch {
+
+            }
+
+            if (this.testButton == null) {
+                goto create_button;
+            }
+
             this.testButton.Click += this.TestButton_Click;
+
         }
-
-
-
 
         private void TestButton_Click(object sender, RoutedEventArgs e) {
             if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
@@ -103,9 +132,13 @@ namespace Demos {
             // This is Button Next Touch event
             this.Close();
 
-        protected override void Deactive() =>
+        protected override void Deactive() {
+            this.isRuning = false;
+
+            Thread.Sleep(100); // Wait for test thread is stop => no update canvas
             // To stop or free, uinitialize variable resource
             this.canvas.Children.Clear();
+        }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();
@@ -131,7 +164,7 @@ namespace Demos {
         private void CreateWindow() {
             var startX = 20;
             var startY = 40;
-            var offsetY = 30;
+            var offsetY = 20;
 
             Canvas.SetLeft(this.instructionLabel1, startX); Canvas.SetTop(this.instructionLabel1, startY); startY += offsetY;
             this.canvas.Children.Add(this.instructionLabel1);
@@ -150,103 +183,80 @@ namespace Demos {
             this.canvas.Children.Add(this.instructionLabel5);
 
 
+            Canvas.SetLeft(this.instructionLabel6, startX); Canvas.SetTop(this.instructionLabel6, startY); startY += offsetY;
+            this.canvas.Children.Add(this.instructionLabel6);
+
+
+            Canvas.SetLeft(this.instructionLabel7, startX); Canvas.SetTop(this.instructionLabel7, startY); startY += offsetY;
+            this.canvas.Children.Add(this.instructionLabel7);
+
+
+            Canvas.SetLeft(this.instructionLabel8, startX); Canvas.SetTop(this.instructionLabel8, startY); startY += offsetY;
+            this.canvas.Children.Add(this.instructionLabel8);
+
             Canvas.SetLeft(this.testButton, startX); Canvas.SetTop(this.testButton, startY); startY += offsetY;
             this.canvas.Children.Add(this.testButton);
         }
 
-        private string status = string.Empty;
 
         private void ThreadTest() {
 
             this.isRuning = true;
-            var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
-
-            var drive = storeController.Provider;
-
-            drive.Open();
-
-
-            var sectorSize = drive.Descriptor.RegionSizes[0];
-
-            var textWrite = System.Text.UTF8Encoding.UTF8.GetBytes("this is for test");
-            var dataRead = new byte[sectorSize];
-
-            var dataWrite = new byte[sectorSize];
-
-            for (var i = 0; i < sectorSize; i += textWrite.Length) {
-                Array.Copy(textWrite, 0, dataWrite, i, textWrite.Length);
-
-            }
-
-            var roundTest = 0;
-            var startSector = 0;
-            var endSector = 8;
-
-_again:
-            if (roundTest == 1) {
-                startSector = 4088; // last 8 sectors
-                endSector = startSector + 8;
-            }
 
             var startX = 20;
             var startY = 40;
             var offsetY = 30;
 
-            for (var s = startSector; s < endSector; s++) {
 
-                startX = 20;
-                startY = 40;
-                offsetY = 30;
+            using (var uart5 = UartController.FromName(SC20260.UartPort.Uart5)) {
 
-                var address = s * sectorSize;
-                this.UpdateStatusText("Erasing sector " + s, startX, startY, true); startY += offsetY;
-                // Erase
-                drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
+                var setting = new UartSetting() {
+                    BaudRate = 115200
+                };
 
-                // Read - check for blank
-                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
+                uart5.SetActiveSettings(setting);
+                uart5.Enable();
 
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != 0xFF) {
+                var totalReceived = 0;
+                var totalSent = 0;
 
-                        this.UpdateStatusText("Erase failed at: " + idx, startX, startY, false); startY += offsetY;
+                while (this.isRuning) {
 
-                        goto _return;
+                    startX = 20;
+                    startY = 40;
+
+                    this.UpdateStatusText("Total received: " + totalReceived, startX, startY, true); startY += offsetY;
+                    this.UpdateStatusText("Total sent: " + totalSent,  startX, startY, false); startY += offsetY;
+                    this.UpdateStatusText("Listening data...", startX, startY, false); startY += offsetY;
+
+                    while (uart5.BytesToRead == 0) {
+                        Thread.Sleep(10);
                     }
-                }
+                    
+                    var byteToRead = uart5.BytesToRead > uart5.ReadBufferSize ? uart5.ReadBufferSize : uart5.BytesToRead;
 
-                // Write
-                this.UpdateStatusText("Writing sector " + s, startX, startY, false); startY += offsetY;
-                drive.Write(address, sectorSize, dataWrite, 0, TimeSpan.FromSeconds(100));
-
-                this.UpdateStatusText("Reading sector " + s, startX, startY, false); startY += offsetY;
-                //Read to compare
-                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
+                    var read = new byte[byteToRead];
 
 
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != dataWrite[idx]) {
+                    this.UpdateStatusText("Receiving... " + byteToRead + " byte(s)", startX, startY, false); startY += offsetY;
+                    totalReceived +=uart5.Read(read);
 
-                        this.UpdateStatusText("Compare failed at: " + idx, startX, startY, false); startY += offsetY;
+                    
 
-                        goto _return;
+                    for (var i = 0; i < read.Length; i++) {
+                        var write = new byte[1] { (byte)(read[i] + 1) };
+                        totalSent +=uart5.Write(write);
+
+                        uart5.Flush();
                     }
 
+                    
+                    this.UpdateStatusText("Writing back... " + byteToRead + " byte(s)", startX, startY, false); startY += offsetY;
+
                 }
             }
 
-            roundTest++;
 
-            if (roundTest == 2) {
-                this.UpdateStatusText("Tested Quad Spi successful!", startX, startY, false); startY += offsetY;
-            }
-            else {
-                goto _again;
-            }
-
-
-_return:
-            drive.Close();
             this.isRuning = false;
 
             return;
@@ -255,9 +265,9 @@ _return:
 
         private void UpdateStatusText(string text, int x, int y, bool clearscreen) {
 
-            Thread.Sleep(1);
+            var timeout = 10;
 
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(10), _ => {
+            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
                 if (clearscreen)
                     this.ClearScreen();
@@ -276,6 +286,8 @@ _return:
                 return null;
 
             }, null);
+
+            Thread.Sleep(timeout);
 
         }
     }

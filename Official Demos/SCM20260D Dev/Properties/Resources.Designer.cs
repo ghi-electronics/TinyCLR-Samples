@@ -37,13 +37,20 @@ namespace Demos.Properties
         internal enum BitmapResources : short
         {
             Qspi = -32580,
+            analog = -29953,
+            Camera = -29782,
             Template = -21726,
             settingImage = -17023,
             Canfd = -16516,
             Ethernet = -16161,
+            Pwm = -9888,
+            Piezo = -5876,
             Usb = 1556,
+            Uart = 11521,
             Sd = 12737,
+            Rtc = 14704,
             Wifi = 17372,
+            Color = 18291,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short

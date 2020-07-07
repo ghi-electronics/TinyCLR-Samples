@@ -12,7 +12,7 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class QspiWindow : ApplicationWindow {
+    public class BuzzerWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
         private Text instructionLabel1;
@@ -20,12 +20,12 @@ namespace Demos {
         private Text instructionLabel3;
         private Text instructionLabel4;
         private Text instructionLabel5;
-        private Text statusLabel;
 
-        private string instruction1 = "This test will Erase/Write/Read:";
-        private string instruction2 = " - 8 frist sectors";
-        private string instruction3 = " - 8 last sectors";
-        private string instruction4 = "All exist data on these sectors will be erased!";
+
+        private string instruction1 = "This test Buzzer:";
+        private string instruction2 = " First second generate pwm 500Hz, duty cycle 0.5";
+        private string instruction3 = " Next second generate pwm  1KHz, duty cycle 0.5";
+        private string instruction4 = " Third second generates pwm 2KHz, duty cycle 0.5";
         private string instruction5 = "Press Test button when you ready.";
 
         private Button testButton;
@@ -34,7 +34,9 @@ namespace Demos {
 
         private bool isRuning;
 
-        public QspiWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public object PwmController { get; private set; }
+
+        public BuzzerWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
 
             this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
@@ -57,9 +59,7 @@ namespace Demos {
                 ForeColor = Colors.White,
             };
 
-            this.statusLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, string.Empty) {
-                ForeColor = Colors.White,
-            };
+
 
             this.testButton = new Button() {
                 Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Start Test!") {
@@ -73,9 +73,6 @@ namespace Demos {
 
             this.testButton.Click += this.TestButton_Click;
         }
-
-
-
 
         private void TestButton_Click(object sender, RoutedEventArgs e) {
             if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
@@ -154,99 +151,53 @@ namespace Demos {
             this.canvas.Children.Add(this.testButton);
         }
 
-        private string status = string.Empty;
 
         private void ThreadTest() {
 
             this.isRuning = true;
-            var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
-
-            var drive = storeController.Provider;
-
-            drive.Open();
-
-
-            var sectorSize = drive.Descriptor.RegionSizes[0];
-
-            var textWrite = System.Text.UTF8Encoding.UTF8.GetBytes("this is for test");
-            var dataRead = new byte[sectorSize];
-
-            var dataWrite = new byte[sectorSize];
-
-            for (var i = 0; i < sectorSize; i += textWrite.Length) {
-                Array.Copy(textWrite, 0, dataWrite, i, textWrite.Length);
-
-            }
-
-            var roundTest = 0;
-            var startSector = 0;
-            var endSector = 8;
-
-_again:
-            if (roundTest == 1) {
-                startSector = 4088; // last 8 sectors
-                endSector = startSector + 8;
-            }
 
             var startX = 20;
             var startY = 40;
             var offsetY = 30;
 
-            for (var s = startSector; s < endSector; s++) {
+            using (var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id)) {
 
-                startX = 20;
-                startY = 40;
-                offsetY = 30;
+                var pwmPinPB1 = pwmController3.OpenChannel(SC20260.PwmChannel.Controller3.PB1);
 
-                var address = s * sectorSize;
-                this.UpdateStatusText("Erasing sector " + s, startX, startY, true); startY += offsetY;
-                // Erase
-                drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
+                pwmController3.SetDesiredFrequency(500);
+                pwmPinPB1.SetActiveDutyCyclePercentage(0.5);
 
-                // Read - check for blank
-                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
+                this.UpdateStatusText("Generate Pwm 500Hz...", startX, startY, true); startY += offsetY;
 
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != 0xFF) {
+                pwmPinPB1.Start();
 
-                        this.UpdateStatusText("Erase failed at: " + idx, startX, startY, false); startY += offsetY;
+                Thread.Sleep(1000);
 
-                        goto _return;
-                    }
-                }
+                pwmPinPB1.Stop();
 
-                // Write
-                this.UpdateStatusText("Writing sector " + s, startX, startY, false); startY += offsetY;
-                drive.Write(address, sectorSize, dataWrite, 0, TimeSpan.FromSeconds(100));
+                this.UpdateStatusText("Generate Pwm 1000Hz...", startX, startY, false); startY += offsetY;
 
-                this.UpdateStatusText("Reading sector " + s, startX, startY, false); startY += offsetY;
-                //Read to compare
-                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
+                pwmController3.SetDesiredFrequency(1000);
 
+                pwmPinPB1.Start();
 
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != dataWrite[idx]) {
+                Thread.Sleep(1000);
 
-                        this.UpdateStatusText("Compare failed at: " + idx, startX, startY, false); startY += offsetY;
+                this.UpdateStatusText("Generate Pwm 2000Hz...", startX, startY, false); startY += offsetY;
 
-                        goto _return;
-                    }
+                pwmController3.SetDesiredFrequency(2000);
 
-                }
+                pwmPinPB1.Start();
+
+                Thread.Sleep(1000);
+
+                pwmPinPB1.Stop();
+
+                pwmPinPB1.Dispose();
+
+                this.UpdateStatusText("Testing is success if you heard three kind of sounds!", startX, startY, false); startY += offsetY;
             }
 
-            roundTest++;
-
-            if (roundTest == 2) {
-                this.UpdateStatusText("Tested Quad Spi successful!", startX, startY, false); startY += offsetY;
-            }
-            else {
-                goto _again;
-            }
-
-
-_return:
-            drive.Close();
             this.isRuning = false;
 
             return;
@@ -255,9 +206,9 @@ _return:
 
         private void UpdateStatusText(string text, int x, int y, bool clearscreen) {
 
-            Thread.Sleep(1);
+            var timeout = 10;
 
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(10), _ => {
+            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
                 if (clearscreen)
                     this.ClearScreen();
@@ -276,6 +227,8 @@ _return:
                 return null;
 
             }, null);
+
+            Thread.Sleep(timeout);
 
         }
     }

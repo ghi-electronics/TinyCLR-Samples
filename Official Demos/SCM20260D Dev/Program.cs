@@ -75,9 +75,66 @@ namespace Demos {
             // Create QSpi Window
             var iconImageQspi = Resources.GetBitmap(Resources.BitmapResources.Qspi); // Icon
             var iconTextQspi = "Quad Spi";
-            var qspiFdWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height);
+            var qspiWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height);
 
-            mainWindow.RegisterWindow(qspiFdWindow); // Register to MainWindow
+            mainWindow.RegisterWindow(qspiWindow); // Register to MainWindow
+
+            // Create Buzzer Window
+            var iconImageBuzzer = Resources.GetBitmap(Resources.BitmapResources.Piezo); // Icon
+            var iconTextBuzzer = "Buzzer";
+            var buzzerWindow = new BuzzerWindow(iconImageBuzzer, iconTextBuzzer, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(buzzerWindow); // Register to MainWindow
+
+            // Create Buzzer Window
+            var iconImageRtc = Resources.GetBitmap(Resources.BitmapResources.Rtc); // Icon
+            var iconTextRtc = "Rtc";
+            var rtcWindow = new RtcWindow(iconImageRtc, iconTextRtc, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(rtcWindow); // Register to MainWindow
+
+            // Create Uart Window
+            var iconImageUart = Resources.GetBitmap(Resources.BitmapResources.Uart); // Icon
+            var iconTextUart = "Uart";
+            var uartWindow = new UartWindow(iconImageUart, iconTextUart, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(uartWindow); // Register to MainWindow
+           
+            // Create Adc Window
+            var iconImageAdc = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
+            var iconTextAdc = "Adc";
+            var adcWindow = new AdcWindow(iconImageAdc, iconTextAdc, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(adcWindow); // Register to MainWindow
+
+            // Create Pwm Window
+            var iconImagePwm = Resources.GetBitmap(Resources.BitmapResources.Pwm); // Icon
+            var iconTextPwm = "Pwm";
+            var pwmWindow = new PwmWindow(iconImagePwm, iconTextPwm, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(pwmWindow); // Register to MainWindow
+
+
+            // Create Dac Window
+            var iconImageDac = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
+            var iconTextDac = "Dac";
+            var dacWindow = new DacWindow(iconImageDac, iconTextDac, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(dacWindow); // Register to MainWindow
+
+            // Create Camera Window
+            var iconImageCamera = Resources.GetBitmap(Resources.BitmapResources.Camera); // Icon
+            var iconTextCamera = "Camera";
+            var cameraWindow = new CameraWindow(iconImageCamera, iconTextCamera, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(cameraWindow); // Register to MainWindow
+
+            // Create Camera Window
+            var iconImageColor = Resources.GetBitmap(Resources.BitmapResources.Color); // Icon
+            var iconTextColor = "Color";
+            var colorWindow = new ColorWindow(iconImageColor, iconTextColor, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(colorWindow); // Register to MainWindow
 
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
