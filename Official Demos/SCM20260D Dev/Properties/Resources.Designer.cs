@@ -37,6 +37,7 @@ namespace Demos.Properties
         internal enum BitmapResources : short
         {
             Qspi = -32580,
+            analog = -29953,
             Camera = -29782,
             Template = -21726,
             settingImage = -17023,

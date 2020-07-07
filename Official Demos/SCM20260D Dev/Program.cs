@@ -93,14 +93,21 @@ namespace Demos {
 
             mainWindow.RegisterWindow(rtcWindow); // Register to MainWindow
 
-            // Create Buzzer Window
+            // Create Uart Window
             var iconImageUart = Resources.GetBitmap(Resources.BitmapResources.Uart); // Icon
             var iconTextUart = "Uart";
             var uartWindow = new UartWindow(iconImageUart, iconTextUart, Display.Width, Display.Height);
 
             mainWindow.RegisterWindow(uartWindow); // Register to MainWindow
+           
+            // Create Adc Window
+            var iconImageAdc = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
+            var iconTextAdc = "Adc";
+            var adcWindow = new AdcWindow(iconImageAdc, iconTextAdc, Display.Width, Display.Height);
 
-            // Create Buzzer Window
+            mainWindow.RegisterWindow(adcWindow); // Register to MainWindow
+
+            // Create Camera Window
             var iconImageCamera = Resources.GetBitmap(Resources.BitmapResources.Camera); // Icon
             var iconTextCamera = "Camera";
             var cameraWindow = new CameraWindow(iconImageCamera, iconTextCamera, Display.Width, Display.Height);
