@@ -155,13 +155,6 @@ namespace Demos {
             }
         }
 
-        private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
-            // This is Button Back Touch event
-            this.Close();
-
-        private void TemplateWindow_OnBottomBarButtonNextTouchUpEvent(object sender, RoutedEventArgs e) =>
-            // This is Button Next Touch event
-            this.Close();
 
         protected override void Deactive() {
             // To stop or free, uinitialize variable resource

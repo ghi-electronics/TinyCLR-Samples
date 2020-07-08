@@ -243,9 +243,6 @@ namespace Demos {
             var startY = 20;
             var offsetY = 10;
 
-            GC.Collect();
-            Debug.WriteLine("Free " + Memory.ManagedMemory.FreeBytes);
-
             Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
                 this.ClearScreen();
                 this.freeSizeLabel.TextContent = this.freeSize;
