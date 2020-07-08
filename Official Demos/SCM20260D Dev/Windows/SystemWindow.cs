@@ -28,6 +28,16 @@ namespace Demos {
                 ForeColor = Colors.White,
             };
 
+            var ramText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Memory: 512KB Total")
+            {
+                ForeColor = Colors.White,
+            };
+
+            var ramExtText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "External Memory: 32MB Total")
+            {
+                ForeColor = Colors.White,
+            };
+
             var osText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "OS: TinyCLR OS v2.0.0") {
                 ForeColor = Colors.White,
             };
@@ -37,11 +47,15 @@ namespace Demos {
   
             Canvas.SetLeft(devText, startX); Canvas.SetTop(devText, startY); startY += offsetY;
             Canvas.SetLeft(clockText, startX); Canvas.SetTop(clockText, startY); startY += offsetY;
+            Canvas.SetLeft(ramText, startX); Canvas.SetTop(ramText, startY); startY += offsetY;
+            Canvas.SetLeft(ramExtText, startX); Canvas.SetTop(ramExtText, startY); startY += offsetY;
             Canvas.SetLeft(osText, startX); Canvas.SetTop(osText, startY); startY += offsetY;
             Canvas.SetLeft(mText, startX); Canvas.SetTop(mText, startY); startY += offsetY;
 
             this.canvas.Children.Add(devText);
             this.canvas.Children.Add(clockText);
+            this.canvas.Children.Add(ramText);
+            this.canvas.Children.Add(ramExtText);
             this.canvas.Children.Add(osText);
             this.canvas.Children.Add(mText);
 
