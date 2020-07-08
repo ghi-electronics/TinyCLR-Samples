@@ -48,6 +48,11 @@ namespace Demos {
         private Font font;
 
         public SdWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+
+
+        }
+
+        private void Initialize() {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
             this.freeSizeLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.freeSize) {
@@ -97,11 +102,31 @@ namespace Demos {
             this.instructionLabel6 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction6) {
                 ForeColor = Colors.White,
             };
+        }
+
+        private void Deinitialize() {
+            this.freeSizeLabel = null;
+            this.totalSizeLabel = null;
+            this.volumeLabel = null;
+            this.rootDirectoryLabel = null;
+            this.driverFormatLabel = null;
+            this.statusLabel = null;
+
+            this.instructionLabel1 = null;
+            this.instructionLabel2 = null;
+            this.instructionLabel3 = null;
+            this.instructionLabel4 = null;
+            this.instructionLabel5 = null;
+            this.instructionLabel6 = null;
+
+            this.font.Dispose();
 
         }
 
         protected override void Active() {
             // To initialize, reset your variable, design...
+            this.Initialize();
+
             this.canvas = new Canvas();
 
             this.Child = this.canvas;
@@ -119,9 +144,11 @@ namespace Demos {
             // This is Button Next Touch event
             this.Close();
 
-        protected override void Deactive() =>
+        protected override void Deactive() {
             // To stop or free, uinitialize variable resource
             this.canvas.Children.Clear();
+            this.Deinitialize();
+        }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();

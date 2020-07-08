@@ -34,6 +34,11 @@ namespace Demos {
         public object PwmController { get; private set; }
 
         public BuzzerWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+           
+         
+        }
+
+        private void Initialize() {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
             this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
@@ -55,11 +60,27 @@ namespace Demos {
             this.instructionLabel5 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction5) {
                 ForeColor = Colors.White,
             };
+
+        }
+
+        private void Deinitialize() {
          
+
+            this.instructionLabel1 = null;
+            this.instructionLabel2 = null;
+            this.instructionLabel3 = null;
+            this.instructionLabel4 = null;
+            this.instructionLabel5 = null;
+     
+
+            this.font.Dispose();
+
         }
 
         protected override void Active() {
             // To initialize, reset your variable, design...
+            this.Initialize();
+
             this.canvas = new Canvas();
 
             this.Child = this.canvas;
@@ -68,9 +89,11 @@ namespace Demos {
             this.CreateWindow();
         }
 
-        protected override void Deactive() =>
+        protected override void Deactive() {
             // To stop or free, uinitialize variable resource
+            this.Deinitialize();
             this.canvas.Children.Clear();
+        }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();
