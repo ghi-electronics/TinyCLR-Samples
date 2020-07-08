@@ -245,9 +245,6 @@ namespace Demos {
         private int[] widthDownSteps = new int[] { 53, 48, 43, 38, 33, 27 };    // Array of widths so we save time by pre-calculating them
         private int[] heightDownSteps = new int[] { 53, 48, 43, 38, 33, 27 };
 
-        private int[] widthDownSteps2 = new int[] { 27, 22, 17, 12, 7, 2 };    // Array of widths so we save time by pre-calculating them
-        private int[] heightDownSteps2 = new int[] { 27, 22, 17, 12, 7, 2 };
-
         public static bool StartAnimation = false;
 
         private void StartAnimationTimer() {

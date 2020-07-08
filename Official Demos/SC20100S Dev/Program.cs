@@ -62,6 +62,16 @@ namespace Demos {
 
             mainWindow.RegisterWindow(buzzerWindow); // Register to MainWindow
 
+            // Create Sd Window
+            var iconImageSd = Resources.GetBitmap(Resources.BitmapResources.Sd); // Icon
+            var iconTextSd = "Sd Card";
+            var sdWindow = new SdWindow(iconImageSd, iconTextSd, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(sdWindow); // Register to MainWindow
 
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
