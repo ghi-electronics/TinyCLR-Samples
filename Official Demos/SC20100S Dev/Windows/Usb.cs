@@ -1,21 +1,20 @@
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.Storage;
+using GHIElectronics.TinyCLR.Devices.UsbHost;
 using GHIElectronics.TinyCLR.IO;
-using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class SdWindow : ApplicationWindow {
+    public class UsbWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
         private Text freeSizeLabel;
@@ -47,7 +46,10 @@ namespace Demos {
 
         private Font font;
 
-        public SdWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        private bool enabledUsbHost;
+        private bool usbConnected;
+
+        public UsbWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
             this.freeSizeLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.freeSize) {
@@ -97,7 +99,6 @@ namespace Demos {
             this.instructionLabel6 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction6) {
                 ForeColor = Colors.White,
             };
-
         }
 
         protected override void Active() {
@@ -109,6 +110,25 @@ namespace Demos {
             this.ClearScreen();
 
             this.CreateWindow();
+
+            if (this.enabledUsbHost == false) {
+                this.enabledUsbHost = true;
+
+                var usnhostController = UsbHostController.GetDefault();
+
+                usnhostController.OnConnectionChangedEvent += this.UsnhostController_OnConnectionChangedEvent;
+
+                usnhostController.Enable();
+            }
+        }
+
+        private void UsnhostController_OnConnectionChangedEvent(UsbHostController sender, DeviceConnectionEventArgs e) {
+            if (e.DeviceStatus == DeviceConnectionStatus.Connected) {
+                this.usbConnected = true;
+            }
+            else {
+                this.usbConnected = false;
+            }
         }
 
         private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
@@ -178,6 +198,7 @@ namespace Demos {
             Canvas.SetLeft(this.instructionLabel2, startX); Canvas.SetTop(this.instructionLabel2, startY); startY += offsetY;
             this.canvas.Children.Add(this.instructionLabel2);
 
+
             Canvas.SetLeft(this.instructionLabel3, startX); Canvas.SetTop(this.instructionLabel3, startY); startY += offsetY;
             this.canvas.Children.Add(this.instructionLabel3);
 
@@ -189,6 +210,9 @@ namespace Demos {
 
             Canvas.SetLeft(this.instructionLabel3, startX); Canvas.SetTop(this.instructionLabel6, startY); startY += offsetY;
             this.canvas.Children.Add(this.instructionLabel6);
+
+
+
         }
 
         private string testStatus;
@@ -199,7 +223,7 @@ namespace Demos {
 
             this.isRuning = true;
 
-            var data = System.Text.Encoding.UTF8.GetBytes("Thi is for sd  \n");
+            var data = System.Text.Encoding.UTF8.GetBytes("This is for usb\n");
 
             var dataWrite = new byte[BlockSize];
             var dataRead = new byte[BlockSize];
@@ -208,16 +232,13 @@ namespace Demos {
                 Array.Copy(data, 0, dataWrite, i, data.Length);
             }
 
-            var storageController = StorageController.FromName(SC20260.StorageController.SdCard);
+            var storageController = StorageController.FromName(SC20260.StorageController.UsbHostMassStorage);
 
             IDriveProvider drive;
 
             var startX = 5;
             var startY = 20;
             var offsetY = 10;
-
-            GC.Collect();
-            Debug.WriteLine("Free " + Memory.ManagedMemory.FreeBytes);
 
             Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
                 this.ClearScreen();
@@ -250,14 +271,38 @@ namespace Demos {
 
             }, null);
 
-            Thread.Sleep(1000);
+            var timeout = 0;
+
+            while (this.usbConnected == false) {
+                Thread.Sleep(1000);
+
+                timeout++;
+
+                if (timeout > 5) // 5 seconds
+                    break;
+            }
+
+            if (this.usbConnected == false) {
+                this.testStatus = "Bad device or no device connected.";
+
+                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
+
+                    this.statusLabel.TextContent = this.testStatus;
+
+                    this.statusLabel.Invalidate();
+                    return null;
+
+                }, null);
+
+                goto _return;
+            }
 
             try {
                 drive = FileSystem.Mount(storageController.Hdc);
 
                 var driveInfo = new DriveInfo(drive.Name);
 
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
+                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1000), _ => {
 
                     this.freeSizeLabel.TextContent += driveInfo.TotalFreeSpace;
                     this.totalSizeLabel.TextContent += driveInfo.TotalSize;
@@ -288,7 +333,7 @@ namespace Demos {
 
             Thread.Sleep(1000);
 
-            var filename = drive.Name + "\\TEST_SD.TXT";
+            var filename = drive.Name + "TEST_USB.TXT";
 
             try {
                 using (var fsWrite = new FileStream(filename, FileMode.Create)) {

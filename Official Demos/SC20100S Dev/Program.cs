@@ -73,6 +73,17 @@ namespace Demos {
 
             mainWindow.RegisterWindow(sdWindow); // Register to MainWindow
 
+            // Create Usb Window
+            var iconImageUsb = Resources.GetBitmap(Resources.BitmapResources.Usb); // Icon
+            var iconTextUsb = "Usb";
+            var usbdWindow = new UsbWindow(iconImageUsb, iconTextUsb, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(usbdWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
