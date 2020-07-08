@@ -51,6 +51,18 @@ namespace Demos {
 
             mainWindow.RegisterWindow(networkWindow); // Register to MainWindow
 
+            // Create Buzzer Window
+            var iconImageBuzzer = Resources.GetBitmap(Resources.BitmapResources.Piezo); // Icon
+            var iconTextBuzzer = "Buzzer";
+            var buzzerWindow = new BuzzerWindow(iconImageBuzzer, iconTextBuzzer, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(buzzerWindow); // Register to MainWindow
+
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text

@@ -96,8 +96,7 @@ namespace Demos {
         private void ButtonNext_Click(object sender, RoutedEventArgs e) {
             if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
                 OnBottomBarButtonNextTouchUpEvent?.Invoke(sender, e);
-            }
-            OnBottomBarButtonNextTouchUpEvent?.Invoke(sender, e);
+            }            
         }
 
         private void Child_IsVisibleChanged(object sender, PropertyChangedEventArgs e) {

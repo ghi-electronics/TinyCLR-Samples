@@ -40,6 +40,7 @@
     <Compile Include="Utils\BottomBar.cs" />
     <Compile Include="Windows\ApplicationWindow.cs" />
     <Compile Include="Display.cs" />
+    <Compile Include="Windows\Buzzer.cs" />
     <Compile Include="Windows\EthernetWindow.cs" />
     <Compile Include="Utils\Icon.cs" />
     <Compile Include="MainWindow.cs" />
@@ -93,6 +94,9 @@
     <Reference Include="GHIElectronics.TinyCLR.Devices.Network, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Network.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Network.dll</HintPath>
     </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Pwm, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Pwm.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Pwm.dll</HintPath>
+    </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Devices.Spi, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Spi.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Spi.dll</HintPath>
     </Reference>
@@ -117,6 +121,9 @@
     <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.UI.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Piezo.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

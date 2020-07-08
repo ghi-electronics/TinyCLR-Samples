@@ -53,6 +53,7 @@ namespace Demos.Properties
             Template = -21726,
             settingImage = -17023,
             Ethernet = -16161,
+            Piezo = -5876,
         }
     }
 }

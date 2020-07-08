@@ -314,44 +314,43 @@ namespace Demos {
         public override void OnRender(DrawingContext dc) {
             base.OnRender(dc);
 
-            var scaleOffset = System.Math.Abs(this.animationStep);
+            if (StartAnimation == true) {
 
-            var left = IconColum / 2;
-            var right = IconColum / 2;
+                var scaleOffset = System.Math.Abs(this.animationStep);
 
-            {
-                var a = (ApplicationWindow)this.applicationWindows[this.selectWindowIndexPrev];
-                var icon = a.Icon;
+                {
+                    var a = (ApplicationWindow)this.applicationWindows[this.selectWindowIndexPrev];
+                    var icon = a.Icon;
 
-                var scale = MaxStep - scaleOffset;
+                    var scale = MaxStep - scaleOffset;
 
-                var w = this.widthDownSteps[scale];
-                var h = this.heightDownSteps[scale];
+                    var w = this.widthDownSteps[scale];
+                    var h = this.heightDownSteps[scale];
 
-                var x = this.Width / IconColum;//  startX + this.animationStep * 5;
+                    var x = this.Width / IconColum;//  startX + this.animationStep * 5;
 
 
-                var offsetY = 5;
+                    var offsetY = 5;
+
+                    if (this.animationStep < 0) {
+                        var offsetX = 7;
+                        x -= (scale * offsetX);
+                    }
+                    else {
+                        var offsetX = 13;
+                        x += (scale * offsetX);
+                    }
+
+                    var y = this.Height - this.topBar.Height - icon.Height - (icon.Font.Height) / 2 + (scale * offsetY);
+
+                    dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
+
+                }
+
 
                 if (this.animationStep < 0) {
-                    var offsetX = 7;
-                    x -= (scale * offsetX);
-                }
-                else {
-                    var offsetX = 13;
-                    x += (scale * offsetX);
-                }
-
-                var y = this.Height - this.topBar.Height - icon.Height - (icon.Font.Height) / 2 + (scale * offsetY);
-
-                dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
-
-            }
-
-
-            if (this.animationStep < 0) {
-                if (this.showListRightPrev.Count > 0) {
-                    for (var i = 0; i < right; i++) {
+                    if (this.showListRightPrev.Count > 0) {
+                        var i = 0; // draw the one next to Seclect item only
 
                         var a = (ApplicationWindow)this.applicationWindows[(int)this.showListRightPrev[i]];
 
@@ -373,13 +372,13 @@ namespace Demos {
                         dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
 
                     }
+
+
                 }
 
-            }
-
-            if (this.animationStep > 0) {
-                if (this.showListLeftPrev.Count > 0) {
-                    for (var i = left - 1; i >= 0; i--) {
+                if (this.animationStep > 0) {
+                    if (this.showListLeftPrev.Count > 0) {
+                        var i = 0; // draw the one next to Seclect item only
 
                         var a = (ApplicationWindow)this.applicationWindows[(int)this.showListLeftPrev[i]];
 
@@ -399,16 +398,12 @@ namespace Demos {
                         var y = this.topBar.Height + icon.Height - (2 * icon.Font.Height) - ((MaxStep - scale) * offsetY);
 
                         dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
-
                     }
-                }
 
+                }
             }
 
             this.StartAnimationTimer();
         }
-
-
-
     }
 }
