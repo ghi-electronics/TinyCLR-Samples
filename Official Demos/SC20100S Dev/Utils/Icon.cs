@@ -12,7 +12,7 @@ using GHIElectronics.TinyCLR.UI.Media.Imaging;
 
 namespace Demos {
     public class Icon : Button {
-        private readonly BitmapImage bitmapImage;
+        public BitmapImage bitmapImage;
 
         public bool Select { get; set; }
         public int Id { get; set; }
@@ -29,9 +29,9 @@ namespace Demos {
             this.Font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
             TextColor = Colors.White;
-         
+
         }
-       
+
         public override void OnRender(DrawingContext dc) {
             var alpha = (this.IsEnabled) ? this.Alpha : (ushort)(this.Alpha / 2);
 
@@ -41,10 +41,13 @@ namespace Demos {
             var w = this.Width;
             var h = this.Height - (3 * this.Font.Height) / 2;
 
+            if (MainWindow.StartAnimation)
+                return;
+
             if (this.Select) {
 
                 if (this.bitmapImage != null) {
-                    dc.Scale9Image(x , y , w , h , this.bitmapImage, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, alpha);
+                    dc.Scale9Image(x, y, w, h, this.bitmapImage, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, alpha);
                 }
 
                 if (this.IconText != null && this.Font != null) {
@@ -57,10 +60,10 @@ namespace Demos {
             else {
 
                 if (this.bitmapImage != null) {
-                    dc.Scale9Image(x + w / 4, y + (h- h / 2),  w / 2,  h / 2, this.bitmapImage, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, alpha);
+                    dc.Scale9Image(x + w / 4, y + (h - h / 2), w / 2, h / 2, this.bitmapImage, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, alpha);
                 }
 
-                
+
             }
         }
     }

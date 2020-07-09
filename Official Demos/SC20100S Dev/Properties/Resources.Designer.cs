@@ -34,6 +34,23 @@ namespace Demos.Properties
             return ((System.Drawing.Font)(ResourceManager.GetObject(((short)(id)))));
         }
         [System.SerializableAttribute()]
+        internal enum BitmapResources : short
+        {
+            Qspi = -32580,
+            Template = -21726,
+            settingImage = -17023,
+            Canfd = -16516,
+            Ethernet = -16161,
+            Pwm = -9888,
+            Piezo = -5876,
+            Usb = 1556,
+            Uart = 11521,
+            Sd = 12737,
+            Rtc = 14704,
+            Wifi = 17372,
+            Color = 18291,
+        }
+        [System.SerializableAttribute()]
         internal enum FontResources : short
         {
             droid_reg10 = -27850,
@@ -46,13 +63,6 @@ namespace Demos.Properties
             droid_reg08 = -7427,
             droid_reg32 = 14655,
             droid_reg48 = 24547,
-        }
-        [System.SerializableAttribute()]
-        internal enum BitmapResources : short
-        {
-            Template = -21726,
-            settingImage = -17023,
-            Ethernet = -16161,
         }
     }
 }

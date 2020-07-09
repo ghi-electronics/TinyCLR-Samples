@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Threading;
@@ -9,7 +10,7 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
 namespace Demos.Utils {
-    public class BottomBar {
+    public class BottomBar : IDisposable {
         private Canvas canvas;
 
         public Button ButtonBack { get; }
@@ -49,6 +50,9 @@ namespace Demos.Utils {
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
                 };
+
+                GC.Collect();
+                Debug.WriteLine("" + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
 
                 this.ButtonBack = new Button() {
                     Child = backText,
