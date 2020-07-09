@@ -166,7 +166,7 @@ namespace Demos {
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            
+
 
             aw.Parent = this;
             aw.Id = this.applicationWindows.Count;
@@ -220,7 +220,11 @@ namespace Demos {
 
                     var applicationWindow = (ApplicationWindow)this.applicationWindows[this.selectWindowIndex];
 
-                    this.Child = applicationWindow.Open();
+                    var nextWindow = applicationWindow.Open();
+
+                    if (nextWindow != null)
+                        this.Child = nextWindow;
+
                     break;
 
             }

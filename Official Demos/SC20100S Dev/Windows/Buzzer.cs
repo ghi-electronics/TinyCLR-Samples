@@ -14,24 +14,15 @@ namespace Demos {
     public class BuzzerWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private Text instructionLabel1;
-        private Text instructionLabel2;
-        private Text instructionLabel3;
-        private Text instructionLabel4;
-        private Text instructionLabel5;
-
-
-        private string instruction1 = "This test Buzzer:";
-        private string instruction2 = " First sound at 500Hz";
-        private string instruction3 = " Second sound at 1000";
-        private string instruction4 = " Third sound at 2000Hz";
-        private string instruction5 = "Press Test button when you ready.";        
+        private const string Instruction1 = "This test Buzzer:";
+        private const string Instruction2 = " First sound at 500Hz";
+        private const string Instruction3 = " Second sound at 1000";
+        private const string Instruction4 = " Third sound at 2000Hz";
+        private const string Instruction5 = "Press Test button when you ready.";
 
         private Font font;
-
+        private TextFlow textFlow;
         private bool isRuning;
-
-        public object PwmController { get; private set; }
 
         public BuzzerWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
            
@@ -41,37 +32,29 @@ namespace Demos {
         private void Initialize() {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
-            this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow = new TextFlow();
 
-            this.instructionLabel2 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction2) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.instructionLabel3 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction3) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.instructionLabel4 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction4) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.instructionLabel5 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction5) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
         }
 
         private void Deinitialize() {
-         
 
-            this.instructionLabel1 = null;
-            this.instructionLabel2 = null;
-            this.instructionLabel3 = null;
-            this.instructionLabel4 = null;
-            this.instructionLabel5 = null;
-     
+            this.textFlow.TextRuns.Clear();
+            this.textFlow = null;
 
             this.font.Dispose();
 
@@ -141,33 +124,15 @@ namespace Demos {
         private void CreateWindow() {
             var startX = 5;
             var startY = 20;
-            var offsetY = 10;
 
-            Canvas.SetLeft(this.instructionLabel1, startX); Canvas.SetTop(this.instructionLabel1, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel1);
-
-            Canvas.SetLeft(this.instructionLabel2, startX); Canvas.SetTop(this.instructionLabel2, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel2);
-
-
-            Canvas.SetLeft(this.instructionLabel3, startX); Canvas.SetTop(this.instructionLabel3, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel3);
-
-            Canvas.SetLeft(this.instructionLabel4, startX); Canvas.SetTop(this.instructionLabel4, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel4);
-
-            Canvas.SetLeft(this.instructionLabel5, startX); Canvas.SetTop(this.instructionLabel5, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel5);
+            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
+            this.canvas.Children.Add(this.textFlow);
         }
 
 
         private void ThreadTest() {
 
             this.isRuning = true;
-
-            var startX = 5;
-            var startY = 20;
-            var offsetY = 10;
 
             using (var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id)) {
 
@@ -176,7 +141,7 @@ namespace Demos {
                 pwmController3.SetDesiredFrequency(500);
                 pwmPinPB1.SetActiveDutyCyclePercentage(0.5);
 
-                this.UpdateStatusText("Generate Pwm 500Hz...", startX, startY, true); startY += offsetY;
+                this.UpdateStatusText("Generate Pwm 500Hz...",  true); 
 
                 pwmPinPB1.Start();
 
@@ -184,7 +149,7 @@ namespace Demos {
 
                 pwmPinPB1.Stop();
 
-                this.UpdateStatusText("Generate Pwm 1000Hz...", startX, startY, false); startY += offsetY;
+                this.UpdateStatusText("Generate Pwm 1000Hz...",  false); 
 
                 pwmController3.SetDesiredFrequency(1000);
 
@@ -192,7 +157,7 @@ namespace Demos {
 
                 Thread.Sleep(1000);
 
-                this.UpdateStatusText("Generate Pwm 2000Hz...", startX, startY, false); startY += offsetY;
+                this.UpdateStatusText("Generate Pwm 2000Hz...",  false); 
 
                 pwmController3.SetDesiredFrequency(2000);
 
@@ -204,41 +169,48 @@ namespace Demos {
 
                 pwmPinPB1.Dispose();
 
-                this.UpdateStatusText("Testing is success if you heard three", startX, startY, false); startY += offsetY;
-                this.UpdateStatusText("kind of sounds!", startX, startY, false); startY += offsetY;
+                this.UpdateStatusText("Testing is success if you heard three",  false); 
+                this.UpdateStatusText("kind of sounds!",  false); 
             }
 
             this.isRuning = false;
 
             return;
 
-        }
+        }       
 
-        private void UpdateStatusText(string text, int x, int y, bool clearscreen) {
+        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-            var timeout = 10;
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
+
+            var timeout = 100;
+            var count = this.textFlow.TextRuns.Count + 2;
 
             Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
                 if (clearscreen)
-                    this.ClearScreen();
+                    this.textFlow.TextRuns.Clear();
 
-
-                var label = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, text) {
-                    ForeColor = Colors.White,
-                };
-
-
-                Canvas.SetLeft(label, x); Canvas.SetTop(label, y);
-                this.canvas.Children.Add(label);
-
-                label.Invalidate();
+                this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
+                this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
                 return null;
 
             }, null);
 
-            Thread.Sleep(timeout);
+            if (clearscreen) {
+                while (this.textFlow.TextRuns.Count < 2) {
+                    Thread.Sleep(1);
+                }
+            }
+            else {
+                while (this.textFlow.TextRuns.Count < count) {
+                    Thread.Sleep(1);
+                }
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
         }
     }

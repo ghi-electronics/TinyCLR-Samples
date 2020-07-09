@@ -24,20 +24,20 @@ namespace Demos {
         static void Main() {
 
             Display.InitializeDisplay();
-            Input.Button.InitializeButtons();            
+            Input.Button.InitializeButtons();
 
             MainApp = new Program(Display.Width, Display.Height);
 
-            var mainWindow = new MainWindow(Display.Width, Display.Height);            
+            var mainWindow = new MainWindow(Display.Width, Display.Height);
 
             // Create System Window            
-            var iconImageSystem = Resources.GetBitmap(Resources.BitmapResources.settingImage);                  
-            var iconTextSystem = "System Information";
+            var iconImageSystem = Resources.GetBitmap(Resources.BitmapResources.settingImage);
+            var iconTextSystem = "System";
             var systemWindow = new SystemWindow(iconImageSystem, iconTextSystem, Display.Width, Display.Height) {
                 EnableButtomBack = true,
                 EnableClockOnTopBar = true
             };
-            
+
             mainWindow.RegisterWindow(systemWindow);
 
             // Create Ethernet Window
@@ -45,7 +45,7 @@ namespace Demos {
             var iconTextEthernet = "Ethernet";
             var networkWindow = new EthernetWindow(iconImageEthernet, iconTextEthernet, Display.Width, Display.Height) {
                 EnableButtomBack = true,
-               
+
                 EnableClockOnTopBar = true
             };
 
@@ -163,7 +163,7 @@ namespace Demos {
 
 
 
-            
+
 
             MainApp.Run(mainWindow);
         }

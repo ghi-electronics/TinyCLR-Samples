@@ -60,11 +60,23 @@ namespace Demos {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
+
                 this.topBar = new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
                 this.topBar.OnClose += this.OnClose;
 
                 if (this.EnableButtomBack || this.EnableButtomNext) {
-                    this.bottomBar = new BottomBar(this.Width, this.EnableButtomBack, this.EnableButtomNext);
+                    try {
+                        this.bottomBar = new BottomBar(this.Width, this.EnableButtomBack, this.EnableButtomNext);
+                    }
+                    catch {
+                        if (this.topBar != null)
+                            this.topBar.Dispose();
+
+                        if (this.bottomBar != null)
+                            this.bottomBar.Dispose();
+
+                        return null;
+                    }
                 }
 
 
@@ -100,7 +112,7 @@ namespace Demos {
         private void ButtonNext_Click(object sender, RoutedEventArgs e) {
             if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
                 OnBottomBarButtonNextTouchUpEvent?.Invoke(sender, e);
-            }            
+            }
         }
 
         private void Child_IsVisibleChanged(object sender, PropertyChangedEventArgs e) {
@@ -137,7 +149,7 @@ namespace Demos {
                 return;
 
             this.bottomBar.ButtonNext.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
-            
+
         }
     }
 }
