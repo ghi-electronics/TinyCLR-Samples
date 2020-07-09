@@ -117,6 +117,17 @@ namespace Demos {
 
             mainWindow.RegisterWindow(uartWindow); // Register to MainWindow
 
+            // Create Buzzer Window
+            var iconImageRtc = Resources.GetBitmap(Resources.BitmapResources.Rtc); // Icon
+            var iconTextRtc = "Rtc";
+            var rtcWindow = new RtcWindow(iconImageRtc, iconTextRtc, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(rtcWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
@@ -126,7 +137,13 @@ namespace Demos {
                 EnableClockOnTopBar = true
             };
 
-            mainWindow.RegisterWindow(templateWindow); // Register to MainWindow           
+            mainWindow.RegisterWindow(templateWindow); // Register to MainWindow
+
+
+
+            GC.Collect();
+
+            Debug.WriteLine("Free: " + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
 
             MainApp.Run(mainWindow);
         }

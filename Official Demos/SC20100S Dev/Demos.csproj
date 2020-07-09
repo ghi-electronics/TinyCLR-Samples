@@ -53,6 +53,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Windows\QspiWindow.cs" />
+    <Compile Include="Windows\RtcWindow.cs" />
     <Compile Include="Windows\Sd.cs" />
     <Compile Include="Windows\SystemWindow.cs" />
     <Compile Include="Utils\TopBar.cs" />
@@ -105,6 +106,9 @@
     <Reference Include="GHIElectronics.TinyCLR.Devices.Pwm, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Pwm.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Pwm.dll</HintPath>
     </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Rtc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Rtc.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Rtc.dll</HintPath>
+    </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Devices.Spi, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Spi.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Spi.dll</HintPath>
     </Reference>
@@ -156,6 +160,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Uart.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Rtc.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Pwm.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Color.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
