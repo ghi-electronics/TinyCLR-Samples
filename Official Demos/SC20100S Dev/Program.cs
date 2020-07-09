@@ -130,7 +130,7 @@ namespace Demos {
 
             // Create Pwm Window
             var iconImagePwm = Resources.GetBitmap(Resources.BitmapResources.Pwm); // Icon
-            var iconTextPwm = "Pwm";
+            var iconTextPwm = "Led - Pwm";
             var pwmWindow = new PwmWindow(iconImagePwm, iconTextPwm, Display.Width, Display.Height) {
                 EnableButtomBack = true,
                 EnableButtomNext = true,

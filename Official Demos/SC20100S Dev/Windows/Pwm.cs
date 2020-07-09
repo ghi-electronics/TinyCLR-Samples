@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
+using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -24,8 +25,9 @@ namespace Demos {
 
         private const string Instruction8 = " ";
 
-        private const string StatusPass1 = "The test is passed if red led";
-        private const string StatusPass2 = "is changing brighness.";
+        private const string StatusPass1 = "The test is passed if red led is";
+        private const string StatusPass2 = "changing brighness, and green is";
+        private const string StatusPass3 = "blinking.";
 
         private Font font;
 
@@ -164,13 +166,18 @@ namespace Demos {
 
             this.isRuning = true;
             //Because of https://github.com/ghi-electronics/TinyCLR-Libraries/issues/642
-            // the green led PE11 is disable for now.
+            // the green led PE11 is gpio for now.
+
+            var gpioController = GpioController.GetDefault();
 
             var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.PwmChannel.Controller3.Id);
             //var pwmController1 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.PwmChannel.Controller1.Id);
 
             var pwmPinPB0 = pwmController3.OpenChannel(SC20100.PwmChannel.Controller3.PB0);
             //var pwmPinPE11 = pwmController1.OpenChannel(SC20100.PwmChannel.Controller1.PE11);
+            var pwmPinPE11 = gpioController.OpenPin(SC20100.GpioPin.PE11);
+
+            pwmPinPE11.SetDriveMode(GpioPinDriveMode.Output);
 
             pwmController3.SetDesiredFrequency(1000);
             //pwmController1.SetDesiredFrequency(1000);
@@ -183,6 +190,7 @@ namespace Demos {
 
             this.UpdateStatusText(StatusPass1, true);
             this.UpdateStatusText(StatusPass2, false);
+            this.UpdateStatusText(StatusPass3, false);
 
             while (this.isRuning) {
                 for (var i = 0; i < 10; i++) {
@@ -190,6 +198,7 @@ namespace Demos {
 
                     pwmPinPB0.Start();
                     //pwmPinPE11.Start();
+                    pwmPinPE11.Write(pwmPinPE11.Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
 
                     Thread.Sleep(100);
 
@@ -204,7 +213,7 @@ namespace Demos {
             }
 
             pwmPinPB0.Dispose();
-            //pwmPinPE11.Dispose();
+            pwmPinPE11.Dispose();
 
             this.isRuning = false;
 
