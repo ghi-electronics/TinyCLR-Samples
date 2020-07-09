@@ -58,6 +58,7 @@
     <Compile Include="Utils\TopBar.cs" />
     <Compile Include="Windows\TemplateWindow.cs" />
     <Compile Include="Touch.cs" />
+    <Compile Include="Windows\UartWindow.cs" />
     <Compile Include="Windows\Usb.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Canfd.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Uart.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

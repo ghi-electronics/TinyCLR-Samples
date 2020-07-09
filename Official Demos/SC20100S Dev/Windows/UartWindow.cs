@@ -4,46 +4,36 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Can;
+
+using GHIElectronics.TinyCLR.Devices.Uart;
+using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class CanFdWindow : ApplicationWindow {
+    public class UartWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = "This test will run on CAN1, FD mode.";
-        private const string Instruction2 = " Nominal speed: 1Mbit/s.";
-        private const string Instruction3 = " Data speed: 2Mbit/.,";
-        private const string Instruction4 = " Filter Id: 0x100...0x999.";
-        private const string Instruction5 = " When the board get a message, it'll ";
-        private const string Instruction6 = " send back a message same format";
-        private const string Instruction7 = " and ArbitrationId plus 1. ";
-        private const string Instruction8 = " Press Test button when you ready.";
+        private const string Instruction1 = " This will test UART1 only: ";
+        private const string Instruction2 = " - Connect UART1 to PC.";
+        private const string Instruction3 = " - Open TeraTerm application.";
+        private const string Instruction4 = " - Baudrate: 115200, DataBit: 8, StopBit: One,";
+        private const string Instruction5 = "   Parity: None, , Flow Control: None. ";
+        private const string Instruction6 = " - Whatever you typed on TeraTerm, SITCore ";
+        private const string Instruction7 = " will back these data +1 ";
+        private const string Instruction8 = " Example: Type 123... on TeraTerm, you will get back 234... ";
 
-        private const string WaitForMessage = "Wait for receiving message...";
-        private const string TotalReceived = "Total received: ";
-
-        private const string ArbitrationId = "ArbitrationId: ";
-        private const string ExtendedId = "ExtendedId: ";
-        private const string FdCanMode = "FD Mode: ";
-        private const string BitRateSwitch = "BitRateSwitch: ";
-        private const string RTR = "RTR: ";
-        private const string Data = "Data: ";
+        private const string WaitForMessage = "Wait for receiving data...";
 
         private Font font;
 
-        private bool isRuning;
-
-        private int messageReceiveCount = 0;
+        private bool isRuning;        
 
         private TextFlow textFlow;
 
-
-        public CanFdWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-
+        public UartWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
 
         }
 
@@ -78,30 +68,22 @@ namespace Demos {
         }
 
         private void Deinitialize() {
-
             this.textFlow.TextRuns.Clear();
             this.textFlow = null;
 
             this.font.Dispose();
-
         }
 
         protected override void Active() {
             // To initialize, reset your variable, design...
-
             this.Initialize();
 
             this.canvas = new Canvas();
 
             this.Child = this.canvas;
 
-            this.isRuning = false;
-
-            this.messageReceiveCount = 0;
-
             this.ClearScreen();
             this.CreateWindow();
-
             this.SetEnableButtonNext(true);
         }
 
@@ -116,11 +98,9 @@ namespace Demos {
         protected override void Deactive() {
             this.isRuning = false;
 
-            Thread.Sleep(10);
+            Thread.Sleep(100); // Wait for test thread is stop => no update canvas
             // To stop or free, uinitialize variable resource
             this.canvas.Children.Clear();
-
-            this.Deinitialize();
         }
 
         private void ClearScreen() {
@@ -155,10 +135,6 @@ namespace Demos {
 
                 case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
                     if (this.isRuning == false) {
-                        this.textFlow.TextRuns.Clear();
-
-                        this.textFlow.TextRuns.Add(WaitForMessage, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-                        this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
                         this.SetEnableButtonNext(false);
 
@@ -176,92 +152,73 @@ namespace Demos {
         private void CreateWindow() {
             var startX = 5;
             var startY = 20;
-            var offsetY = 10;
 
-
-            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY); startY += offsetY;
+            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY); 
             this.canvas.Children.Add(this.textFlow);
         }
-        
+
+
         private void ThreadTest() {
+
             this.isRuning = true;
 
-            var canController = CanController.FromName(SC20260.CanBus.Can1);
 
-            canController.SetNominalBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(13, 2, 3, 1, false)); // 1.0Mb at 48MHz            
+            using (var uart1 = UartController.FromName(SC20260.UartPort.Uart5)) {
 
-            canController.SetDataBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(8, 3, 2, 1, false)); // 2.0Mb at 48MHz
+                var setting = new UartSetting() {
+                    BaudRate = 115200
+                };
 
-            canController.Filter.AddRangeFilter(Filter.IdType.Standard, 0x100, 0x7FF);
-            canController.Filter.AddRangeFilter(Filter.IdType.Extended, 0x100, 0x999);
+                uart1.SetActiveSettings(setting);
+                uart1.Enable();
 
-            canController.MessageReceived += this.CanController_MessageReceived;
-            canController.ErrorReceived += this.CanController_ErrorReceived;
+                var totalReceived = 0;
+                var totalSent = 0;
 
-            canController.Enable();
+                while (this.isRuning) {
+                    this.UpdateStatusText("Total received: " + totalReceived,  true); 
+                    this.UpdateStatusText("Total sent: " + totalSent,  false); 
+                    this.UpdateStatusText(WaitForMessage, false); 
 
-            while (this.isRuning) {
+                    while (uart1.BytesToRead == 0) {
+                        Thread.Sleep(10);
+                    }
+                    
+                    var byteToRead = uart1.BytesToRead > uart1.ReadBufferSize ? uart1.ReadBufferSize : uart1.BytesToRead;
 
-                Thread.Sleep(100);
+                    var read = new byte[byteToRead];
+
+
+                    this.UpdateStatusText("Receiving... " + byteToRead + " byte(s)", false); 
+                    totalReceived +=uart1.Read(read);
+
+                    
+
+                    for (var i = 0; i < read.Length; i++) {
+                        var write = new byte[1] { (byte)(read[i] + 1) };
+                        totalSent +=uart1.Write(write);
+
+                        uart1.Flush();
+                    }
+
+                    
+                    this.UpdateStatusText("Writing back... " + byteToRead + " byte(s)", false); 
+
+                }
             }
+
 
             this.isRuning = false;
 
-            canController.Disable();
-        }
+            return;
 
-        private void CanController_ErrorReceived(CanController sender, ErrorReceivedEventArgs e) {
-            try {
-                // Reset CAN
-                sender.Disable();
-
-                Thread.Sleep(10);
-
-                sender.Enable();
-            }
-            catch { }
-        }
-
-        private void CanController_MessageReceived(CanController sender, MessageReceivedEventArgs e) {
-
-            var msgs = new GHIElectronics.TinyCLR.Devices.Can.CanMessage[e.Count];
-
-            for (var i = 0; i < msgs.Length; i++)
-                msgs[i] = new GHIElectronics.TinyCLR.Devices.Can.CanMessage();
-
-            this.messageReceiveCount += sender.ReadMessages(msgs, 0, msgs.Length);
-
-            for (var i = 0; i < msgs.Length; i++) {
-                this.UpdateStatusText(ArbitrationId + msgs[i].ArbitrationId, true);
-                this.UpdateStatusText(FdCanMode + msgs[i].FdCan, false);
-                this.UpdateStatusText(ExtendedId + msgs[i].ExtendedId, false);
-                this.UpdateStatusText(RTR + msgs[i].RemoteTransmissionRequest, false);
-                this.UpdateStatusText(BitRateSwitch + msgs[i].BitRateSwitch, false);
-
-                var dataText = string.Empty;
-
-                for (var ii = 0; ii < 8; ii++) {
-                    dataText += msgs[i].Data[ii] + " ";
-                }
-
-                this.UpdateStatusText(Data + dataText, false);
-                this.UpdateStatusText(TotalReceived + this.messageReceiveCount, false);
-
-                try {
-                    msgs[i].ArbitrationId += 1;
-
-                    sender.WriteMessage(msgs[i]);
-                }
-                catch {
-
-                }
-            }
         }
 
         private void UpdateStatusText(string text, bool clearscreen) {
 
             var timeout = 100;
             var count = this.textFlow.TextRuns.Count + 2;
+            
 
             Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
@@ -285,7 +242,7 @@ namespace Demos {
                     Thread.Sleep(1);
                 }
             }
-
+            
 
         }
     }

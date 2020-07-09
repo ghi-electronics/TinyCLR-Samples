@@ -106,6 +106,17 @@ namespace Demos {
 
             mainWindow.RegisterWindow(canFdWindow); // Register to MainWindow
 
+            // Create Uart Window
+            var iconImageUart = Resources.GetBitmap(Resources.BitmapResources.Uart); // Icon
+            var iconTextUart = "Uart";
+            var uartWindow = new UartWindow(iconImageUart, iconTextUart, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(uartWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
