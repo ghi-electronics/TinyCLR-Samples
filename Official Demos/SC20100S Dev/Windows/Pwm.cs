@@ -139,6 +139,7 @@ namespace Demos {
                     break;
 
                 case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
+                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
                     if (this.isRuning == false) {
 
                         this.SetEnableButtonNext(false);
@@ -147,9 +148,6 @@ namespace Demos {
                     }
                     break;
 
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
-
-                    break;
             }
         }
 

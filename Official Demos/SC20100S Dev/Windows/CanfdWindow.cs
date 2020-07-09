@@ -146,6 +146,7 @@ namespace Demos {
                     break;
 
                 case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
+                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
                     if (this.isRuning == false) {
                         this.textFlow.TextRuns.Clear();
 
@@ -157,10 +158,7 @@ namespace Demos {
                         new Thread(this.ThreadTest).Start();
                     }
                     break;
-
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
-
-                    break;
+                
 
             }
         }

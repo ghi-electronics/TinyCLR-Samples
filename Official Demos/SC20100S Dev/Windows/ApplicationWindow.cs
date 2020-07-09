@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Threading;
@@ -35,11 +36,20 @@ namespace Demos {
 
         private bool actived;
 
+        static BottomBar sBottomBar;
+        static TopBar sTopBar;
+
         public ApplicationWindow(Bitmap icon, string title, int width, int height) {
             this.Icon = new Icon(icon, title);
 
             this.Width = width;
             this.Height = height;
+
+            if (sBottomBar == null)
+                sBottomBar = new BottomBar(this.Width, true, true);
+
+            if (sTopBar == null)
+                sTopBar = new TopBar(this.Width, "", true);
         }
 
         public UIElement TopBar => this.topBar?.Child;
@@ -60,20 +70,24 @@ namespace Demos {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
+                //Debug.WriteLine("" + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
 
-                this.topBar = new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
-                this.topBar.OnClose += this.OnClose;
+
+                this.topBar = sTopBar;// new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
+                //this.topBar.OnClose += this.OnClose;
 
                 if (this.EnableButtomBack || this.EnableButtomNext) {
                     try {
-                        this.bottomBar = new BottomBar(this.Width, this.EnableButtomBack, this.EnableButtomNext);
+                        this.bottomBar = sBottomBar;// new BottomBar(this.Width, this.EnableButtomBack, this.EnableButtomNext);
+
+
                     }
                     catch {
-                        if (this.topBar != null)
-                            this.topBar.Dispose();
+                        //if (this.topBar != null)
+                        //    this.topBar.Dispose();
 
-                        if (this.bottomBar != null)
-                            this.bottomBar.Dispose();
+                        //if (this.bottomBar != null)
+                        //    this.bottomBar.Dispose();
 
                         return null;
                     }
@@ -126,11 +140,16 @@ namespace Demos {
             if (this.actived) {
                 this.Deactive();
 
-                if (this.topBar != null)
-                    this.topBar.Dispose();
+                //if (this.topBar != null)
+                //    this.topBar.Dispose();
 
-                if (this.bottomBar != null)
-                    this.bottomBar.Dispose();
+                //if (this.bottomBar != null)
+                //    this.bottomBar.Dispose();
+
+                //if (this.bottomBar != null) {
+                //    this.bottomBar.ButtonBack.Click -= this.ButtonBack_Click;
+                //    this.bottomBar.ButtonNext.Click -= this.ButtonNext_Click;
+                //}
 
                 this.actived = false;
             }
@@ -145,10 +164,10 @@ namespace Demos {
         private void OnClose(object sender, RoutedEventArgs e) => this.Close();
 
         public void SetEnableButtonNext(bool enable) {
-            if (this.bottomBar.ButtonNext == null)
-                return;
+            //if (this.bottomBar.ButtonNext == null)
+            //    return;
 
-            this.bottomBar.ButtonNext.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
+            //this.bottomBar.ButtonNext.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
 
         }
     }

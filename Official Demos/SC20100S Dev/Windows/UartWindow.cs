@@ -16,14 +16,14 @@ namespace Demos {
     public class UartWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test UART1 only: ";
-        private const string Instruction2 = " - Connect UART1 to PC.";
-        private const string Instruction3 = " - Open TeraTerm application.";
-        private const string Instruction4 = " - Baudrate: 115200, DataBit: 8, StopBit: One,";
-        private const string Instruction5 = "   Parity: None, , Flow Control: None. ";
-        private const string Instruction6 = " - Whatever you typed on TeraTerm, SITCore ";
-        private const string Instruction7 = " will back these data +1 ";
-        private const string Instruction8 = " Example: Type 123... on TeraTerm, you will get back 234... ";
+        private const string Instruction1 = "This will test UART1 only: ";
+        private const string Instruction2 = "- Connect UART1 to PC.";
+        private const string Instruction3 = "- Open TeraTerm application.";
+        private const string Instruction4 = "- Baud: 115200, DataBit 8, StopBit: 1,";
+        private const string Instruction5 = "  Parity: None, Flow Control: None. ";
+        private const string Instruction6 = "- Whatever you typed on TeraTerm, ";
+        private const string Instruction7 = "SITCore will back these data +1 ";
+        private const string Instruction8 = " ";
 
         private const string WaitForMessage = "Wait for receiving data...";
 
@@ -134,6 +134,7 @@ namespace Demos {
                     break;
 
                 case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
+                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
                     if (this.isRuning == false) {
 
                         this.SetEnableButtonNext(false);
@@ -141,16 +142,11 @@ namespace Demos {
                         new Thread(this.ThreadTest).Start();
                     }
                     break;
-
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
-
-                    break;
-
             }
         }
 
         private void CreateWindow() {
-            var startX = 5;
+            var startX = 2;
             var startY = 20;
 
             Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY); 

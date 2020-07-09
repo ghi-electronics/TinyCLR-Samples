@@ -86,16 +86,10 @@ namespace Demos {
 
             switch (buttonSource.Button) {
                 case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Left:
+                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
+                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
                     // close this window, back to previous window ???
                     this.Close();
-                    break;
-
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
-                   
-                    break;
-
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
-
                     break;
 
             }
