@@ -1,37 +1,48 @@
 using System;
+using System.Collections;
 using System.Drawing;
+using System.Text;
 using System.Threading;
 using Demos.Properties;
+using GHIElectronics.TinyCLR.Devices.Rtc;
+using GHIElectronics.TinyCLR.Devices.Storage;
+using GHIElectronics.TinyCLR.Devices.Uart;
+using GHIElectronics.TinyCLR.Native;
+using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
-using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class SystemWindow : ApplicationWindow {
-        private Canvas canvas;
+    public class ColorWindow : ApplicationWindow {
+        private Canvas canvas; // can be StackPanel     
 
-        private const string Instruction1 = "Device: ";
-        private const string Instruction2 = "Clock: 480 MHz";
-        private const string Instruction3 = "Memory: 512KB Total";
-        private const string Instruction4 = "External Memory: ";
-        private const string Instruction5 = "OS: TinyCLR OS v";
-        private const string Instruction6 = "Manufacture: ";
+        private const string Instruction1 = " This will test raw graphic on ";
+        private const string Instruction2 = " ST7735 display.";
+        private const string Instruction3 = " ";
+        private const string Instruction4 = "  Press Test button when you ready.";
+        private const string Instruction5 = "  ";
+        private const string Instruction6 = "  ";
+        private const string Instruction7 = "  ";
 
-        public SystemWindow(Bitmap icon, string title, int width, int height) : base(icon, title, width, height) {
-
-        }
+        private const string Instruction8 = " ";
 
         private Font font;
+
+        private bool isRuning;
+
         private TextFlow textFlow;
 
+        public ColorWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+
+        }
 
         private void Initialize() {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
             this.textFlow = new TextFlow();
-            
-            this.textFlow.TextRuns.Add(Instruction1 + GHIElectronics.TinyCLR.Native.DeviceInformation.DeviceName, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+
+            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
@@ -40,13 +51,19 @@ namespace Demos {
             this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.textFlow.TextRuns.Add(Instruction4 + (GHIElectronics.TinyCLR.Native.Memory.UnmanagedMemory.FreeBytes / 1024) + "KB", this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.textFlow.TextRuns.Add(Instruction5 + GHIElectronics.TinyCLR.Native.DeviceInformation.Version.ToString("x8").Substring(0, 3), this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.textFlow.TextRuns.Add(Instruction6 + GHIElectronics.TinyCLR.Native.DeviceInformation.ManufacturerName, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
         }
@@ -58,6 +75,31 @@ namespace Demos {
 
             this.font.Dispose();
 
+        }
+
+        protected override void Active() {
+            // To initialize, reset your variable, design...
+            this.Initialize();
+
+            this.canvas = new Canvas();
+
+            this.Child = this.canvas;
+
+            this.ClearScreen();
+            this.CreateWindow();
+
+            this.SetEnableButtonNext(true);
+        }
+
+
+        protected override void Deactive() {
+            this.isRuning = false;
+
+            Thread.Sleep(100); // Wait for test thread is stop => no update canvas
+            // To stop or free, uinitialize variable resource
+            this.canvas.Children.Clear();
+
+            this.Deinitialize();
         }
 
         private void ClearScreen() {
@@ -78,7 +120,6 @@ namespace Demos {
                 // Regiter Button event
                 this.OnBottomBarButtonUpEvent += this.TemplateWindow_OnBottomBarButtonUpEvent;
             }
-
         }
 
         private void TemplateWindow_OnBottomBarButtonUpEvent(object sender, RoutedEventArgs e) {
@@ -91,13 +132,17 @@ namespace Demos {
                     break;
 
                 case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
-                   
+                    if (this.isRuning == false) {
+
+                        this.SetEnableButtonNext(false);
+
+                        new Thread(this.ThreadTest).Start();
+                    }
                     break;
 
                 case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
 
                     break;
-
             }
         }
 
@@ -106,26 +151,23 @@ namespace Demos {
             var startY = 20;
 
             Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
-            this.canvas.Children.Add(this.textFlow);            
-        }      
-        
-
-        protected override void Active() {
-            this.Initialize();
-
-            this.canvas = new Canvas();
-
-            this.Child = this.canvas;
-
-            this.ClearScreen();
-
-            this.CreateWindow();
+            this.canvas.Children.Add(this.textFlow);
         }
 
-        protected override void Deactive() {
-            this.canvas.Children.Clear();
 
-            this.Deinitialize();
+
+        private void ThreadTest() {
+
+            this.isRuning = true;
+
+            this.UpdateStatusText("This is red color", true, System.Drawing.Color.Red);
+            this.UpdateStatusText("This is green color", false, System.Drawing.Color.Green);
+            this.UpdateStatusText("This is blue color", false, System.Drawing.Color.Blue);
+            this.UpdateStatusText("This is white color", false, System.Drawing.Color.White);
+
+            this.isRuning = false;
+
+            return;
         }
 
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
@@ -134,6 +176,8 @@ namespace Demos {
 
             var timeout = 100;
             var count = this.textFlow.TextRuns.Count + 2;
+
+
 
             Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
@@ -163,6 +207,5 @@ namespace Demos {
 
 
         }
-
     }
 }
