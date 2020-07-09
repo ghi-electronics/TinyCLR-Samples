@@ -127,5 +127,13 @@ namespace Demos {
         private void OnButtonUp(object sender, RoutedEventArgs e) => OnBottomBarButtonUpEvent?.Invoke(sender, e);
 
         private void OnClose(object sender, RoutedEventArgs e) => this.Close();
+
+        public void SetEnableButtonNext(bool enable) {
+            if (this.bottomBar.ButtonNext == null)
+                return;
+
+            this.bottomBar.ButtonNext.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
+            
+        }
     }
 }

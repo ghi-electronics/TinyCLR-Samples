@@ -95,6 +95,17 @@ namespace Demos {
 
             mainWindow.RegisterWindow(qspiWindow); // Register to MainWindow
 
+            // Create CanFd Window
+            var iconImageCanFd = Resources.GetBitmap(Resources.BitmapResources.Canfd); // Icon
+            var iconTextCanFd = "CAN FD";
+            var canFdWindow = new CanFdWindow(iconImageCanFd, iconTextCanFd, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(canFdWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text

@@ -39,6 +39,7 @@ namespace Demos.Properties
             Qspi = -32580,
             Template = -21726,
             settingImage = -17023,
+            Canfd = -16516,
             Ethernet = -16161,
             Piezo = -5876,
             Usb = 1556,
