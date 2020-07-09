@@ -42,8 +42,8 @@ namespace Demos {
 
             // Create Ethernet Window
             var iconImageEthernet = Resources.GetBitmap(Resources.BitmapResources.Ethernet); // Icon
-            var iconTextEthernet = "Ethernet";
-            var networkWindow = new EthernetWindow(iconImageEthernet, iconTextEthernet, Display.Width, Display.Height) {
+            var iconTextEthernet = "Eth-Wifi";
+            var networkWindow = new NetworkWindow(iconImageEthernet, iconTextEthernet, Display.Width, Display.Height) {
                 EnableButtomBack = true,
 
                 EnableClockOnTopBar = true

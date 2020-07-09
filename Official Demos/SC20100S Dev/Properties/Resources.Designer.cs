@@ -47,6 +47,7 @@ namespace Demos.Properties
             Uart = 11521,
             Sd = 12737,
             Rtc = 14704,
+            Wifi = 17372,
             Color = 18291,
         }
         [System.SerializableAttribute()]
