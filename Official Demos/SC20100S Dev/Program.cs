@@ -128,6 +128,17 @@ namespace Demos {
 
             mainWindow.RegisterWindow(rtcWindow); // Register to MainWindow
 
+            // Create Pwm Window
+            var iconImagePwm = Resources.GetBitmap(Resources.BitmapResources.Pwm); // Icon
+            var iconTextPwm = "Pwm";
+            var pwmWindow = new PwmWindow(iconImagePwm, iconTextPwm, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(pwmWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text
@@ -141,9 +152,7 @@ namespace Demos {
 
 
 
-            GC.Collect();
-
-            Debug.WriteLine("Free: " + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
+            
 
             MainApp.Run(mainWindow);
         }

@@ -52,6 +52,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Windows\Pwm.cs" />
     <Compile Include="Windows\QspiWindow.cs" />
     <Compile Include="Windows\RtcWindow.cs" />
     <Compile Include="Windows\Sd.cs" />

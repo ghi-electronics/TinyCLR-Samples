@@ -164,6 +164,10 @@ namespace Demos {
 
         public void RegisterWindow(ApplicationWindow aw) {
 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            
+
             aw.Parent = this;
             aw.Id = this.applicationWindows.Count;
             aw.Icon.Width = this.Width / IconColum;

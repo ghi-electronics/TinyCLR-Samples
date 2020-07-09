@@ -4,8 +4,6 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Rtc;
-using GHIElectronics.TinyCLR.Devices.Storage;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -13,33 +11,30 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class RtcWindow : ApplicationWindow {
+    public class PwmWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " ***Be carefull: This test will enable ";
-        private const string Instruction2 = " charging mode on VBAT pin***";
-        private const string Instruction3 = " ";
-        private const string Instruction4 = " Press Test button when you ready.";
-        private const string Instruction5 = " ";
+        private const string Instruction1 = "This will test Pwm on two leds: ";
+        private const string Instruction2 = "- Red led connect to PB0";
+        private const string Instruction3 = "- Green led connect to PH11 ";
+        private const string Instruction4 = " ";
+        private const string Instruction5 = "Press Test button when you ready.";
         private const string Instruction6 = " ";
         private const string Instruction7 = " ";
+
         private const string Instruction8 = " ";
+
+        private const string StatusPass1 = "The test is passed if red led";
+        private const string StatusPass2 = "is changing brighness.";
 
         private Font font;
 
         private bool isRuning;
 
-        private RtcController rtc;
-
         private TextFlow textFlow;
 
-        const int ChargeVbatTimeout = 30; // 30 seconds
+        public PwmWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
 
-        public RtcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-
-            this.rtc = RtcController.GetDefault();
-
-            this.rtc.SetChargeMode(BatteryChargeMode.None);
         }
 
         private void Initialize() {
@@ -81,7 +76,6 @@ namespace Demos {
             this.font.Dispose();
 
         }
-
 
         protected override void Active() {
             // To initialize, reset your variable, design...
@@ -126,12 +120,11 @@ namespace Demos {
             if (this.BottomBar != null) {
                 Canvas.SetLeft(this.BottomBar, 0); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
                 this.canvas.Children.Add(this.BottomBar);
-               
+
                 // Regiter touch event for button back or next
                 // Regiter Button event
                 this.OnBottomBarButtonUpEvent += this.TemplateWindow_OnBottomBarButtonUpEvent;
             }
-
         }
 
         private void TemplateWindow_OnBottomBarButtonUpEvent(object sender, RoutedEventArgs e) {
@@ -155,7 +148,6 @@ namespace Demos {
                 case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
 
                     break;
-
             }
         }
 
@@ -169,47 +161,54 @@ namespace Demos {
 
 
         private void ThreadTest() {
+
             this.isRuning = true;
+            //Because of https://github.com/ghi-electronics/TinyCLR-Libraries/issues/642
+            // the green led PE11 is disable for now.
 
-            var m = new DateTime(2020, 7, 7, 00, 00, 00);
+            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.PwmChannel.Controller3.Id);
+            //var pwmController1 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.PwmChannel.Controller1.Id);
 
-            if (this.rtc.IsValid && this.rtc.Now > m) {
+            var pwmPinPB0 = pwmController3.OpenChannel(SC20100.PwmChannel.Controller3.PB0);
+            //var pwmPinPE11 = pwmController1.OpenChannel(SC20100.PwmChannel.Controller1.PE11);
 
-                while (this.isRuning) {
-                    var time = this.rtc.Now.ToString();
-                    this.UpdateStatusText("RTC is working: " + time, true);
+            pwmController3.SetDesiredFrequency(1000);
+            //pwmController1.SetDesiredFrequency(1000);
+
+            pwmPinPB0.SetActiveDutyCyclePercentage(0.0);
+            //pwmPinPE11.SetActiveDutyCyclePercentage(0.0);
+
+            var value = 0.0;
+            var dir = 1;
+
+            this.UpdateStatusText(StatusPass1, true);
+            this.UpdateStatusText(StatusPass2, false);
+
+            while (this.isRuning) {
+                for (var i = 0; i < 10; i++) {
+                    value += 0.1 * dir;
+
+                    pwmPinPB0.Start();
+                    //pwmPinPE11.Start();
+
+                    Thread.Sleep(100);
+
+                    pwmPinPB0.Stop();
+                    //pwmPinPE11.Stop();
+
+                    pwmPinPB0.SetActiveDutyCyclePercentage(value);
+                    //pwmPinPE11.SetActiveDutyCyclePercentage(value);
                 }
-            }
-            else {
-                var newDt = RtcDateTime.FromDateTime(m);
 
-                var charetimeout = 0;
-
-                this.rtc.SetChargeMode(BatteryChargeMode.Fast);
-
-                while (charetimeout < ChargeVbatTimeout) {
-                    this.UpdateStatusText("Please wait for charing...." + charetimeout + " / " + ChargeVbatTimeout, true);
-
-                    charetimeout++;
-
-                    Thread.Sleep(1000);
-                }
-
-                this.rtc.SetChargeMode(BatteryChargeMode.None);
-
-                this.rtc.SetTime(newDt);
-                GHIElectronics.TinyCLR.Native.SystemTime.SetTime(m);
-
-                this.UpdateStatusText("Please power off the board for 10", false);
-                this.UpdateStatusText("seconds, then check RTC timer again", false);
-
+                dir = 0 - dir;
             }
 
+            pwmPinPB0.Dispose();
+            //pwmPinPE11.Dispose();
 
             this.isRuning = false;
 
             return;
-
         }
 
         private void UpdateStatusText(string text, bool clearscreen) {
