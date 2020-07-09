@@ -11,7 +11,7 @@ using GHIElectronics.TinyCLR.UI.Media.Imaging;
 using GHIElectronics.TinyCLR.UI.Threading;
 
 namespace Demos {
-    public class TopBar {
+    public class TopBar : IDisposable {
 
         private Text leftLabel;
         private Text rightLabel;

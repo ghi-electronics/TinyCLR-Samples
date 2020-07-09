@@ -10,7 +10,7 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
 namespace Demos.Utils {
-    public class BottomBar {
+    public class BottomBar : IDisposable {
         private Canvas canvas;
 
         public Button ButtonBack { get; }

@@ -151,15 +151,15 @@ namespace Demos {
             mainWindow.RegisterWindow(colorWindow); // Register to MainWindow
 
             // Empty template
-            var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
-            var iconTextTemplate = "Template"; // Text
-            var templateWindow = new TemplateWindow(iconImageTemplate, iconTextTemplate, Display.Width, Display.Height) {
-                EnableButtomBack = true,
-                EnableButtomNext = true,
-                EnableClockOnTopBar = true
-            };
+            //var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
+            //var iconTextTemplate = "Template"; // Text
+            //var templateWindow = new TemplateWindow(iconImageTemplate, iconTextTemplate, Display.Width, Display.Height) {
+            //    EnableButtomBack = true,
+            //    EnableButtomNext = true,
+            //    EnableClockOnTopBar = true
+            //};
 
-            mainWindow.RegisterWindow(templateWindow); // Register to MainWindow
+            //mainWindow.RegisterWindow(templateWindow); // Register to MainWindow
 
 
 
