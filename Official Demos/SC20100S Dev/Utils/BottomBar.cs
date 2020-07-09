@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Threading;
@@ -49,6 +50,9 @@ namespace Demos.Utils {
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
                 };
+
+                GC.Collect();
+                Debug.WriteLine("" + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
 
                 this.ButtonBack = new Button() {
                     Child = backText,

@@ -56,6 +56,10 @@ namespace Demos {
         public UIElement Open() {
             if (!this.actived) {
 
+                // Avoid defregment if next screen allocate big memory
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
                 this.topBar = new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
                 this.topBar.OnClose += this.OnClose;
 

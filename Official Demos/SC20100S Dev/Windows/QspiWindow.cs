@@ -13,93 +13,47 @@ using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
     public class QspiWindow : ApplicationWindow {
-        private Canvas canvas; // can be StackPanel
+        private Canvas canvas; // can be StackPanel        
 
-        private Text instructionLabel1;
-        private Text instructionLabel2;
-        private Text instructionLabel3;
-        private Text instructionLabel4;
-        private Text instructionLabel5;
-        private Text statusLabel;
-
-        private string instruction1 = "This test will Erase/Write/Read:";
-        private string instruction2 = " - 8 frist sectors";
-        private string instruction3 = " - 8 last sectors";
-        private string instruction4 = "All exist data on these sectors will be erased!";
-        private string instruction5 = "Press Test button when you ready.";
+        private const string Instruction1 = "This test will Erase/Write/Read:";
+        private const string Instruction2 = " - 8 frist sectors";
+        private const string Instruction3 = " - 8 last sectors";
+        private const string Instruction4 = "All exist data on these sectors will be erased!";
+        private const string Instruction5 = "Press Test button when you ready.";
 
         private Font font;
 
         private bool isRuning;
 
+        private TextFlow textFlow;
+
         public QspiWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-            this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
 
-            this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel2 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction2) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel3 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction3) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel4 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction4) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel5 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction5) {
-                ForeColor = Colors.White,
-            };
-
-            this.statusLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, string.Empty) {
-                ForeColor = Colors.White,
-            };
         }
 
         private void Initialize() {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
-           
-            this.statusLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "") {
-                ForeColor = Colors.White,
-            };
+            this.textFlow = new TextFlow();
 
-            this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.instructionLabel2 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction2) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.instructionLabel3 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction3) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.instructionLabel4 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction4) {
-                ForeColor = Colors.White,
-            };
+            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.instructionLabel5 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction5) {
-                ForeColor = Colors.White,
-            };
-
-         
         }
 
         private void Deinitialize() {
-          
 
-            this.instructionLabel1 = null;
-            this.instructionLabel2 = null;
-            this.instructionLabel3 = null;
-            this.instructionLabel4 = null;
-            this.instructionLabel5 = null;
-   
+            this.textFlow.TextRuns.Clear();
+            this.textFlow = null;
 
             this.font.Dispose();
 
@@ -180,27 +134,12 @@ namespace Demos {
         private void CreateWindow() {
             var startX = 5;
             var startY = 20;
-            var offsetY = 10;
 
-            Canvas.SetLeft(this.instructionLabel1, startX); Canvas.SetTop(this.instructionLabel1, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel1);
-
-            Canvas.SetLeft(this.instructionLabel2, startX); Canvas.SetTop(this.instructionLabel2, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel2);
-
-
-            Canvas.SetLeft(this.instructionLabel3, startX); Canvas.SetTop(this.instructionLabel3, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel3);
-
-            Canvas.SetLeft(this.instructionLabel4, startX); Canvas.SetTop(this.instructionLabel4, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel4);
-
-            Canvas.SetLeft(this.instructionLabel5, startX); Canvas.SetTop(this.instructionLabel5, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel5);
-   
+            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
+            this.canvas.Children.Add(this.textFlow);
         }
 
-        private string status = string.Empty;
+
 
         private void ThreadTest() {
 
@@ -234,18 +173,10 @@ _again:
                 endSector = startSector + 8;
             }
 
-            var startX = 5;
-            var startY = 20;
-            var offsetY = 10;
-
             for (var s = startSector; s < endSector; s++) {
-
-                startX = 5;
-                startY = 20;
-                offsetY = 10;
-
                 var address = s * sectorSize;
-                this.UpdateStatusText("Erasing sector " + s, startX, startY, true); startY += offsetY;
+                this.UpdateStatusText("Erasing sector " + s, true);
+
                 // Erase
                 drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
 
@@ -255,17 +186,17 @@ _again:
                 for (var idx = 0; idx < sectorSize; idx++) {
                     if (dataRead[idx] != 0xFF) {
 
-                        this.UpdateStatusText("Erase failed at: " + idx, startX, startY, false); startY += offsetY;
+                        this.UpdateStatusText("Erase failed at: " + idx, false);
 
                         goto _return;
                     }
                 }
 
                 // Write
-                this.UpdateStatusText("Writing sector " + s, startX, startY, false); startY += offsetY;
+                this.UpdateStatusText("Writing sector " + s, false);
                 drive.Write(address, sectorSize, dataWrite, 0, TimeSpan.FromSeconds(100));
 
-                this.UpdateStatusText("Reading sector " + s, startX, startY, false); startY += offsetY;
+                this.UpdateStatusText("Reading sector " + s, false);
                 //Read to compare
                 drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
 
@@ -273,7 +204,7 @@ _again:
                 for (var idx = 0; idx < sectorSize; idx++) {
                     if (dataRead[idx] != dataWrite[idx]) {
 
-                        this.UpdateStatusText("Compare failed at: " + idx, startX, startY, false); startY += offsetY;
+                        this.UpdateStatusText("Compare failed at: " + idx, false);
 
                         goto _return;
                     }
@@ -284,7 +215,7 @@ _again:
             roundTest++;
 
             if (roundTest == 2) {
-                this.UpdateStatusText("Tested Quad Spi successful!", startX, startY, false); startY += offsetY;
+                this.UpdateStatusText("Tested Quad Spi successful!", false);
             }
             else {
                 goto _again;
@@ -299,29 +230,41 @@ _return:
 
         }
 
-        private void UpdateStatusText(string text, int x, int y, bool clearscreen) {
+        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-            Thread.Sleep(1);
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
 
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(10), _ => {
+            var timeout = 100;
+            var count = this.textFlow.TextRuns.Count + 2;
+
+
+
+            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
                 if (clearscreen)
-                    this.ClearScreen();
+                    this.textFlow.TextRuns.Clear();
 
-
-                var label = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, text) {
-                    ForeColor = Colors.White,
-                };
-
-
-                Canvas.SetLeft(label, x); Canvas.SetTop(label, y);
-                this.canvas.Children.Add(label);
-
-                label.Invalidate();
+                this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
+                this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
                 return null;
 
             }, null);
+
+            if (clearscreen) {
+                while (this.textFlow.TextRuns.Count < 2) {
+                    Thread.Sleep(1);
+                }
+            }
+            else {
+                while (this.textFlow.TextRuns.Count < count) {
+                    Thread.Sleep(1);
+                }
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
 
         }
     }

@@ -139,6 +139,17 @@ namespace Demos {
 
             mainWindow.RegisterWindow(pwmWindow); // Register to MainWindow
 
+            // Create Camera Window
+            var iconImageColor = Resources.GetBitmap(Resources.BitmapResources.Color); // Icon
+            var iconTextColor = "Test Color";
+            var colorWindow = new ColorWindow(iconImageColor, iconTextColor, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(colorWindow); // Register to MainWindow
+
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             var iconTextTemplate = "Template"; // Text

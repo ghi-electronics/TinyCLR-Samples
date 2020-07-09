@@ -42,6 +42,7 @@
     <Compile Include="Display.cs" />
     <Compile Include="Windows\Buzzer.cs" />
     <Compile Include="Windows\CanfdWindow.cs" />
+    <Compile Include="Windows\ColorWindow.cs" />
     <Compile Include="Windows\EthernetWindow.cs" />
     <Compile Include="Utils\Icon.cs" />
     <Compile Include="MainWindow.cs" />
