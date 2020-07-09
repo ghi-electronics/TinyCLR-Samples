@@ -18,8 +18,9 @@ namespace Demos {
         private const string Instruction1 = "This test will Erase/Write/Read:";
         private const string Instruction2 = " - 8 frist sectors";
         private const string Instruction3 = " - 8 last sectors";
-        private const string Instruction4 = "All exist data on these sectors will be erased!";
-        private const string Instruction5 = "Press Test button when you ready.";
+        private const string Instruction4 = "All exist data on these sectors ";
+        private const string Instruction5 = "will be erased!";
+
 
         private Font font;
 
@@ -46,6 +47,9 @@ namespace Demos {
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
         }
@@ -236,8 +240,6 @@ _return:
 
             var timeout = 100;
             var count = this.textFlow.TextRuns.Count + 2;
-
-
 
             Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
