@@ -89,7 +89,7 @@ namespace Demos {
                 ForeColor = Colors.White,
             };
 
-            this.status = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "") {
+            this.status = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, " ") {
                 ForeColor = Colors.White,
             };
 
@@ -158,6 +158,11 @@ namespace Demos {
 
                     new Thread(this.CreateEthernet).Start();
                 }
+                else if (this.isWifiConnected) {
+                    this.status.TextContent = "Wifi is already connected.";
+
+                    this.status.Invalidate();
+                }
             }
         }
 
@@ -203,6 +208,8 @@ namespace Demos {
 
             Canvas.SetLeft(this.connectButton, this.Width / 2 - this.Width / 4); Canvas.SetTop(this.connectButton, startY2); startY2 += offsetY;
             this.canvas.Children.Add(this.connectButton);
+
+            this.status.TextContent = " ";
 
             Canvas.SetLeft(this.status, this.Width / 2 - this.Width / 4); Canvas.SetTop(this.status, this.Height - 40);
             this.canvas.Children.Add(this.status);
@@ -305,7 +312,7 @@ namespace Demos {
 
                     }, null);
 
-                    return;
+                    goto _return;
 
                 }
 
@@ -363,7 +370,7 @@ namespace Demos {
 
                 //gpioController.Dispose();
             }
-
+_return:
             this.isRunning = false;
         }
 
