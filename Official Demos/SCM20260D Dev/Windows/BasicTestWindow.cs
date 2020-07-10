@@ -103,9 +103,6 @@ namespace Demos {
 
                     this.textFlow.TextRuns.Clear();
 
-                    //this.textFlow.TextRuns.Add(WaitForMessage, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-                    //this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
                     new Thread(this.ThreadTest).Start();
                 }
             }
