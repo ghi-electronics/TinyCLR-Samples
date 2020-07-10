@@ -33,7 +33,7 @@ namespace Demos {
         private string instruction5 = " - Power on the board. ";
         private string instruction6 = " => Passed if timer is after 00:00:00 - 07/07/2020 ";
         private string instruction7 = "    Failed if timer is reset to 00:00:00 - 01/01/2017 ";
-        private string instruction8 = " Press Test button when you ready.";
+        private string instruction8 = " Press Test button when you are ready.";
 
         private Button testButton;
 

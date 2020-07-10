@@ -26,7 +26,7 @@ namespace Demos {
         private string instruction2 = " First second generate pwm 500Hz, duty cycle 0.5";
         private string instruction3 = " Next second generate pwm  1KHz, duty cycle 0.5";
         private string instruction4 = " Third second generates pwm 2KHz, duty cycle 0.5";
-        private string instruction5 = "Press Test button when you ready.";
+        private string instruction5 = "Press Test button when you are ready.";
 
         private Button testButton;
 

@@ -32,7 +32,7 @@ namespace Demos {
         private string instruction1 = " This will test raw graphic on UD435 display: ";
         private string instruction2 = " ";
         private string instruction3 = " ";
-        private string instruction4 = "  Press Test button when you ready.";
+        private string instruction4 = "  Press Test button when you are ready.";
         private string instruction5 = "  ";
         private string instruction6 = "  ";
         private string instruction7 = "  ";

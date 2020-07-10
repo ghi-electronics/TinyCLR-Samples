@@ -34,7 +34,7 @@ namespace Demos {
         private string instruction6 = " - Whatever you typed on TeraTerm, SITCore will back these data +1 ";
         private string instruction7 = " Example: Type 123... on TeraTerm, you will get back 234... ";
         
-        private string instruction8 = " Press Test button when you ready.";
+        private string instruction8 = " Press Test button when you are ready.";
 
         private Button testButton;
 

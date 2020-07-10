@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Threading;
@@ -55,6 +56,11 @@ namespace Demos {
 
         public UIElement Open() {
             if (!this.actived) {
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                Debug.WriteLine("" + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
 
                 this.topBar = new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
                 this.topBar.OnClose += this.OnClose;

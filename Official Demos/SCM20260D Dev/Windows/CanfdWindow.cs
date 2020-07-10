@@ -21,7 +21,7 @@ namespace Demos {
         private const string Instruction5 = " When the board get a message, it'll send back a message same format";
         private const string Instruction6 = " and ArbitrationId plus 1. ";
         private const string Instruction7 = " ";
-        private const string Instruction8 = " Press Test button when you ready.";
+        private const string Instruction8 = " Press Test button when you are ready.";
 
         private const string WaitForMessage = "Wait for receiving message...";
         private const string TotalReceived = "Total received: ";

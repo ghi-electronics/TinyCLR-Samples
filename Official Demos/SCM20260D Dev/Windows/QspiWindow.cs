@@ -26,7 +26,7 @@ namespace Demos {
         private string instruction2 = " - 8 frist sectors";
         private string instruction3 = " - 8 last sectors";
         private string instruction4 = "All exist data on these sectors will be erased!";
-        private string instruction5 = "Press Test button when you ready.";
+        private string instruction5 = "Press Test button when you are ready.";
 
         private Button testButton;
 

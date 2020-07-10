@@ -35,7 +35,7 @@ namespace Demos {
         private string instruction3 = " - PA5: Value change from 100, 55, 50, 25 and 0% of 3.3V every second";
         private string instruction4 = " - You may need a oscilloscope to measure the value on these pin ";
         private string instruction5 = "  ";
-        private string instruction6 = "  Press Test button when you ready.";
+        private string instruction6 = "  Press Test button when you are ready.";
         private string instruction7 = "  ";
 
         private string instruction8 = " ";

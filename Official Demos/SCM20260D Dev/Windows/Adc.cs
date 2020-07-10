@@ -34,7 +34,7 @@ namespace Demos {
         private string instruction2 = " - Connect PA0C pin to analog source";
         private string instruction3 = " - The screen will show current value from the pin.";
         private string instruction4 = "  ";
-        private string instruction5 = "  Press Test button when you ready.";
+        private string instruction5 = "  Press Test button when you are ready.";
         private string instruction6 = "  ";
         private string instruction7 = "  ";
 

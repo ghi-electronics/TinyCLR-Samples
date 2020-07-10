@@ -34,7 +34,7 @@ namespace Demos {
         private string instruction2 = " - Red led connect to PB0";
         private string instruction3 = " - Green led connect to PH11 ";
         private string instruction4 = " ";
-        private string instruction5 = " Press Test button when you ready.";
+        private string instruction5 = " Press Test button when you are ready.";
         private string instruction6 = " ";
         private string instruction7 = "  ";
 
