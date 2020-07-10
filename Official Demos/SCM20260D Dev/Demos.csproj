@@ -148,6 +148,9 @@
     <Reference Include="GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.dll</HintPath>
     </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.dll</HintPath>
+    </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655.dll</HintPath>
     </Reference>

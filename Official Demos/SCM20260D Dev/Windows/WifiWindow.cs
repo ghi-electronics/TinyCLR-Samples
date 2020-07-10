@@ -6,7 +6,10 @@ using System.Text;
 using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.Gpio;
+using GHIElectronics.TinyCLR.Devices.Gpio.Provider;
 using GHIElectronics.TinyCLR.Devices.Network;
+using GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0;
+using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
@@ -52,6 +55,8 @@ namespace Demos {
         private GpioPin csPin;
         private GpioPin intPin;
         private GpioPin enPin;
+
+        private bool isRunning;
 
         private SpiNetworkCommunicationInterfaceSettings networkCommunicationInterfaceSettings;
 
@@ -131,22 +136,22 @@ namespace Demos {
                 Height = 30,
             };
 
-            this.connectButton.Click += this.ConnectButton_Click;            
+            this.connectButton.Click += this.ConnectButton_Click;
 
             OnScreenKeyboard.Font = this.font;
 
             this.networkController = NetworkController.FromName("GHIElectronics.TinyCLR.NativeApis.ATWINC15xx.NetworkController");
 
-            this.isWifiConnected = false;
+            //this.isWifiConnected = false;
 
-            
+            this.isRunning = false;
         }
 
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e) {
             if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
 
-                if (this.isWifiConnected == false) {
+                if (this.isRunning == false && this.isWifiConnected == false) {
                     this.status.TextContent = "Please wait...";
 
                     this.status.Invalidate();
@@ -210,72 +215,156 @@ namespace Demos {
 
         private void CreateEthernet() {
 
+            this.isRunning = true;
             // MikroBus 1
             var gpioController = GpioController.GetDefault();
 
-            this.resetPin = gpioController.OpenPin(SC20260.GpioPin.PI8);
-            this.csPin = gpioController.OpenPin(SC20260.GpioPin.PG12);
-            this.intPin = gpioController.OpenPin(SC20260.GpioPin.PG6);
-            this.enPin = gpioController.OpenPin(SC20260.GpioPin.PI0);
-
-            this.enPin.SetDriveMode(GpioPinDriveMode.Output);
-
-            this.enPin.Write(GpioPinValue.High);
-
-            var settings = new GHIElectronics.TinyCLR.Devices.Spi.SpiConnectionSettings() {
-                ChipSelectLine = this.csPin,
-                ClockFrequency = 4000000,
-                Mode = GHIElectronics.TinyCLR.Devices.Spi.SpiMode.Mode0,
-                ChipSelectType = GHIElectronics.TinyCLR.Devices.Spi.SpiChipSelectType.Gpio,
-                ChipSelectHoldTime = TimeSpan.FromTicks(10),
-                ChipSelectSetupTime = TimeSpan.FromTicks(10)
-            };
-
-            this.networkCommunicationInterfaceSettings.SpiApiName = SC20260.SpiBus.Spi3;
-            this.networkCommunicationInterfaceSettings.GpioApiName = "GHIElectronics.TinyCLR.NativeApis.STM32H7.GpioController\\0";
-            this.networkCommunicationInterfaceSettings.SpiSettings = settings;
-            this.networkCommunicationInterfaceSettings.InterruptPin = this.intPin;
-            this.networkCommunicationInterfaceSettings.InterruptEdge = GpioPinEdge.FallingEdge;
-            this.networkCommunicationInterfaceSettings.InterruptDriveMode = GpioPinDriveMode.InputPullUp;
-            this.networkCommunicationInterfaceSettings.ResetPin = this.resetPin;
-            this.networkCommunicationInterfaceSettings.ResetActiveState = GpioPinValue.Low;
-
-            var networkInterfaceSetting = new WiFiNetworkInterfaceSettings() {
-                //Ssid = "GHI",
-                //Password = "ghi555wifi.",
-                Ssid = this.ssid.Text,
-                Password = this.password.Text,
-            };
-
-
-
-            networkInterfaceSetting.Address = new IPAddress(new byte[] { 192, 168, 1, 122 });
-            networkInterfaceSetting.SubnetMask = new IPAddress(new byte[] { 255, 255, 255, 0 });
-            networkInterfaceSetting.GatewayAddress = new IPAddress(new byte[] { 192, 168, 1, 1 });
-            networkInterfaceSetting.DnsAddresses = new IPAddress[] { new IPAddress(new byte[] { 75, 75, 75, 75 }), new IPAddress(new byte[] { 75, 75, 75, 76 }) };
-
-            networkInterfaceSetting.MacAddress = new byte[] { 0x00, 0x04, 0x00, 0x00, 0x00, 0x00 };
-            networkInterfaceSetting.IsDhcpEnabled = true;
-            networkInterfaceSetting.IsDynamicDnsEnabled = true;
-
-            this.networkController.SetInterfaceSettings(networkInterfaceSetting);
-            this.networkController.SetCommunicationInterfaceSettings(this.networkCommunicationInterfaceSettings);
-            this.networkController.SetAsDefaultController();
-
-            this.networkController.NetworkAddressChanged += this.NetworkController_NetworkAddressChanged;
-            this.networkController.NetworkLinkConnectedChanged += this.NetworkController_NetworkLinkConnectedChanged;
+            var start = DateTime.Now;
 
             try {
+                Thread.Sleep(100);
+
+                this.resetPin = gpioController.OpenPin(SC20260.GpioPin.PI8);
+                this.csPin = gpioController.OpenPin(SC20260.GpioPin.PG12);
+                this.intPin = gpioController.OpenPin(SC20260.GpioPin.PG6);
+                this.enPin = gpioController.OpenPin(SC20260.GpioPin.PI0);
+
+                this.enPin.SetDriveMode(GpioPinDriveMode.Output);
+                this.resetPin.SetDriveMode(GpioPinDriveMode.Output);
+
+                this.enPin.Write(GpioPinValue.Low);
+                this.resetPin.Write(GpioPinValue.Low);
+                Thread.Sleep(100);
+
+                this.enPin.Write(GpioPinValue.High);
+                this.resetPin.Write(GpioPinValue.High);
+
+
+
+                var settings = new GHIElectronics.TinyCLR.Devices.Spi.SpiConnectionSettings() {
+                    ChipSelectLine = this.csPin,
+                    ClockFrequency = 4000000,
+                    Mode = GHIElectronics.TinyCLR.Devices.Spi.SpiMode.Mode0,
+                    ChipSelectType = GHIElectronics.TinyCLR.Devices.Spi.SpiChipSelectType.Gpio,
+                    ChipSelectHoldTime = TimeSpan.FromTicks(10),
+                    ChipSelectSetupTime = TimeSpan.FromTicks(10)
+                };
+
+                this.networkCommunicationInterfaceSettings.SpiApiName = SC20260.SpiBus.Spi3;
+                this.networkCommunicationInterfaceSettings.GpioApiName = "GHIElectronics.TinyCLR.NativeApis.STM32H7.GpioController\\0";
+                this.networkCommunicationInterfaceSettings.SpiSettings = settings;
+                this.networkCommunicationInterfaceSettings.InterruptPin = this.intPin;
+                this.networkCommunicationInterfaceSettings.InterruptEdge = GpioPinEdge.FallingEdge;
+                this.networkCommunicationInterfaceSettings.InterruptDriveMode = GpioPinDriveMode.InputPullUp;
+                this.networkCommunicationInterfaceSettings.ResetPin = this.resetPin;
+                this.networkCommunicationInterfaceSettings.ResetActiveState = GpioPinValue.Low;
+
+                var networkInterfaceSetting = new WiFiNetworkInterfaceSettings() {
+                    Ssid = this.ssid.Text,
+                    Password = this.password.Text,
+                };
+
+                networkInterfaceSetting.Address = new IPAddress(new byte[] { 192, 168, 1, 122 });
+                networkInterfaceSetting.SubnetMask = new IPAddress(new byte[] { 255, 255, 255, 0 });
+                networkInterfaceSetting.GatewayAddress = new IPAddress(new byte[] { 192, 168, 1, 1 });
+                networkInterfaceSetting.DnsAddresses = new IPAddress[] { new IPAddress(new byte[] { 75, 75, 75, 75 }), new IPAddress(new byte[] { 75, 75, 75, 76 }) };
+
+                networkInterfaceSetting.MacAddress = new byte[] { 0x00, 0x04, 0x00, 0x00, 0x00, 0x00 };
+                networkInterfaceSetting.IsDhcpEnabled = true;
+                networkInterfaceSetting.IsDynamicDnsEnabled = true;
+
+                this.networkController.SetInterfaceSettings(networkInterfaceSetting);
+                this.networkController.SetCommunicationInterfaceSettings(this.networkCommunicationInterfaceSettings);
+                this.networkController.SetAsDefaultController();
+
+                this.networkController.NetworkAddressChanged += this.NetworkController_NetworkAddressChanged;
+                this.networkController.NetworkLinkConnectedChanged += this.NetworkController_NetworkLinkConnectedChanged;
+
+                var firmware = Winc15x0Interface.GetFirmwareVersion();
+
+
+                if (firmware.IndexOf("255.255.255.65535") == 0) {
+
+                    this.resetPin.Dispose();
+                    this.csPin.Dispose();
+                    this.intPin.Dispose();
+                    this.enPin.Dispose();
+
+                    Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(100), _ => {
+
+                        this.canvas.Children.Remove(this.status);
+
+                        Canvas.SetLeft(this.status, this.Width / 2 - this.Width / 4 - this.Width / 8 - this.Width / 16); Canvas.SetTop(this.status, this.Height - 40);
+                        this.canvas.Children.Add(this.status);
+
+                        this.status.TextContent = "Please reset application and type ssid, password correctly!";
+
+
+                        this.status.Invalidate();
+                        return null;
+
+                    }, null);
+
+                    return;
+
+                }
+
+
                 this.networkController.Enable();
 
             }
             catch {
 
+
+            }
+
+
+            while ((DateTime.Now - start).TotalSeconds < 20) {
+                if (this.isWifiConnected)
+                    break;
+
+                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(100), _ => {
+
+
+                    this.status.TextContent = "Please wait..." + (int)((DateTime.Now - start).TotalSeconds) + " / 20";
+
+
+                    this.status.Invalidate();
+                    return null;
+
+                }, null);
+
+                Thread.Sleep(1000);
+            }
+
+            if (this.isWifiConnected == false) {
+                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(100), _ => {
+
+
+                    this.status.TextContent = "Wifi connection failed.";
+
+
+                    this.status.Invalidate();
+                    return null;
+
+                }, null);
+
+
                 this.resetPin.Dispose();
                 this.csPin.Dispose();
                 this.intPin.Dispose();
                 this.enPin.Dispose();
+
+                //var gpioControllerApi = new GpioControllerApiWrapper(NativeApi.Find(NativeApi.GetDefaultName(NativeApiType.GpioController), NativeApiType.GpioController));
+
+                //gpioControllerApi.ClosePin(SC20260.GpioPin.PB3);
+                //gpioControllerApi.ClosePin(SC20260.GpioPin.PB4);
+                //gpioControllerApi.ClosePin(SC20260.GpioPin.PB5);
+
+                //gpioController.Dispose();
             }
+
+            this.isRunning = false;
         }
 
         private void NetworkController_NetworkLinkConnectedChanged(NetworkController sender, NetworkLinkConnectedChangedEventArgs e) {
