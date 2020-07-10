@@ -49,6 +49,7 @@ namespace Demos.Properties
             Uart = 11521,
             Sd = 12737,
             Rtc = 14704,
+            Generaltest = 16986,
             Wifi = 17372,
             Color = 18291,
         }
