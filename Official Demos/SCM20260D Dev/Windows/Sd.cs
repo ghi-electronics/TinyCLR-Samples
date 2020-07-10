@@ -38,7 +38,6 @@ namespace Demos {
 
         private Font font;
 
-        private string testStatus;
         private bool isRunning;
 
         private TextFlow textFlow;
