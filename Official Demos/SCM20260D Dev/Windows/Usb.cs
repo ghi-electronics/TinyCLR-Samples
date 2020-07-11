@@ -17,26 +17,24 @@ namespace Demos {
     public class UsbWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private Text freeSizeLabel;
-        private Text totalSizeLabel;
-        private Text volumeLabel;
-        private Text rootDirectoryLabel;
-        private Text driverFormatLabel;
-        private Text statusLabel;
+        private const string FreeSize = "Total Free: ";
+        private const string TotalSize = "Total Size: ";
+        private const string VolumeLabel = "VolumeLabel: ";
+        private const string RootDirectory = "RootDirectory: ";
+        private const string DriveFormat = "DriveFormat: ";
 
-        private Text instructionLabel1;
-        private Text instructionLabel2;
-        private Text instructionLabel3;
+        private const string Instruction1 = "This test will write 1K of data to the file TEST_USB.TXT,";
+        private const string Instruction2 = "then read back to compare data.";
+        private const string Instruction3 = "Insert usb stick and press Test Button when you ready.";
 
-        private string freeSize = "Total Free: ";
-        private string totalSize = "Total Size: ";
-        private string volume = "VolumeLabel: ";
-        private string rootDirectory = "RootDirectory: ";
-        private string driverFormat = "DriveFormat: ";
+        private const string BadConnect1 = "Bad device or no connect.";
+        private const string BadConnect2 = "Data corrupted.";
+        private const string BadWrite = "Write failed.";
+        private const string BadRead = "Read failed.";
 
-        private string instruction1 = "This test will write 1K of data to the file TEST_USB.TXT,";
-        private string instruction2 = "then read back to compare data.";
-        private string instruction3 = "Insert microSd and press Test Button when you ready.";
+        private const string MountSuccess = "Mounted successful.";
+        private const string TestSuccess = "Tested Read / Write successful.";
+
 
         private Button testButton;
 
@@ -45,44 +43,12 @@ namespace Demos {
         private bool enabledUsbHost;
         private bool usbConnected;
 
+        private bool isRunning;
+
+        private TextFlow textFlow;
+
         public UsbWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
-
-            this.freeSizeLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.freeSize) {
-                ForeColor = Colors.White,
-            };
-
-            this.totalSizeLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.totalSize) {
-                ForeColor = Colors.White,
-            };
-
-            this.volumeLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.volume) {
-                ForeColor = Colors.White,
-            };
-
-            this.rootDirectoryLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.rootDirectory) {
-                ForeColor = Colors.White,
-            };
-
-            this.driverFormatLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.driverFormat) {
-                ForeColor = Colors.White,
-            };
-
-            this.statusLabel = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "") {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel2 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction2) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel3 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction3) {
-                ForeColor = Colors.White,
-            };
 
             this.testButton = new Button() {
                 Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Test Usb") {
@@ -97,36 +63,68 @@ namespace Demos {
             this.testButton.Click += this.TestButton_Click;
         }
 
+        private void Initialize() {
+
+            this.textFlow = new TextFlow();
+
+            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+        }
+
+        private void Deinitialize() {
+
+            this.textFlow.TextRuns.Clear();
+            this.textFlow = null;
+        }
+
         private void TestButton_Click(object sender, RoutedEventArgs e) {
             if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                if (!this.isRunning)
-                    new Thread(this.ThreadTestUsb).Start();
 
+                if (!this.isRunning) {
+                    this.ClearScreen();
+
+                    this.CreateWindow(false);
+
+                    this.textFlow.TextRuns.Clear();
+
+                    new Thread(this.ThreadTest).Start();
+                }
             }
         }
 
+
         protected override void Active() {
             // To initialize, reset your variable, design...
+            this.Initialize();
+
             this.canvas = new Canvas();
 
             this.Child = this.canvas;
 
-            this.ClearScreen();
+            this.isRunning = false;
 
-            this.CreateWindow();
+            this.ClearScreen();
+            this.CreateWindow(true);
 
             if (this.enabledUsbHost == false) {
                 this.enabledUsbHost = true;
 
                 var usnhostController = UsbHostController.GetDefault();
 
-                usnhostController.OnConnectionChangedEvent += this.UsnhostController_OnConnectionChangedEvent;
+                usnhostController.OnConnectionChangedEvent += this.UsbhostController_OnConnectionChangedEvent;
 
                 usnhostController.Enable();
             }
         }
 
-        private void UsnhostController_OnConnectionChangedEvent(UsbHostController sender, DeviceConnectionEventArgs e) {
+        private void UsbhostController_OnConnectionChangedEvent(UsbHostController sender, DeviceConnectionEventArgs e) {
             if (e.DeviceStatus == DeviceConnectionStatus.Connected) {
                 this.usbConnected = true;
             }
@@ -143,9 +141,15 @@ namespace Demos {
             // This is Button Next Touch event
             this.Close();
 
-        protected override void Deactive() =>
+        protected override void Deactive() {
+            this.isRunning = false;
+
+            Thread.Sleep(10);
             // To stop or free, uinitialize variable resource
             this.canvas.Children.Clear();
+
+            this.Deinitialize();
+        }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();
@@ -168,36 +172,28 @@ namespace Demos {
 
         }
 
-        private void CreateWindow() {
-
-            var startX = 20;
+        private void CreateWindow(bool enablebutton) {
+            var startX = 5;
             var startY = 40;
-            var offsetY = 30;
 
-            Canvas.SetLeft(this.instructionLabel1, startX); Canvas.SetTop(this.instructionLabel1, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel1);
+            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
+            this.canvas.Children.Add(this.textFlow);
 
-            Canvas.SetLeft(this.instructionLabel2, startX); Canvas.SetTop(this.instructionLabel2, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel2);
+            if (enablebutton) {
+                var buttonY = this.Height - ((this.testButton.Height * 3) / 2);
 
-
-            Canvas.SetLeft(this.instructionLabel3, startX); Canvas.SetTop(this.instructionLabel3, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel3);
-
-
-            Canvas.SetLeft(this.testButton, startX); Canvas.SetTop(this.testButton, startY); startY += offsetY;
-            this.canvas.Children.Add(this.testButton);
+                Canvas.SetLeft(this.testButton, startX); Canvas.SetTop(this.testButton, buttonY);
+                this.canvas.Children.Add(this.testButton);
+            }
         }
 
-        private string testStatus;
-        private bool isRunning;
 
-        private void ThreadTestUsb() {
+        private void ThreadTest() {
             const int BlockSize = 1024;
 
             this.isRunning = true;
 
-            var data = System.Text.Encoding.UTF8.GetBytes("Thi is for sd  \n");
+            var data = System.Text.Encoding.UTF8.GetBytes("This is for usb\n");
 
             var dataWrite = new byte[BlockSize];
             var dataRead = new byte[BlockSize];
@@ -209,41 +205,6 @@ namespace Demos {
             var storageController = StorageController.FromName(SC20260.StorageController.UsbHostMassStorage);
 
             IDriveProvider drive;
-
-            var startX = 20;
-            var startY = 40;
-            var offsetY = 30;
-
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
-                this.ClearScreen();
-                this.freeSizeLabel.TextContent = this.freeSize;
-                this.totalSizeLabel.TextContent = this.totalSize;
-                this.volumeLabel.TextContent = this.volume;
-                this.rootDirectoryLabel.TextContent = this.rootDirectory;
-                this.driverFormatLabel.TextContent = this.driverFormat;
-                this.statusLabel.TextContent = string.Empty;
-
-                Canvas.SetLeft(this.freeSizeLabel, startX); Canvas.SetTop(this.freeSizeLabel, startY); startY += offsetY;
-                this.canvas.Children.Add(this.freeSizeLabel);
-
-                Canvas.SetLeft(this.totalSizeLabel, startX); Canvas.SetTop(this.totalSizeLabel, startY); startY += offsetY;
-                this.canvas.Children.Add(this.totalSizeLabel);
-
-                Canvas.SetLeft(this.volumeLabel, startX); Canvas.SetTop(this.volumeLabel, startY); startY += offsetY;
-                this.canvas.Children.Add(this.volumeLabel);
-
-                Canvas.SetLeft(this.rootDirectoryLabel, startX); Canvas.SetTop(this.rootDirectoryLabel, startY); startY += offsetY;
-                this.canvas.Children.Add(this.rootDirectoryLabel);
-
-                Canvas.SetLeft(this.driverFormatLabel, startX); Canvas.SetTop(this.driverFormatLabel, startY); startY += offsetY;
-                this.canvas.Children.Add(this.driverFormatLabel);
-
-                Canvas.SetLeft(this.statusLabel, startX); Canvas.SetTop(this.statusLabel, startY); startY += offsetY;
-                this.canvas.Children.Add(this.statusLabel);
-
-                return null;
-
-            }, null);
 
             var timeout = 0;
 
@@ -257,55 +218,31 @@ namespace Demos {
             }
 
             if (this.usbConnected == false) {
-                this.testStatus = "Bad device or no device connected.";
-
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
-
-                    this.statusLabel.TextContent = this.testStatus;
-
-                    this.statusLabel.Invalidate();
-                    return null;
-
-                }, null);
+                this.UpdateStatusText(BadConnect1, true);
 
                 goto _return;
             }
+
 
             try {
                 drive = FileSystem.Mount(storageController.Hdc);
 
                 var driveInfo = new DriveInfo(drive.Name);
 
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
+                this.UpdateStatusText(FreeSize + driveInfo.TotalFreeSpace, true);
+                this.UpdateStatusText(TotalSize + driveInfo.TotalSize, false);
+                this.UpdateStatusText(VolumeLabel + driveInfo.VolumeLabel, false);
+                this.UpdateStatusText(RootDirectory + driveInfo.RootDirectory, false);
+                this.UpdateStatusText(DriveFormat + driveInfo.DriveFormat, false);
+                this.UpdateStatusText(MountSuccess, false);
 
-                    this.freeSizeLabel.TextContent += driveInfo.TotalFreeSpace;
-                    this.totalSizeLabel.TextContent += driveInfo.TotalSize;
-                    this.volumeLabel.TextContent += driveInfo.VolumeLabel;
-                    this.rootDirectoryLabel.TextContent += driveInfo.RootDirectory;
-                    this.driverFormatLabel.TextContent += driveInfo.DriveFormat;
-                    this.statusLabel.TextContent += "Mounted successfully.";
-
-
-                    return null;
-
-                }, null);
             }
             catch {
-                this.testStatus = "Bad device or no device connected.";
 
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
-
-                    this.statusLabel.TextContent = this.testStatus;
-
-                    this.statusLabel.Invalidate();
-                    return null;
-
-                }, null);
+                this.UpdateStatusText(BadConnect1, true);
 
                 goto _return;
             }
-
-            Thread.Sleep(1000);
 
             var filename = drive.Name + "\\TEST_USB.TXT";
 
@@ -319,16 +256,7 @@ namespace Demos {
                 }
             }
             catch {
-                this.testStatus = "Test write failed.";
-
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
-
-                    this.statusLabel.TextContent = this.testStatus;
-
-                    this.statusLabel.Invalidate();
-                    return null;
-
-                }, null);
+                this.UpdateStatusText(BadWrite, false);
 
                 goto _unmount;
             }
@@ -342,16 +270,7 @@ namespace Demos {
 
 
                         if (dataRead[i] != dataWrite[i]) {
-                            this.testStatus = "Test Read: Data corrupted.";
-
-                            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
-
-                                this.statusLabel.TextContent = this.testStatus;
-
-                                this.statusLabel.Invalidate();
-                                return null;
-
-                            }, null);
+                            this.UpdateStatusText(BadConnect2, false);
 
                             goto _unmount;
                         }
@@ -362,30 +281,13 @@ namespace Demos {
                 }
             }
             catch {
-                this.testStatus = "Test write failed.";
-
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
-
-                    this.statusLabel.TextContent = this.testStatus;
-
-                    this.statusLabel.Invalidate();
-                    return null;
-
-                }, null);
+                this.UpdateStatusText(BadRead, false);
 
                 goto _unmount;
             }
 
-            this.testStatus = "Tested Write/Read successfully.";
 
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1), _ => {
-
-                this.statusLabel.TextContent = this.testStatus;
-
-                this.statusLabel.Invalidate();
-                return null;
-
-            }, null);
+            this.UpdateStatusText(TestSuccess, false);
 
 _unmount:
             try {
@@ -398,6 +300,48 @@ _unmount:
 _return:
 
             this.isRunning = false;
+
+        }
+
+        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
+
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
+
+            var timeout = 100;
+
+            try {
+
+                var count = this.textFlow.TextRuns.Count + 2;
+
+                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
+
+                    if (clearscreen)
+                        this.textFlow.TextRuns.Clear();
+
+                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
+                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+                    return null;
+
+                }, null);
+
+                if (clearscreen) {
+                    while (this.textFlow.TextRuns.Count < 2) {
+                        Thread.Sleep(10);
+                    }
+                }
+                else {
+                    while (this.textFlow.TextRuns.Count < count) {
+                        Thread.Sleep(10);
+                    }
+                }
+            }
+            catch {
+
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
         }
     }

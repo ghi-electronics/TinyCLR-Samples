@@ -37,12 +37,12 @@ namespace Demos {
 
             mainWindow.RegisterWindow(systemWindow);
 
-            // Create Ethernet Window
-            var iconImageEthernet = Resources.GetBitmap(Resources.BitmapResources.Ethernet); // Icon
-            var iconTextEthernet = "Ethernet";
-            var networkWindow = new EthernetWindow(iconImageEthernet, iconTextEthernet, Display.Width, Display.Height);
+            //// Create Ethernet Window
+            //var iconImageEthernet = Resources.GetBitmap(Resources.BitmapResources.Ethernet); // Icon
+            //var iconTextEthernet = "Ethernet";
+            //var networkWindow = new EthernetWindow(iconImageEthernet, iconTextEthernet, Display.Width, Display.Height);
 
-            mainWindow.RegisterWindow(networkWindow); // Register to MainWindow
+            //mainWindow.RegisterWindow(networkWindow); // Register to MainWindow
 
             // Create Wifi Window
             var iconImageWifi = Resources.GetBitmap(Resources.BitmapResources.Wifi); // Icon
@@ -114,7 +114,6 @@ namespace Demos {
 
             mainWindow.RegisterWindow(pwmWindow); // Register to MainWindow
 
-
             // Create Dac Window
             var iconImageDac = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
             var iconTextDac = "Dac";
@@ -135,6 +134,13 @@ namespace Demos {
             var colorWindow = new ColorWindow(iconImageColor, iconTextColor, Display.Width, Display.Height);
 
             mainWindow.RegisterWindow(colorWindow); // Register to MainWindow
+
+            // Create Camera Window
+            var iconImageBasicTest = Resources.GetBitmap(Resources.BitmapResources.Generaltest); // Icon
+            var iconTextBasicTest = "Basic Test";
+            var basicTestWindow = new BasicTestWindow(iconImageBasicTest, iconTextBasicTest, Display.Width, Display.Height);
+
+            mainWindow.RegisterWindow(basicTestWindow); // Register to MainWindow
 
             // Empty template
             var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon

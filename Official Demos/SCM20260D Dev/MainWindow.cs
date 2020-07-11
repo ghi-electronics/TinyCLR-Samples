@@ -68,6 +68,9 @@ namespace Demos {
             if (this.applicationWindows.Count == MaxWindows)
                 throw new ArgumentOutOfRangeException("No more than " + MaxWindows + " windows");
 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             aw.Parent = this;
             aw.Id = this.applicationWindows.Count;
             aw.Icon.Width = this.Width / IconColum;
