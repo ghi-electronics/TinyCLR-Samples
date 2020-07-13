@@ -1,14 +1,20 @@
 using System;
 using System.Collections;
 using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.Can;
 using GHIElectronics.TinyCLR.Devices.Gpio;
+using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Network;
+using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
+using GHIElectronics.TinyCLR.Devices.Uart;
+using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
+using GHIElectronics.TinyCLR.IO;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -19,15 +25,20 @@ namespace Demos {
     public class BasicTestWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = "This step will test:";
-        private const string Instruction2 = " - External Ram.";
-        private const string Instruction3 = " - External flash.";
-        private const string Instruction4 = " - Ethernet.";
-        private const string Instruction5 = " ";
-        private const string Instruction6 = " ** Please connect ethernet cable for Ethernet testing **";
-        private const string Instruction7 = " ";
-        private const string Instruction8 = " Press Test button when you are ready.";
+        private const string Instruction1 = "This step will do simple test on:";
+        private const string Instruction2 = " - User leds";
+        private const string Instruction3 = " - User buttons";
+        private const string Instruction4 = " - External RAM / Flash";
+        private const string Instruction5 = " - Ethernet";
+        private const string Instruction6 = " - Buzzer";
+        private const string Instruction7 = " - Usb Host/ Micro Sd";
+        private const string Instruction8 = " - Real time clock crystal";
+        private const string Instruction9 = " - Camera Interface";
+        private const string Instruction10 = " - VCOM Uart5";
+        private const string Instruction11 = " - CAN1 FD";
 
+        private const string MountSuccess = "Mounted successful.";
+        private const string BadConnect1 = "Bad device or no connect.";
 
         private Font font;
 
@@ -37,8 +48,11 @@ namespace Demos {
 
         private Button testButton;
 
+        private Button nextButton;
+
         private bool ethernetConnect = false;
 
+        private bool doNext = false;
 
         public BasicTestWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
@@ -53,7 +67,27 @@ namespace Demos {
                 Height = 30,
             };
 
+
+            this.nextButton = new Button() {
+                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Next") {
+                    ForeColor = Colors.Black,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+                Width = 100,
+                Height = 30,
+            };
+
             this.testButton.Click += this.TestButton_Click;
+            this.nextButton.Click += this.NextButton_Click;
+        }
+
+
+
+        private void NextButton_Click(object sender, RoutedEventArgs e) {
+            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
+                this.doNext = true;
+            }
         }
 
         private void Initialize() {
@@ -78,13 +112,21 @@ namespace Demos {
             this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            var yellowColor = System.Drawing.Color.Yellow;
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(yellowColor.R, yellowColor.G, yellowColor.B));
+            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction9, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction10, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction11, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
         }
 
         private void Deinitialize() {
@@ -178,17 +220,86 @@ namespace Demos {
                 this.canvas.Children.Add(this.testButton);
             }
         }
+        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
+
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
+
+            var timeout = 100;
+
+            try {
+
+                var count = this.textFlow.TextRuns.Count + 2;
+
+                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
+
+                    if (clearscreen)
+                        this.textFlow.TextRuns.Clear();
+
+                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
+                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+                    return null;
+
+                }, null);
+
+                if (clearscreen) {
+                    while (this.textFlow.TextRuns.Count < 2) {
+                        Thread.Sleep(10);
+                    }
+                }
+                else {
+                    while (this.textFlow.TextRuns.Count < count) {
+                        Thread.Sleep(10);
+                    }
+                }
+            }
+            catch {
+
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+        }
 
         private void ThreadTest() {
             this.isRunning = true;
 
-            var extRamTestResult = this.DoTestExternalRam();
-            var extFlashTestResult = this.DoTestExternalFlash();
-            var ethernetTestResult = this.DoTestEthernet();
+            if (this.DoTestLeds() == true) {
+                if (this.isRunning == true && this.DoTestButtons() == true) {
+                    if (this.isRunning == true && this.DoTestExternalRam() == true) {
+                        if (this.isRunning == true && this.DoTestExternalFlash() == true) {
+                            if (this.isRunning == true && this.DoTestEthernet() == true) {
+                                if (this.isRunning == true && this.DoTestBuzzer() == true) {
+                                    if (this.isRunning == true && this.DoTestUsbHost()) {
+                                        if (this.isRunning == true && this.DoTestSdcard() == true) {
+                                            if (this.isRunning == true && this.DoTestRtc() == true) {
+                                                if (this.isRunning == true && this.DoTestCamera() == true) {
+                                                    if (this.isRunning == true && this.DoTestUart() == true) {
+                                                        if (this.isRunning == true && this.DoTestCan() == true) {
 
-            this.UpdateStatusText("External ram test result: " + (extRamTestResult == true ? "Passed" : "Failed"), true, extRamTestResult == true ? System.Drawing.Color.White : System.Drawing.Color.Red);
-            this.UpdateStatusText("External flash test result: " + (extFlashTestResult == true ? "Passed" : "Failed"), false, extFlashTestResult == true ? System.Drawing.Color.White : System.Drawing.Color.Red);
-            this.UpdateStatusText("Ethernet test result: " + (ethernetTestResult == true ? "Passed" : "Failed"), false, ethernetTestResult == true ? System.Drawing.Color.White : System.Drawing.Color.Red);
+                                                            this.UpdateStatusText(Instruction2 + ": Passed by tester.", true, System.Drawing.Color.Yellow);
+                                                            this.UpdateStatusText(Instruction3 + ": Passed.", false);
+                                                            this.UpdateStatusText(Instruction4 + ": Passed.", false);
+                                                            this.UpdateStatusText(Instruction5 + ": Passed.", false);
+                                                            this.UpdateStatusText(Instruction6 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
+                                                            this.UpdateStatusText(Instruction7 + ": Passed.", false);
+                                                            this.UpdateStatusText(Instruction8 + ": Passed.", false);
+                                                            this.UpdateStatusText(Instruction9 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
+                                                            this.UpdateStatusText(Instruction10 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
+                                                            this.UpdateStatusText(Instruction11 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             this.isRunning = false;
         }
@@ -234,8 +345,6 @@ namespace Demos {
 
             rd.NextBytes(buf2);
 
-
-
             try {
 
                 var hashValue2 = md5.ComputeHash(buf1); //data is a byte array.
@@ -266,11 +375,11 @@ namespace Demos {
         }
 
         private bool DoTestExternalFlash() {
-
-            this.isRunning = true;
             var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
             var drive = storeController.Provider;
             var result = true;
+
+
 
             drive.Open();
 
@@ -298,8 +407,10 @@ _again:
 
             for (var s = startSector; s < endSector; s++) {
 
+                this.UpdateStatusText("Testing external flash.", true);
+
                 var address = s * sectorSize;
-                this.UpdateStatusText("External flash - Erasing sector " + s, true);
+                this.UpdateStatusText("External flash - Erasing sector " + s, false);
                 // Erase
                 drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
 
@@ -346,12 +457,12 @@ _again:
 
 _return:
             drive.Close();
-            this.isRunning = false;
 
             return result;
         }
 
         private bool DoTestEthernet() {
+
             var gpioController = GpioController.GetDefault();
 
             var resetPin = gpioController.OpenPin(SC20260.GpioPin.PG3);
@@ -375,7 +486,7 @@ _return:
             networkInterfaceSetting.DnsAddresses = new IPAddress[] { new IPAddress(new byte[] { 75, 75, 75, 75 }), new IPAddress(new byte[] { 75, 75, 75, 76 }) };
 
             networkInterfaceSetting.MacAddress = new byte[] { 0x00, 0x04, 0x00, 0x00, 0x00, 0x00 };
-            networkInterfaceSetting.IsDhcpEnabled = true;
+            networkInterfaceSetting.IsDhcpEnabled = !true;
             networkInterfaceSetting.IsDynamicDnsEnabled = true;
 
             networkController.SetInterfaceSettings(networkInterfaceSetting);
@@ -385,16 +496,22 @@ _return:
             networkController.NetworkAddressChanged += this.NetworkController_NetworkAddressChanged;
             networkController.NetworkLinkConnectedChanged += this.NetworkController_NetworkLinkConnectedChanged;
 
-            this.UpdateStatusText("Test Ethernet is starting, take up to 10 seconds... ", true);
-
             var start = DateTime.Now;
 
             networkController.Enable();
 
             while (this.ethernetConnect == false) {
                 var end = DateTime.Now - start;
-                if (end.TotalSeconds > 10) break;
+
+                this.UpdateStatusText("Testing ethernet. If the connecting take more than 10 seconds, the test is failed.", true);
+                this.UpdateStatusText("  ", false);
+                this.UpdateStatusText(" - If the connecting takes more than 10 seconds, need to check the cable.", false);
+                this.UpdateStatusText("  ", false);
+                this.UpdateStatusText("Please wait for connnecting.... " + (int)(end.TotalSeconds), false);
+
+                Thread.Sleep(1000);
             }
+
 
             networkController.Disable();
             networkController.Dispose();
@@ -405,6 +522,7 @@ _return:
 
         private void NetworkController_NetworkLinkConnectedChanged(NetworkController sender, NetworkLinkConnectedChangedEventArgs e) {
             //throw new NotImplementedException();
+
         }
 
         private void NetworkController_NetworkAddressChanged(NetworkController sender, NetworkAddressChangedEventArgs e) {
@@ -443,47 +561,451 @@ _return:
 
         }
 
+        private bool DoTestButtons() {
+            var gpioController = GpioController.GetDefault();
 
-        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
+            var ldrButton = gpioController.OpenPin(SC20260.GpioPin.PE3);
+            var appButton = gpioController.OpenPin(SC20260.GpioPin.PB7);
+            var modeButton = gpioController.OpenPin(SC20260.GpioPin.PD7);
 
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
+            ldrButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
+            appButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
+            modeButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
 
-            var timeout = 100;
+            this.UpdateStatusText("Testing buttons.", true);
+
+
+            this.UpdateStatusText("Wait for press LDR button ", false);
+            while (ldrButton.Read() == GpioPinValue.High && this.isRunning) Thread.Sleep(100);
+            while (ldrButton.Read() == GpioPinValue.Low && this.isRunning) Thread.Sleep(100);
+
+            this.UpdateStatusText("Wait for press APP button ", false);
+            while (appButton.Read() == GpioPinValue.High && this.isRunning) Thread.Sleep(100);
+            while (appButton.Read() == GpioPinValue.Low && this.isRunning) Thread.Sleep(100);
+
+            this.UpdateStatusText("Wait for press MOD button ", false);
+            while (modeButton.Read() == GpioPinValue.High && this.isRunning) Thread.Sleep(100);
+            while (modeButton.Read() == GpioPinValue.Low && this.isRunning) Thread.Sleep(100);
+
+            ldrButton.Dispose();
+            appButton.Dispose();
+            modeButton.Dispose();
+
+            return true;
+        }
+
+        private bool DoTestLeds() {
+            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id);
+            var pwmController5 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller5.Id);
+
+            var pwmPinPB0 = pwmController3.OpenChannel(SC20260.PwmChannel.Controller3.PB0);
+            var pwmPinPH11 = pwmController5.OpenChannel(SC20260.PwmChannel.Controller5.PH11);
+
+            pwmController3.SetDesiredFrequency(1000);
+            pwmController5.SetDesiredFrequency(1000);
+
+            pwmPinPB0.SetActiveDutyCyclePercentage(0.0);
+            pwmPinPH11.SetActiveDutyCyclePercentage(0.0);
+
+            var value = 0.0;
+            var dir = 1;
+
+            this.UpdateStatusText("Testing red and green leds.", true);
+            this.UpdateStatusText("- The test is passed if red and green led are changing brightness.", false);
+            this.UpdateStatusText(" ", false);
+            this.UpdateStatusText("- Only press Next button if the test is passed.", false, System.Drawing.Color.Yellow);
+
+            this.AddNextButton();
+
+            while (this.doNext == false && this.isRunning) {
+                for (var i = 0; i < 10; i++) {
+                    value += 0.1 * dir;
+
+                    pwmPinPB0.Start();
+                    pwmPinPH11.Start();
+
+                    Thread.Sleep(100);
+
+                    pwmPinPB0.Stop();
+                    pwmPinPH11.Stop();
+
+                    pwmPinPB0.SetActiveDutyCyclePercentage(value);
+                    pwmPinPH11.SetActiveDutyCyclePercentage(value);
+                }
+
+                dir = 0 - dir;
+            }
+
+
+            pwmPinPB0.Dispose();
+            pwmPinPH11.Dispose();
+
+            pwmController3.Dispose();
+            pwmController5.Dispose();
+
+            this.RemoveNextButton();
+
+            return true;
+        }
+
+        private bool DoTestUsbHost() {
+
+            var result = true;
+            this.UpdateStatusText("Waiting for usb host initialize...", true);
+
+            UsbWindow.InitializeUsbHostController();
+
+            while (!UsbWindow.IsUsbHostConnected) Thread.Sleep(100);
+
+            var storageController = StorageController.FromName(SC20260.StorageController.UsbHostMassStorage);
+
+            IDriveProvider drive;
 
             try {
+                drive = FileSystem.Mount(storageController.Hdc);
 
-                var count = this.textFlow.TextRuns.Count + 2;
+                var driveInfo = new DriveInfo(drive.Name);
 
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
-                    if (clearscreen)
-                        this.textFlow.TextRuns.Clear();
+                this.UpdateStatusText(MountSuccess, false);
 
-                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
-                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-                    return null;
-
-                }, null);
-
-                if (clearscreen) {
-                    while (this.textFlow.TextRuns.Count < 2) {
-                        Thread.Sleep(10);
-                    }
-                }
-                else {
-                    while (this.textFlow.TextRuns.Count < count) {
-                        Thread.Sleep(10);
-                    }
-                }
             }
             catch {
 
+                this.UpdateStatusText(BadConnect1, true);
+
+                result = false;
+
+                goto _return;
             }
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+_return:
 
+            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+
+            return result;
         }
+
+        private bool DoTestSdcard() {
+
+            var result = true;
+            this.UpdateStatusText("Waiting for Sd initialize...", true);
+
+            UsbWindow.InitializeUsbHostController();
+
+            while (!UsbWindow.IsUsbHostConnected) Thread.Sleep(100);
+
+            var storageController = StorageController.FromName(SC20260.StorageController.SdCard);
+
+            IDriveProvider drive;
+
+            try {
+                drive = FileSystem.Mount(storageController.Hdc);
+
+                var driveInfo = new DriveInfo(drive.Name);
+
+
+                this.UpdateStatusText(MountSuccess, false);
+
+            }
+            catch {
+
+                this.UpdateStatusText(BadConnect1, true);
+
+                result = false;
+
+                goto _return;
+            }
+
+_return:
+
+            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+
+            return result;
+        }
+
+        private bool DoTestBuzzer() {
+
+            this.UpdateStatusText("Testing buzzer...", true);
+
+            using (var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id)) {
+
+                var pwmPinPB1 = pwmController3.OpenChannel(SC20260.PwmChannel.Controller3.PB1);
+
+                pwmController3.SetDesiredFrequency(500);
+                pwmPinPB1.SetActiveDutyCyclePercentage(0.5);
+
+                this.UpdateStatusText("Generate Pwm 500Hz...", false);
+
+                pwmPinPB1.Start();
+
+                Thread.Sleep(1000);
+
+                pwmPinPB1.Stop();
+
+                this.UpdateStatusText("Generate Pwm 1000Hz...", false);
+
+                pwmController3.SetDesiredFrequency(1000);
+
+                pwmPinPB1.Start();
+
+                Thread.Sleep(1000);
+
+                this.UpdateStatusText("Generate Pwm 2000Hz...", false);
+
+                pwmController3.SetDesiredFrequency(2000);
+
+                pwmPinPB1.Start();
+
+                Thread.Sleep(1000);
+
+                pwmPinPB1.Stop();
+
+                pwmPinPB1.Dispose();
+
+                this.UpdateStatusText("Testing is success if you heard three kind of sounds!", false);
+            }
+
+            return true;
+        }
+
+        private bool DoTestRtc() {
+            this.UpdateStatusText("Testing real time clock... ", true);
+            var rtc = RtcController.GetDefault();
+
+            var m = new DateTime(2020, 7, 7, 00, 00, 00);
+
+            if (rtc.IsValid && rtc.Now > m) {
+
+                return true;
+            }
+
+            else {
+                var newDt = RtcDateTime.FromDateTime(m);
+
+                rtc.SetTime(newDt);
+
+                if (rtc.IsValid && rtc.Now > m) {
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool DoTestUart() {
+            this.UpdateStatusText("Testing VCOM Uart5.", true);
+
+            this.UpdateStatusText(" - Connect VCOM Uart5 to PC.", false);
+            this.UpdateStatusText(" - Open Tera Term. Baudrate: 9600, Data: 8, Parity: None, StopBit: One.", false);
+            this.UpdateStatusText(" - Type 'A' or 'a'", false);
+            this.UpdateStatusText(" - The test is passed if you see 'B' 'b' on Tera Term screen.", false);
+            this.UpdateStatusText(" ", false);
+            this.UpdateStatusText("- Only press Next button if the test is passed.", false, System.Drawing.Color.Yellow);
+
+            using (var uart5 = UartController.FromName(SC20260.UartPort.Uart5)) {
+
+                var setting = new UartSetting() {
+                    BaudRate = 9600
+                };
+
+                uart5.SetActiveSettings(setting);
+                uart5.Enable();
+
+                var totalReceived = 0;
+                var totalSent = 0;
+
+                this.AddNextButton();
+
+                while (this.doNext == false && this.isRunning) {
+
+                    if (uart5.BytesToRead == 0) {
+                        Thread.Sleep(10);
+                        continue;
+                    }
+
+
+                    var byteToRead = uart5.BytesToRead > uart5.ReadBufferSize ? uart5.ReadBufferSize : uart5.BytesToRead;
+
+                    var read = new byte[byteToRead];
+
+                    totalReceived += uart5.Read(read);
+
+                    for (var i = 0; i < read.Length; i++) {
+                        var write = new byte[1] { (byte)(read[i] + 1) };
+                        totalSent += uart5.Write(write);
+
+                        uart5.Flush();
+                    }
+                }
+            }
+
+            this.RemoveNextButton();
+
+            return true;
+        }
+
+        private bool DoTestCan() {
+            this.UpdateStatusText("Testing CAN1.", true);
+
+            this.UpdateStatusText(" - Open PCAN-View application.", false);
+            this.UpdateStatusText(" - Nominal speed: 1Mbit/s.", false);
+            this.UpdateStatusText(" - Data speed: 2Mbit/.", false);
+            this.UpdateStatusText(" - Send any message from PCAN-View application.", false);
+            this.UpdateStatusText(" - You will see same message send back with ArbitrationId.", false);
+            this.UpdateStatusText(" ", false);
+            this.UpdateStatusText("- Only press Next button if the test is passed.", false, System.Drawing.Color.Yellow);
+
+            var canController = CanController.FromName(SC20260.CanBus.Can1);
+
+            canController.SetNominalBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(13, 2, 3, 1, false)); // 1.0Mb at 48MHz            
+
+            canController.SetDataBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(8, 3, 2, 1, false)); // 2.0Mb at 48MHz
+
+            canController.Filter.AddRangeFilter(Filter.IdType.Standard, 0x100, 0x7FF);
+            canController.Filter.AddRangeFilter(Filter.IdType.Extended, 0x100, 0x999);
+
+            canController.Enable();
+
+            this.AddNextButton();
+
+            while (this.doNext == false && this.isRunning) {
+                var msgs = new GHIElectronics.TinyCLR.Devices.Can.CanMessage[canController.MessagesToRead];
+
+                for (var i = 0; i < msgs.Length; i++)
+                    msgs[i] = new GHIElectronics.TinyCLR.Devices.Can.CanMessage();
+
+                var messageReceiveCount = canController.ReadMessages(msgs, 0, msgs.Length);
+
+                for (var i = 0; i < messageReceiveCount; i++) {
+
+                    var dataText = string.Empty;
+
+                    for (var ii = 0; ii < 8; ii++) {
+                        dataText += msgs[i].Data[ii] + " ";
+                    }
+                    try {
+                        msgs[i].ArbitrationId += 1;
+
+                        canController.WriteMessage(msgs[i]);
+                    }
+                    catch {
+                        canController.Disable();
+                        Thread.Sleep(100);
+                        canController.Enable();
+                    }
+                }
+            }
+
+            canController.Disable();
+
+            this.RemoveNextButton();
+
+            return true;
+        }
+
+
+        private bool DoTestCamera() {
+            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
+
+            this.UpdateStatusText("Testing camera...", true);
+            this.UpdateStatusText("Press any button if the image look good to you.", true);
+
+            var gpioController = GpioController.GetDefault();
+
+            var ldrButton = gpioController.OpenPin(SC20260.GpioPin.PE3);
+            var appButton = gpioController.OpenPin(SC20260.GpioPin.PB7);
+            var modeButton = gpioController.OpenPin(SC20260.GpioPin.PD7);
+
+            ldrButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
+            appButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
+            modeButton.SetDriveMode(GpioPinDriveMode.InputPullUp);
+
+            try {
+
+                var ov9655 = new Ov9655(i2cController);
+
+                var id = ov9655.ReadId();
+
+                byte[] data = null;
+                UnmanagedBuffer unmangedBuffer = null;
+
+                if (Memory.UnmanagedMemory.FreeBytes != 0) {
+                    unmangedBuffer = new UnmanagedBuffer(640 * 480 * 2);
+                    data = unmangedBuffer.Bytes;
+                }
+                else {
+                    data = new byte[640 * 480 * 2];
+                }
+
+                ov9655.SetResolution(Ov9655.Resolution.Vga);
+                var displayController = Display.DisplayController;
+
+                while (ldrButton.Read() == GpioPinValue.High && appButton.Read() == GpioPinValue.High && modeButton.Read() == GpioPinValue.High) {
+
+                    try {
+                        ov9655.Capture(data, 500);
+
+                        displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, data, 0);
+                    }
+                    catch {
+
+                    }
+
+                    Thread.Sleep(10);
+
+                }
+
+                if (unmangedBuffer != null) {
+                    unmangedBuffer.Dispose();
+                }
+            }
+            catch {
+                this.UpdateStatusText("Failed. Trying to connect to camera...", true);
+            }
+
+            ldrButton.Dispose();
+            appButton.Dispose();
+            modeButton.Dispose();
+
+            return true;
+        }
+
+        private void AddNextButton() {
+            var startX = 5;
+            var buttonY = this.Height - ((this.testButton.Height * 3) / 2);
+
+            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(100), _ => {
+
+                Canvas.SetLeft(this.nextButton, startX); Canvas.SetTop(this.nextButton, buttonY);
+                this.canvas.Children.Add(this.nextButton);
+
+                return null;
+
+            }, null);
+
+            Thread.Sleep(100);
+
+            this.doNext = false;
+        }
+
+        private void RemoveNextButton() {
+            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(100), _ => {
+
+                this.canvas.Children.Remove(this.nextButton);
+
+                return null;
+
+            }, null);
+
+            Thread.Sleep(100);
+
+            this.doNext = false;
+        }
+
+
     }
 }
