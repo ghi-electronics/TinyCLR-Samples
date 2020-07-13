@@ -231,10 +231,10 @@ namespace Demos {
             try {
                 Thread.Sleep(100);
 
-                this.resetPin = gpioController.OpenPin(SC20260.GpioPin.PI8);
-                this.csPin = gpioController.OpenPin(SC20260.GpioPin.PG12);
-                this.intPin = gpioController.OpenPin(SC20260.GpioPin.PG6);
-                this.enPin = gpioController.OpenPin(SC20260.GpioPin.PI0);
+                this.resetPin = gpioController.OpenPin(SC20260.GpioPin.PF8);
+                this.csPin = gpioController.OpenPin(SC20260.GpioPin.PA6);
+                this.intPin = gpioController.OpenPin(SC20260.GpioPin.PF10);
+                this.enPin = gpioController.OpenPin(SC20260.GpioPin.PA8);
 
                 this.enPin.SetDriveMode(GpioPinDriveMode.Output);
                 this.resetPin.SetDriveMode(GpioPinDriveMode.Output);
@@ -276,7 +276,7 @@ namespace Demos {
                 networkInterfaceSetting.GatewayAddress = new IPAddress(new byte[] { 192, 168, 1, 1 });
                 networkInterfaceSetting.DnsAddresses = new IPAddress[] { new IPAddress(new byte[] { 75, 75, 75, 75 }), new IPAddress(new byte[] { 75, 75, 75, 76 }) };
 
-                networkInterfaceSetting.MacAddress = new byte[] { 0x00, 0x04, 0x00, 0x00, 0x00, 0x00 };
+                //networkInterfaceSetting.MacAddress = new byte[] { 0x00, 0x04, 0x00, 0x00, 0x00, 0x00 };
                 networkInterfaceSetting.IsDhcpEnabled = true;
                 networkInterfaceSetting.IsDynamicDnsEnabled = true;
 
