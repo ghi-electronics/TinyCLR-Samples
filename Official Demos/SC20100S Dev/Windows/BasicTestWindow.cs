@@ -246,23 +246,21 @@ namespace Demos {
                                 this.doNext = false;
                                 if (this.isRunning == true && this.DoTestRtc() == true) {
                                     this.doNext = false;
-                                    if (this.isRunning == true && this.DoTestUart() == true) {
-                                        this.doNext = false;
-                                        if (this.isRunning == true && this.DoTestCan() == true) {
-                                            this.doNext = false;
+                                    var testUart = this.DoTestUart();
 
-                                            this.UpdateStatusText(Instruction2 + ": Passed.", true, System.Drawing.Color.Yellow);
-                                            this.UpdateStatusText(Instruction3 + ": Passed.", false);
-                                            this.UpdateStatusText(Instruction4 + ": Passed.", false, System.Drawing.Color.Yellow);
-                                            this.UpdateStatusText(Instruction5 + ": Passed.", false);
-                                            this.UpdateStatusText(Instruction6 + ": Passed.", false);
-                                            this.UpdateStatusText(Instruction7 + ": Passed.", false, System.Drawing.Color.Yellow);
-                                            this.UpdateStatusText(Instruction8 + ": Passed.", false, System.Drawing.Color.Yellow);
+                                    this.doNext = false;
 
+                                    var testCan = this.DoTestCan();
 
-                                        }
-                                    }
+                                    this.doNext = false;
 
+                                    this.UpdateStatusText(Instruction2 + ": Passed.", true, System.Drawing.Color.Yellow);
+                                    this.UpdateStatusText(Instruction3 + ": Passed.", false);
+                                    this.UpdateStatusText(Instruction4 + ": Passed.", false, System.Drawing.Color.Yellow);
+                                    this.UpdateStatusText(Instruction5 + ": Passed.", false);
+                                    this.UpdateStatusText(Instruction6 + ": Passed.", false);
+                                    this.UpdateStatusText(Instruction7 + (testUart ? ": Passed " : ": Failed"), false, testUart ? System.Drawing.Color.White : System.Drawing.Color.Red);
+                                    this.UpdateStatusText(Instruction8 + (testCan ? ": Passed " : ": Failed"), false, testCan ? System.Drawing.Color.White : System.Drawing.Color.Red);
                                 }
                             }
                         }
@@ -568,9 +566,10 @@ try_again:
             this.UpdateStatusText("- Connect VCOM Uart1 to PC.", false);
             this.UpdateStatusText("- Open Tera Term. Baudrate: 9600, ", false);
             this.UpdateStatusText("  Data: 8, Parity: None, StopBit: 1.", false);
-            this.UpdateStatusText("- The test is listening any character", false);
+            this.UpdateStatusText("- The test is waiting any character", false);
             this.UpdateStatusText("  on Tera Term screen.", false);
 
+            var result = false;
 
             using (var uart1 = UartController.FromName(SC20100.UartPort.Usart1)) {
 
@@ -600,14 +599,18 @@ try_again:
 
                     for (var i = 0; i < read.Length; i++) {
                         if (read[i] == 'a') {
-                            return true;
+                            result = true;
+                            break;
                         }
                     }
+
+                    if (result == true)
+                        break;
                 }
             }
 
 
-            return true;
+            return result;
         }
 
         private bool DoTestCan() {
@@ -626,6 +629,8 @@ try_again:
 
             canController.Enable();
 
+            var result = false;
+
             var message = new CanMessage() {
                 ArbitrationId = 0x1234,
                 ExtendedId = true,
@@ -633,12 +638,7 @@ try_again:
                 BitRateSwitch = true,
                 Data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 },
                 Length = 8
-
-
-
             };
-
-            var result = false;
 
             while (this.doNext == false && this.isRunning) {
 
@@ -676,10 +676,11 @@ try_again:
                     }
                 }
 
-                canController.Disable();
-
-
+                if (result)
+                    break;
             }
+
+            canController.Disable();
 
             return result;
         }

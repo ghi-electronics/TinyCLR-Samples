@@ -277,7 +277,12 @@ namespace Demos {
                                                 if (this.isRunning == true && this.DoTestCamera() == true) {
 
                                                     var testUart = this.DoTestUart();
+
+                                                    this.doNext = false;
+
                                                     var testCan = this.DoTestCan();
+
+                                                    this.doNext = false;
 
                                                     this.UpdateStatusText(Instruction2 + ": Passed by tester.", true, System.Drawing.Color.Yellow);
                                                     this.UpdateStatusText(Instruction3 + ": Passed.", false);
@@ -288,7 +293,7 @@ namespace Demos {
                                                     this.UpdateStatusText(Instruction8 + ": Passed.", false);
                                                     this.UpdateStatusText(Instruction9 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
                                                     this.UpdateStatusText(Instruction10 + (testUart ? ": Passed " : ": Failed"), false, testUart ? System.Drawing.Color.White : System.Drawing.Color.Red);
-                                                    this.UpdateStatusText(Instruction11 + (testCan ? ": Passed " : ": Failed"), false, testUart ? System.Drawing.Color.White : System.Drawing.Color.Red);
+                                                    this.UpdateStatusText(Instruction11 + (testCan ? ": Passed " : ": Failed"), false, testCan ? System.Drawing.Color.White : System.Drawing.Color.Red);
                                                 }
                                             }
                                         }
