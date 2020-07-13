@@ -20,112 +20,104 @@ namespace Demos {
     public class AdcWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private Text instructionLabel1;
-        private Text instructionLabel2;
-        private Text instructionLabel3;
-        private Text instructionLabel4;
-        private Text instructionLabel5;
-        private Text instructionLabel6;
-        private Text instructionLabel7;
-        private Text instructionLabel8;
+        private const string Instruction1 = " This will test Analog input on PC0 pin (MikroBus pins)";
+        private const string Instruction2 = " - Connect PC0 pin to analog source";
+        private const string Instruction3 = " - The screen will show current value from the pin.";
+        private const string Instruction4 = "  ";
+        private const string Instruction5 = "  Press Test button when you are ready.";
+        private const string Instruction6 = "  ";
+        private const string Instruction7 = "  ";
 
-
-        private string instruction1 = " This will test Analog input on PA0C pin ";
-        private string instruction2 = " - Connect PA0C pin to analog source";
-        private string instruction3 = " - The screen will show current value from the pin.";
-        private string instruction4 = "  ";
-        private string instruction5 = "  Press Test button when you are ready.";
-        private string instruction6 = "  ";
-        private string instruction7 = "  ";
-
-        private string instruction8 = " ";
+        private const string Instruction8 = " ";
 
         private Button testButton;
 
         private Font font;
 
-        private bool isRuning;
+        private bool isRunning;
 
-        public object PwmController { get; private set; }
+        private TextFlow textFlow;
 
         public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
-            this.instructionLabel1 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction1) {
-                ForeColor = Colors.White,
+            this.testButton = new Button() {
+                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Test") {
+                    ForeColor = Colors.Black,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+                Width = 100,
+                Height = 30,
             };
-
-            this.instructionLabel2 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction2) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel3 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction3) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel4 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction4) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel5 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction5) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel6 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction6) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel7 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction7) {
-                ForeColor = Colors.White,
-            };
-
-            this.instructionLabel8 = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, this.instruction8) {
-                ForeColor = Colors.White,
-            };
-
-
-create_button:
-
-            try {
-                this.testButton = new Button {
-                    Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Start Test!") {
-                        ForeColor = Colors.Black,
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center,
-                    },
-
-                    Width = 100,
-                    Height = 30
-                };
-            }
-            catch {
-
-            }
-
-            if (this.testButton == null) {
-                goto create_button;
-            }
 
             this.testButton.Click += this.TestButton_Click;
 
         }
 
+        private void Initialize() {
+
+            this.textFlow = new TextFlow();
+
+            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+        }
+
+        private void Deinitialize() {
+
+            this.textFlow.TextRuns.Clear();
+            this.textFlow = null;
+        }
+
         private void TestButton_Click(object sender, RoutedEventArgs e) {
             if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                if (this.isRuning == false) {
+
+                if (!this.isRunning) {
+                    this.ClearScreen();
+
+                    this.CreateWindow(false);
+
+                    this.textFlow.TextRuns.Clear();
+
                     new Thread(this.ThreadTest).Start();
                 }
             }
         }
 
+
         protected override void Active() {
             // To initialize, reset your variable, design...
+            this.Initialize();
+
             this.canvas = new Canvas();
 
             this.Child = this.canvas;
 
+            this.isRunning = false;
+
             this.ClearScreen();
-            this.CreateWindow();
+            this.CreateWindow(true);
         }
 
         private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
@@ -137,11 +129,13 @@ create_button:
             this.Close();
 
         protected override void Deactive() {
-            this.isRuning = false;
+            this.isRunning = false;
 
-            Thread.Sleep(100); // Wait for test thread is stop => no update canvas
+            Thread.Sleep(10);
             // To stop or free, uinitialize variable resource
             this.canvas.Children.Clear();
+
+            this.Deinitialize();
         }
 
         private void ClearScreen() {
@@ -165,63 +159,38 @@ create_button:
 
         }
 
-        private void CreateWindow() {
-            var startX = 20;
+        private void CreateWindow(bool enablebutton) {
+            var startX = 5;
             var startY = 40;
-            var offsetY = 20;
 
-            Canvas.SetLeft(this.instructionLabel1, startX); Canvas.SetTop(this.instructionLabel1, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel1);
+            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
+            this.canvas.Children.Add(this.textFlow);
 
-            Canvas.SetLeft(this.instructionLabel2, startX); Canvas.SetTop(this.instructionLabel2, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel2);
+            if (enablebutton) {
+                var buttonY = this.Height - ((this.testButton.Height * 3) / 2);
 
-
-            Canvas.SetLeft(this.instructionLabel3, startX); Canvas.SetTop(this.instructionLabel3, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel3);
-
-            Canvas.SetLeft(this.instructionLabel4, startX); Canvas.SetTop(this.instructionLabel4, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel4);
-
-            Canvas.SetLeft(this.instructionLabel5, startX); Canvas.SetTop(this.instructionLabel5, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel5);
-
-
-            Canvas.SetLeft(this.instructionLabel6, startX); Canvas.SetTop(this.instructionLabel6, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel6);
-
-
-            Canvas.SetLeft(this.instructionLabel7, startX); Canvas.SetTop(this.instructionLabel7, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel7);
-
-
-            Canvas.SetLeft(this.instructionLabel8, startX); Canvas.SetTop(this.instructionLabel8, startY); startY += offsetY;
-            this.canvas.Children.Add(this.instructionLabel8);
-
-            Canvas.SetLeft(this.testButton, startX); Canvas.SetTop(this.testButton, startY); startY += offsetY;
-            this.canvas.Children.Add(this.testButton);
+                Canvas.SetLeft(this.testButton, startX); Canvas.SetTop(this.testButton, buttonY);
+                this.canvas.Children.Add(this.testButton);
+            }
         }
 
 
         private void ThreadTest() {
 
-            this.isRuning = true;
+            this.isRunning = true;
 
             var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PC0);
 
             var str = string.Empty;
-            while (this.isRuning) {
-                var startX = 20;
-                var startY = 40;
-
+            while (this.isRunning) {
 
                 var v = pin.ReadValue() * 3.3 / 0xFFFF;
 
                 var s = v.ToString("N2");
 
                 if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, startX, startY, true);
+                    this.UpdateStatusText("Adc reading value: " + s, true);
                     str = s;
                 }
 
@@ -230,37 +199,51 @@ create_button:
 
             pin.Dispose();
 
-            this.isRuning = false;
+            this.isRunning = false;
 
             return;
 
         }
 
-        private void UpdateStatusText(string text, int x, int y, bool clearscreen) {
+        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-            var timeout = 10;
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
 
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
+            var timeout = 100;
 
-                if (clearscreen)
-                    this.ClearScreen();
+            try {
 
+                var count = this.textFlow.TextRuns.Count + 2;
 
-                var label = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, text) {
-                    ForeColor = Colors.White,
-                };
+                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
 
+                    if (clearscreen)
+                        this.textFlow.TextRuns.Clear();
 
-                Canvas.SetLeft(label, x); Canvas.SetTop(label, y);
-                this.canvas.Children.Add(label);
+                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
+                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-                label.Invalidate();
+                    return null;
 
-                return null;
+                }, null);
 
-            }, null);
+                if (clearscreen) {
+                    while (this.textFlow.TextRuns.Count < 2) {
+                        Thread.Sleep(10);
+                    }
+                }
+                else {
+                    while (this.textFlow.TextRuns.Count < count) {
+                        Thread.Sleep(10);
+                    }
+                }
+            }
+            catch {
 
-            Thread.Sleep(timeout);
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
         }
     }

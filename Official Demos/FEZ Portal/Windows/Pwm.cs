@@ -22,9 +22,9 @@ namespace Demos {
 
       
 
-        private const string Instruction1 = " This will test Pwm on two leds: ";
+        private const string Instruction1 = " This will test Pwm on led: ";
         private const string Instruction2 = " - Red led connect to PB0";
-        private const string Instruction3 = " - Green led connect to PH11 ";
+        private const string Instruction3 = " ";
         private const string Instruction4 = " ";
         private const string Instruction5 = " Press Test button when you are ready.";
         private const string Instruction6 = " ";
@@ -197,7 +197,7 @@ namespace Demos {
             var value = 0.0;
             var dir = 1;
 
-            this.UpdateStatusText("The test is passed if red and green led are changing brightness.",  true);
+            this.UpdateStatusText("The test is passed if red is changing brightness.",  true);
 
 
             while (this.isRunning) {
