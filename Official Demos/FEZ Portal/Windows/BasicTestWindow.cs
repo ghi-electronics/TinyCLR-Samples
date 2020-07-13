@@ -531,44 +531,26 @@ _return:
         }
 
         private bool DoTestLeds() {
-            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id);
+            var gpioController = GpioController.GetDefault();
 
-            var pwmPinPB0 = pwmController3.OpenChannel(SC20260.PwmChannel.Controller3.PB0);
+            var redLed = gpioController.OpenPin(SC20260.GpioPin.PB0);
 
-            pwmController3.SetDesiredFrequency(1000);
+            redLed.SetDriveMode(GpioPinDriveMode.Output);
 
-            pwmPinPB0.SetActiveDutyCyclePercentage(0.0);
-
-            var value = 0.0;
-            var dir = 1;
-
-            this.UpdateStatusText("Testing red and green leds.", true);
-            this.UpdateStatusText("- The test is passed if red and green led are changing brightness.", false);
+            this.UpdateStatusText("Testing the red led.", true);
+            this.UpdateStatusText("- The test is passed if red is blinking.", false);
             this.UpdateStatusText(" ", false);
-            this.UpdateStatusText("- Only press Next button if the test is passed.", false, System.Drawing.Color.Yellow);
+            this.UpdateStatusText("- Only press Next button if the led are blinking.", false, System.Drawing.Color.Yellow);
 
             this.AddNextButton();
 
             while (this.doNext == false && this.isRunning) {
-                for (var i = 0; i < 10; i++) {
-                    value += 0.1 * dir;
+                redLed.Write(redLed.Read() == GpioPinValue.High ? GpioPinValue.Low : GpioPinValue.High);
 
-                    pwmPinPB0.Start();
-
-                    Thread.Sleep(100);
-
-                    pwmPinPB0.Stop();
-
-                    pwmPinPB0.SetActiveDutyCyclePercentage(value);
-                }
-
-                dir = 0 - dir;
+                Thread.Sleep(100);
             }
 
-
-            pwmPinPB0.Dispose();
-
-            pwmController3.Dispose();
+            redLed.Dispose();
 
             this.RemoveNextButton();
 
@@ -617,15 +599,13 @@ _return:
         private bool DoTestSdcard() {
 
             var result = true;
+
             this.UpdateStatusText("Waiting for Sd initialize...", true);
-
-            UsbWindow.InitializeUsbHostController();
-
-            while (!UsbWindow.IsUsbHostConnected) Thread.Sleep(100);
 
             var storageController = StorageController.FromName(SC20260.StorageController.SdCard);
 
             IDriveProvider drive;
+try_again:
 
             try {
                 drive = FileSystem.Mount(storageController.Hdc);
@@ -639,6 +619,13 @@ _return:
             catch {
 
                 this.UpdateStatusText("Sd: " + BadConnect1, true);
+
+                while (this.doNext == false) {
+
+                    Thread.Sleep(1000);
+
+                    goto try_again;
+                }
 
                 result = false;
 
@@ -692,8 +679,16 @@ _return:
 
                 pwmPinPB1.Dispose();
 
-                this.UpdateStatusText("Testing is success if you heard three kind of sounds!", false);
+                this.UpdateStatusText("Testing is success if you heard three different sounds!", false, System.Drawing.Color.Yellow);
             }
+
+            this.AddNextButton();
+
+            while (this.doNext == false) {
+                Thread.Sleep(100);
+            }
+
+            this.RemoveNextButton();
 
             return true;
         }
@@ -704,6 +699,7 @@ _return:
 
             var m = new DateTime(2020, 7, 7, 00, 00, 00);
 
+try_again:
             if (rtc.IsValid && rtc.Now > m) {
 
                 return true;
@@ -719,6 +715,9 @@ _return:
                     return true;
                 }
             }
+
+            if (this.isRunning)
+                goto try_again;
 
             return false;
         }

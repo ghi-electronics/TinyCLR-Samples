@@ -15,8 +15,8 @@ namespace Demos {
         private Canvas canvas; // can be StackPanel
 
         private const string Instruction1 = "This test will run on CAN1 (PH13, PH14), FD mode.";
-        private const string Instruction2 = " Nominal speed: 1Mbit/s.";
-        private const string Instruction3 = " Data speed: 2Mbit/.,";
+        private const string Instruction2 = " Nominal speed: 250Kbit/s.";
+        private const string Instruction3 = " Data speed: 500Kbit/.,";
         private const string Instruction4 = " Filter Id: 0x100...0x999.";
         private const string Instruction5 = " When the board get a message, it'll send back a message same format";
         private const string Instruction6 = " and ArbitrationId plus 1. ";
@@ -186,9 +186,9 @@ namespace Demos {
 
             var canController = CanController.FromName(SC20260.CanBus.Can1);
 
-            canController.SetNominalBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(13, 2, 3, 1, false)); // 1.0Mb at 48MHz            
+            canController.SetNominalBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(15 + 8, 8, 6, 8, false)); // 250Kbit/s          
 
-            canController.SetDataBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(8, 3, 2, 1, false)); // 2.0Mb at 48MHz
+            canController.SetDataBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(15 + 8, 8, 3, 8, false)); //500kbit/s 
 
             canController.Filter.AddRangeFilter(Filter.IdType.Standard, 0x100, 0x7FF);
             canController.Filter.AddRangeFilter(Filter.IdType.Extended, 0x100, 0x999);
