@@ -22,10 +22,10 @@ namespace Demos {
         private const string Instruction1 = "This step will test:";
         private const string Instruction2 = " - External Ram.";
         private const string Instruction3 = " - External flash.";
-        private const string Instruction4 = " - Ethernet.";
+        private const string Instruction4 = " ";
         private const string Instruction5 = " ";
-        private const string Instruction6 = " ** Please connect ethernet cable for Ethernet testing **";
-        private const string Instruction7 = " ** Ethernet test is not available on FEZ Portal **";
+        private const string Instruction6 = " ";
+        private const string Instruction7 = " ";
         private const string Instruction8 = " Press Test button when you are ready.";
 
 
@@ -183,13 +183,17 @@ namespace Demos {
             this.isRunning = true;
 
             var extRamTestResult = this.DoTestExternalRam();
+
+            Thread.Sleep(100);
+
             var extFlashTestResult = this.DoTestExternalFlash();
-            var ethernetTestResult = this.DoTestEthernet();
+
+            Thread.Sleep(100);            
 
             this.UpdateStatusText("External ram test result: " + (extRamTestResult == true ? "Passed" : "Failed"), true, extRamTestResult == true ? System.Drawing.Color.White : System.Drawing.Color.Red);
-            this.UpdateStatusText("External flash test result: " + (extFlashTestResult == true ? "Passed" : "Failed"), false, extFlashTestResult == true ? System.Drawing.Color.White : System.Drawing.Color.Red);
-            this.UpdateStatusText("Ethernet test result: " + (ethernetTestResult == true ? "Passed" : "Failed"), false, ethernetTestResult == true ? System.Drawing.Color.White : System.Drawing.Color.Red);
+            this.UpdateStatusText("External flash test result: " + (extFlashTestResult == true ? "Passed" : "Failed"), false, extFlashTestResult == true ? System.Drawing.Color.White : System.Drawing.Color.Red);            
 
+            Thread.Sleep(100);
             this.isRunning = false;
         }
 
@@ -266,8 +270,7 @@ namespace Demos {
         }
 
         private bool DoTestExternalFlash() {
-
-            this.isRunning = true;
+            
             var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
             var drive = storeController.Provider;
             var result = true;
@@ -345,8 +348,7 @@ _again:
 
 
 _return:
-            drive.Close();
-            this.isRunning = false;
+            drive.Close();            
 
             return result;
         }
