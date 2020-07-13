@@ -17,15 +17,15 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class DacWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
-
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
+      
+        private const string Instruction1 = " This will test Analog Out on: ";
+        private const string Instruction2 = " - PA4: Value change from 0, 25, 50, 75 and 100% of 3.3V every second.";
+        private const string Instruction3 = " - PA5: Value change from 100, 55, 50, 25 and 0% of 3.3V every second.";
+        private const string Instruction4 = " - You may need a oscilloscope to measure the value on these pins. ";
+        private const string Instruction5 = "  ";
+        private const string Instruction6 = "  Press Test button when you are ready.";
         private const string Instruction7 = "  ";
 
         private const string Instruction8 = " ";
@@ -38,7 +38,7 @@ namespace Demos {
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public DacWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -75,12 +75,6 @@ namespace Demos {
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
         }
 
@@ -161,7 +155,7 @@ namespace Demos {
 
         private void CreateWindow(bool enablebutton) {
             var startX = 5;
-            var startY = 40;
+            var startY = 40;            
 
             Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
             this.canvas.Children.Add(this.textFlow);
@@ -172,37 +166,8 @@ namespace Demos {
                 Canvas.SetLeft(this.testButton, startX); Canvas.SetTop(this.testButton, buttonY);
                 this.canvas.Children.Add(this.testButton);
             }
-        }
 
-
-        private void ThreadTest() {
-
-            this.isRunning = true;
-
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
-
-            var str = string.Empty;
-            while (this.isRunning) {
-
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
-
-                var s = v.ToString("N2");
-
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
-                }
-
-                Thread.Sleep(500);
-            }
-
-            pin.Dispose();
-
-            this.isRunning = false;
-
-            return;
-
+           
         }
 
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
@@ -246,5 +211,79 @@ namespace Demos {
             GC.WaitForPendingFinalizers();
 
         }
+
+        private void ThreadTest() {
+
+            this.isRunning = true;
+
+            var controlelr = GHIElectronics.TinyCLR.Devices.Dac.DacController.FromName(SC20100.DacChannel.Id);
+
+            var channel0 = controlelr.OpenChannel(0);
+            var channel1 = controlelr.OpenChannel(1);
+
+            while (this.isRunning) {
+              
+                channel0.WriteValue(0);
+                channel1.WriteValue(1.0);
+                this.UpdateStatusText("PA4: 0%. PA5: 100%",  true);
+
+                var t = DateTime.Now;
+
+                while ((DateTime.Now - t).TotalMilliseconds < 1000) {
+                    if (this.isRunning == false)
+                        break;
+                }
+
+                channel0.WriteValue(0.25);
+                channel1.WriteValue(0.75);
+                this.UpdateStatusText("PA4: 25%. PA5: 75%",  true);
+                t = DateTime.Now;
+
+                while ((DateTime.Now - t).TotalMilliseconds < 1000) {
+                    if (this.isRunning == false)
+                        break;
+                }
+
+                channel0.WriteValue(0.5);
+                channel1.WriteValue(0.5);
+                this.UpdateStatusText("PA4: 50%. PA5: 50%",  true);
+                t = DateTime.Now;
+
+                while ((DateTime.Now - t).TotalMilliseconds < 1000) {
+                    if (this.isRunning == false)
+                        break;
+                }
+
+                channel0.WriteValue(0.75);
+                channel1.WriteValue(0.25);
+                this.UpdateStatusText("PA4: 75%. PA5: 25%",  true);
+                t = DateTime.Now;
+
+                while ((DateTime.Now - t).TotalMilliseconds < 1000) {
+                    if (this.isRunning == false)
+                        break;
+                }
+
+                channel0.WriteValue(1.0);
+                channel1.WriteValue(0);
+                this.UpdateStatusText("PA4: 100%. PA5: 0%",  true);
+                t = DateTime.Now;
+
+                while ((DateTime.Now - t).TotalMilliseconds < 1000) {
+                    if (this.isRunning == false)
+                        break;
+                }
+
+            }
+
+            channel0.Dispose();
+            channel1.Dispose();
+
+            this.isRunning = false;
+
+            return;
+
+        }
+       
     }
 }

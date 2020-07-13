@@ -4,41 +4,46 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Adc;
-using GHIElectronics.TinyCLR.Devices.I2c;
-using GHIElectronics.TinyCLR.Devices.Rtc;
-using GHIElectronics.TinyCLR.Devices.Storage;
-using GHIElectronics.TinyCLR.Devices.Uart;
-using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
-using GHIElectronics.TinyCLR.Native;
+using GHIElectronics.TinyCLR.Devices.Can;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class CanFdWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
-        private const string Instruction7 = "  ";
+        private const string Instruction1 = "This test will run on CAN1 (PH13, PH14), FD mode.";
+        private const string Instruction2 = " Nominal speed: 1Mbit/s.";
+        private const string Instruction3 = " Data speed: 2Mbit/.,";
+        private const string Instruction4 = " Filter Id: 0x100...0x999.";
+        private const string Instruction5 = " When the board get a message, it'll send back a message same format";
+        private const string Instruction6 = " and ArbitrationId plus 1. ";
+        private const string Instruction7 = " ";
+        private const string Instruction8 = " Press Test button when you are ready.";
 
-        private const string Instruction8 = " ";
+        private const string WaitForMessage = "Wait for receiving message...";
+        private const string TotalReceived = "Total received: ";
 
-        private Button testButton;
+        private const string ArbitrationId = "ArbitrationId: ";
+        private const string ExtendedId = "ExtendedId: ";
+        private const string FdCanMode = "FD Mode: ";
+        private const string BitRateSwitch = "BitRateSwitch: ";
+        private const string RTR = "RTR: ";
+        private const string Data = "Data: ";
 
         private Font font;
 
         private bool isRunning;
 
+        private int messageReceiveCount = 0;
+
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        private Button testButton;
+
+        public CanFdWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -52,7 +57,6 @@ namespace Demos {
             };
 
             this.testButton.Click += this.TestButton_Click;
-
         }
 
         private void Initialize() {
@@ -99,6 +103,9 @@ namespace Demos {
                     this.CreateWindow(false);
 
                     this.textFlow.TextRuns.Clear();
+
+                    this.textFlow.TextRuns.Add(WaitForMessage, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
                     new Thread(this.ThreadTest).Start();
                 }
@@ -174,35 +181,80 @@ namespace Demos {
             }
         }
 
-
         private void ThreadTest() {
-
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            var canController = CanController.FromName(SC20260.CanBus.Can1);
 
-            var str = string.Empty;
+            canController.SetNominalBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(13, 2, 3, 1, false)); // 1.0Mb at 48MHz            
+
+            canController.SetDataBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(8, 3, 2, 1, false)); // 2.0Mb at 48MHz
+
+            canController.Filter.AddRangeFilter(Filter.IdType.Standard, 0x100, 0x7FF);
+            canController.Filter.AddRangeFilter(Filter.IdType.Extended, 0x100, 0x999);
+
+            canController.MessageReceived += this.CanController_MessageReceived;
+            canController.ErrorReceived += this.CanController_ErrorReceived;
+
+            canController.Enable();
+
             while (this.isRunning) {
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
-
-                var s = v.ToString("N2");
-
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
-                }
-
-                Thread.Sleep(500);
+                Thread.Sleep(100);
             }
-
-            pin.Dispose();
 
             this.isRunning = false;
 
-            return;
+            canController.Disable();
+        }
 
+
+        private void CanController_ErrorReceived(CanController sender, ErrorReceivedEventArgs e) {
+            try {
+                // Reset CAN
+                sender.Disable();
+
+                Thread.Sleep(10);
+
+                sender.Enable();
+            }
+            catch { }
+        }
+
+        private void CanController_MessageReceived(CanController sender, MessageReceivedEventArgs e) {
+
+            var msgs = new GHIElectronics.TinyCLR.Devices.Can.CanMessage[e.Count];
+
+            for (var i = 0; i < msgs.Length; i++)
+                msgs[i] = new GHIElectronics.TinyCLR.Devices.Can.CanMessage();
+
+            this.messageReceiveCount += sender.ReadMessages(msgs, 0, msgs.Length);
+
+            for (var i = 0; i < msgs.Length; i++) {
+                this.UpdateStatusText(ArbitrationId + msgs[i].ArbitrationId, true);
+                this.UpdateStatusText(FdCanMode + msgs[i].FdCan, false);
+                this.UpdateStatusText(ExtendedId + msgs[i].ExtendedId, false);
+                this.UpdateStatusText(RTR + msgs[i].RemoteTransmissionRequest, false);
+                this.UpdateStatusText(BitRateSwitch + msgs[i].BitRateSwitch, false);
+
+                var dataText = string.Empty;
+
+                for (var ii = 0; ii < 8; ii++) {
+                    dataText += msgs[i].Data[ii] + " ";
+                }
+
+                this.UpdateStatusText(Data + dataText, false);
+                this.UpdateStatusText(TotalReceived + this.messageReceiveCount, false);
+
+                try {
+                    msgs[i].ArbitrationId += 1;
+
+                    sender.WriteMessage(msgs[i]);
+                }
+                catch {
+
+                }
+            }
         }
 
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);

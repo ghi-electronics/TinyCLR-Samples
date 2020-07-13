@@ -20,8 +20,8 @@ namespace Demos {
     public class AdcWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
+        private const string Instruction1 = " This will test Analog input on PC0 pin (MikroBus pins)";
+        private const string Instruction2 = " - Connect PC0 pin to analog source";
         private const string Instruction3 = " - The screen will show current value from the pin.";
         private const string Instruction4 = "  ";
         private const string Instruction5 = "  Press Test button when you are ready.";
@@ -180,7 +180,7 @@ namespace Demos {
             this.isRunning = true;
 
             var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PC0);
 
             var str = string.Empty;
             while (this.isRunning) {

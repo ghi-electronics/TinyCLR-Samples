@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Adc;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
@@ -17,15 +16,15 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class CameraWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
+        private const string Instruction1 = " This will test Camera module: ";
+        private const string Instruction2 = " - Connect Camera module to Camare Interface on 20260Dev board.";
+        private const string Instruction3 = " ";
+        private const string Instruction4 = " ** This feature is not available on FEZ Portal **";
+        private const string Instruction5 = "  ";
+        private const string Instruction6 = "  Press Test button when you are ready.";
         private const string Instruction7 = "  ";
 
         private const string Instruction8 = " ";
@@ -38,7 +37,7 @@ namespace Demos {
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public CameraWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -68,14 +67,16 @@ namespace Demos {
             this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            var yellowColor = System.Drawing.Color.Yellow;
+
+            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(yellowColor.R, yellowColor.G, yellowColor.B));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);           
 
             this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
@@ -117,7 +118,7 @@ namespace Demos {
             this.isRunning = false;
 
             this.ClearScreen();
-            this.CreateWindow(true);
+            this.CreateWindow(true);          
         }
 
         private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
@@ -179,33 +180,57 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
 
-            var str = string.Empty;
-            while (this.isRunning) {
+            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
+            try {
 
-                var s = v.ToString("N2");
+                var ov9655 = new Ov9655(i2cController);
 
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
+                var id = ov9655.ReadId();
+
+                byte[] data = null;
+                UnmanagedBuffer unmangedBuffer = null;
+
+                if (Memory.UnmanagedMemory.FreeBytes != 0) {
+                    unmangedBuffer = new UnmanagedBuffer(640 * 480 * 2);
+                    data = unmangedBuffer.Bytes;
+                }
+                else {
+                    data = new byte[640 * 480 * 2];
                 }
 
-                Thread.Sleep(500);
+                ov9655.SetResolution(Ov9655.Resolution.Vga);
+                var displayController = Display.DisplayController;
+
+                while (this.isRunning) {
+                    try {
+                        ov9655.Capture(data, 500);
+
+                        displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, data, 0);
+                    }
+                    catch {
+
+                    }
+
+                    Thread.Sleep(10);
+
+                }
+
+                if (unmangedBuffer != null) {
+                    unmangedBuffer.Dispose();
+                }
+            }
+            catch {
+
             }
 
-            pin.Dispose();
 
             this.isRunning = false;
 
             return;
 
         }
-
-        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
         private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
 

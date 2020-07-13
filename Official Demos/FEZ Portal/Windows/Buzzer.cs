@@ -4,12 +4,7 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Adc;
-using GHIElectronics.TinyCLR.Devices.I2c;
-using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
-using GHIElectronics.TinyCLR.Devices.Uart;
-using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -17,18 +12,14 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class BuzzerWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
-        private const string Instruction7 = "  ";
-
-        private const string Instruction8 = " ";
+        private const string Instruction1 = "This test Buzzer:";
+        private const string Instruction2 = " First second generate pwm 500Hz, duty cycle 0.5";
+        private const string Instruction3 = " Next second generate pwm  1KHz, duty cycle 0.5";
+        private const string Instruction4 = " Third second generates pwm 2KHz, duty cycle 0.5";
+        private const string Instruction5 = "Press Test button when you are ready.";
 
         private Button testButton;
 
@@ -38,7 +29,7 @@ namespace Demos {
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public BuzzerWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -52,7 +43,6 @@ namespace Demos {
             };
 
             this.testButton.Click += this.TestButton_Click;
-
         }
 
         private void Initialize() {
@@ -72,15 +62,6 @@ namespace Demos {
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
         }
 
@@ -179,25 +160,43 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            using (var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id)) {
 
-            var str = string.Empty;
-            while (this.isRunning) {
+                var pwmPinPB1 = pwmController3.OpenChannel(SC20260.PwmChannel.Controller3.PB1);
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
+                pwmController3.SetDesiredFrequency(500);
+                pwmPinPB1.SetActiveDutyCyclePercentage(0.5);
 
-                var s = v.ToString("N2");
+                this.UpdateStatusText("Generate Pwm 500Hz...", true);
 
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
-                }
+                pwmPinPB1.Start();
 
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
+
+                pwmPinPB1.Stop();
+
+                this.UpdateStatusText("Generate Pwm 1000Hz...", false);
+
+                pwmController3.SetDesiredFrequency(1000);
+
+                pwmPinPB1.Start();
+
+                Thread.Sleep(1000);
+
+                this.UpdateStatusText("Generate Pwm 2000Hz...", false);
+
+                pwmController3.SetDesiredFrequency(2000);
+
+                pwmPinPB1.Start();
+
+                Thread.Sleep(1000);
+
+                pwmPinPB1.Stop();
+
+                pwmPinPB1.Dispose();
+
+                this.UpdateStatusText("Testing is success if you heard three kind of sounds!", false);
             }
-
-            pin.Dispose();
 
             this.isRunning = false;
 

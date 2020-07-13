@@ -4,12 +4,7 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Adc;
-using GHIElectronics.TinyCLR.Devices.I2c;
-using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
-using GHIElectronics.TinyCLR.Devices.Uart;
-using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -17,18 +12,14 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class QspiWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
-        private const string Instruction7 = "  ";
-
-        private const string Instruction8 = " ";
+        private const string Instruction1 = "This test will Erase/Write/Read:";
+        private const string Instruction2 = " - 8 frist sectors";
+        private const string Instruction3 = " - 8 last sectors";
+        private const string Instruction4 = "All exist data on these sectors will be erased!";
+        private const string Instruction5 = "Press Test button when you are ready.";
 
         private Button testButton;
 
@@ -38,7 +29,7 @@ namespace Demos {
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public QspiWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -52,7 +43,6 @@ namespace Demos {
             };
 
             this.testButton.Click += this.TestButton_Click;
-
         }
 
         private void Initialize() {
@@ -72,15 +62,6 @@ namespace Demos {
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
         }
 
@@ -174,31 +155,88 @@ namespace Demos {
             }
         }
 
-
         private void ThreadTest() {
 
             this.isRunning = true;
+            var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            var drive = storeController.Provider;
 
-            var str = string.Empty;
-            while (this.isRunning) {
+            drive.Open();
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
+            var sectorSize = drive.Descriptor.RegionSizes[0];
 
-                var s = v.ToString("N2");
+            var textWrite = System.Text.UTF8Encoding.UTF8.GetBytes("this is for test");
+            var dataRead = new byte[sectorSize];
 
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
-                }
+            var dataWrite = new byte[sectorSize];
 
-                Thread.Sleep(500);
+            for (var i = 0; i < sectorSize; i += textWrite.Length) {
+                Array.Copy(textWrite, 0, dataWrite, i, textWrite.Length);
+
             }
 
-            pin.Dispose();
+            var roundTest = 0;
+            var startSector = 0;
+            var endSector = 8;
 
+_again:
+            if (roundTest == 1) {
+                startSector = 4088; // last 8 sectors
+                endSector = startSector + 8;
+            }
+
+            for (var s = startSector; s < endSector; s++) {
+
+                var address = s * sectorSize;
+                this.UpdateStatusText("Erasing sector " + s, true);
+                // Erase
+                drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
+
+                // Read - check for blank
+                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
+
+                for (var idx = 0; idx < sectorSize; idx++) {
+                    if (dataRead[idx] != 0xFF) {
+
+                        this.UpdateStatusText("Erase failed at: " + idx, false);
+
+                        goto _return;
+                    }
+                }
+
+                // Write
+                this.UpdateStatusText("Writing sector " + s, false);
+                drive.Write(address, sectorSize, dataWrite, 0, TimeSpan.FromSeconds(100));
+
+                this.UpdateStatusText("Reading sector " + s, false);
+                //Read to compare
+                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
+
+
+                for (var idx = 0; idx < sectorSize; idx++) {
+                    if (dataRead[idx] != dataWrite[idx]) {
+
+                        this.UpdateStatusText("Compare failed at: " + idx, false);
+
+                        goto _return;
+                    }
+
+                }
+            }
+
+            roundTest++;
+
+            if (roundTest == 2) {
+                this.UpdateStatusText("Tested Quad Spi successful!", false);
+            }
+            else {
+                goto _again;
+            }
+
+
+_return:
+            drive.Close();
             this.isRunning = false;
 
             return;

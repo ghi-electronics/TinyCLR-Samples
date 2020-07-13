@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Adc;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
@@ -17,14 +16,15 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
-        private Canvas canvas; // can be StackPanel
+    public class ColorWindow : ApplicationWindow {
+        private Canvas canvas; // can be StackPane        
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
+
+        private const string Instruction1 = " This will test raw graphic on UD435 display: ";
+        private const string Instruction2 = " ";
+        private const string Instruction3 = " ";
+        private const string Instruction4 = "  Press Test button when you are ready.";
+        private const string Instruction5 = "  ";
         private const string Instruction6 = "  ";
         private const string Instruction7 = "  ";
 
@@ -38,7 +38,7 @@ namespace Demos {
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public ColorWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -72,15 +72,6 @@ namespace Demos {
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
         }
 
@@ -179,25 +170,49 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
 
-            var str = string.Empty;
+            var displayController = Display.DisplayController;
+
+            var screen = System.Drawing.Graphics.FromHdc(displayController.Hdc);
+
+            var background = Resources.GetBitmap(Resources.BitmapResources.Color);
+
+            var startY = 0;
+            var imageX = 0;
+
+            var screen_width = 480;
+            var screen_height = 272 - this.TopBar.ActualHeight;
+
             while (this.isRunning) {
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
+                screen.Clear();
 
-                var s = v.ToString("N2");
+                screen.DrawImage(background, imageX, startY);
 
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
-                }
+                screen.FillEllipse(new SolidBrush(System.Drawing.Color.FromArgb(100, 0xFF, 0, 0)), 0, startY, 100, 100);
 
-                Thread.Sleep(500);
+
+                screen.FillRectangle(new SolidBrush(System.Drawing.Color.FromArgb(100, 0, 0, 0xFF)), 0, 120, screen_width / 4, screen_height - 120);
+                screen.FillRectangle(new SolidBrush(System.Drawing.Color.FromArgb(100, 0, 0xFF, 0)), screen_width / 4, 120, screen_width / 4, screen_height - 120);
+                screen.FillRectangle(new SolidBrush(System.Drawing.Color.FromArgb(100, 0xFF, 0, 0)), screen_width / 4 * 2, 120, screen_width / 4, screen_height - 120);
+                screen.FillRectangle(new SolidBrush(System.Drawing.Color.FromArgb(100, 0xFF, 0xFF, 0xFF)), screen_width / 4 * 3, 120, screen_width / 4, screen_height - 120);
+
+
+                screen.DrawString("This is blue", this.font, new SolidBrush(System.Drawing.Color.Blue), 0, screen_height - 140);
+                screen.DrawString("This is green", this.font, new SolidBrush(System.Drawing.Color.Green), screen_width / 4, screen_height - 140);
+                screen.DrawString("This is red", this.font, new SolidBrush(System.Drawing.Color.Red), screen_width / 4 * 2, screen_height - 140);
+                screen.DrawString("This is white", this.font, new SolidBrush(System.Drawing.Color.White), screen_width / 4 * 3, screen_height - 140);
+                screen.DrawString("Touch here to return main menu [X]", this.font, new SolidBrush(System.Drawing.Color.White), screen_width / 2, 5);
+
+
+
+
+                screen.Flush();
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
 
-            pin.Dispose();
 
             this.isRunning = false;
 

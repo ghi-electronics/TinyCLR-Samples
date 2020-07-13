@@ -4,12 +4,8 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Adc;
-using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
-using GHIElectronics.TinyCLR.Devices.Uart;
-using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -17,18 +13,17 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class RtcWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
-        private const string Instruction7 = "  ";
-
-        private const string Instruction8 = " ";
+        private const string Instruction1 = " ***Be carefull: This test will enable charging mode on VBAT pin*** ";
+        private const string Instruction2 = " This will test RTC. The time will start at 00:00:00 - 07/07/2020";
+        private const string Instruction3 = " - Wait for charing about 30 seconds.";
+        private const string Instruction4 = " - Power off the board for 10 seconds";
+        private const string Instruction5 = " - Power on the board. ";
+        private const string Instruction6 = " => Passed if timer is after 00:00:00 - 07/07/2020 ";
+        private const string Instruction7 = "    Failed if timer is reset to 00:00:00 - 01/01/2017 ";
+        private const string Instruction8 = " Press Test button when you are ready.";
 
         private Button testButton;
 
@@ -38,7 +33,11 @@ namespace Demos {
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        private RtcController rtc;
+
+        const int ChargeVbatTimeout = 30; // 30 seconds
+
+        public RtcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -53,6 +52,9 @@ namespace Demos {
 
             this.testButton.Click += this.TestButton_Click;
 
+            this.rtc = RtcController.GetDefault();
+
+            this.rtc.SetChargeMode(BatteryChargeMode.None);
         }
 
         private void Initialize() {
@@ -83,6 +85,7 @@ namespace Demos {
             this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
         }
+
 
         private void Deinitialize() {
 
@@ -179,25 +182,41 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            var m = new DateTime(2020, 7, 7, 00, 00, 00);
 
-            var str = string.Empty;
-            while (this.isRunning) {
+            if (this.rtc.IsValid && this.rtc.Now > m) {
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
+                while (this.isRunning) {
+                    var time = this.rtc.Now.ToString();
 
-                var s = v.ToString("N2");
+                    this.UpdateStatusText("RTC is working: " + time, true);
+                }
+            }
+            else {
 
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
+
+                var newDt = RtcDateTime.FromDateTime(m);
+
+                var charetimeout = 0;
+
+                this.rtc.SetChargeMode(BatteryChargeMode.Fast);
+
+                while (charetimeout < ChargeVbatTimeout) {
+                    this.UpdateStatusText("Please wait for charing...." + charetimeout + " / " + ChargeVbatTimeout, true);
+
+                    charetimeout++;
+
+                    Thread.Sleep(1000);
                 }
 
-                Thread.Sleep(500);
+                this.rtc.SetChargeMode(BatteryChargeMode.None);
+
+                this.rtc.SetTime(newDt);
+                GHIElectronics.TinyCLR.Native.SystemTime.SetTime(m);
+
+                this.UpdateStatusText("Please power off the board for 10 seconds", false);
             }
 
-            pin.Dispose();
 
             this.isRunning = false;
 

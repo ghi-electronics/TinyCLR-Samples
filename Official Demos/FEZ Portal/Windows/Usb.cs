@@ -1,48 +1,57 @@
 using System;
 using System.Collections;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Adc;
-using GHIElectronics.TinyCLR.Devices.I2c;
-using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
-using GHIElectronics.TinyCLR.Devices.Uart;
-using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
-using GHIElectronics.TinyCLR.Native;
+using GHIElectronics.TinyCLR.Devices.UsbHost;
+using GHIElectronics.TinyCLR.IO;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class UsbWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
-        private const string Instruction7 = "  ";
+        private const string FreeSize = "Total Free: ";
+        private const string TotalSize = "Total Size: ";
+        private const string VolumeLabel = "VolumeLabel: ";
+        private const string RootDirectory = "RootDirectory: ";
+        private const string DriveFormat = "DriveFormat: ";
 
-        private const string Instruction8 = " ";
+        private const string Instruction1 = "This test will write 1K of data to the file TEST_USB.TXT,";
+        private const string Instruction2 = "then read back to compare data.";
+        private const string Instruction3 = "Insert usb stick and press Test Button when you ready.";
+
+        private const string BadConnect1 = "Bad device or no connect.";
+        private const string BadConnect2 = "Data corrupted.";
+        private const string BadWrite = "Write failed.";
+        private const string BadRead = "Read failed.";
+
+        private const string MountSuccess = "Mounted successful.";
+        private const string TestSuccess = "Tested Read / Write successful.";
+
 
         private Button testButton;
 
         private Font font;
 
+        private bool enabledUsbHost;
+        private bool usbConnected;
+
         private bool isRunning;
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-            this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
+        public UsbWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+            this.font = Resources.GetFont(Resources.FontResources.droid_reg12);
 
             this.testButton = new Button() {
-                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Test") {
+                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Test Usb") {
                     ForeColor = Colors.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
@@ -52,7 +61,6 @@ namespace Demos {
             };
 
             this.testButton.Click += this.TestButton_Click;
-
         }
 
         private void Initialize() {
@@ -68,20 +76,6 @@ namespace Demos {
             this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
-            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
         }
 
         private void Deinitialize() {
@@ -118,6 +112,25 @@ namespace Demos {
 
             this.ClearScreen();
             this.CreateWindow(true);
+
+            if (this.enabledUsbHost == false) {
+                this.enabledUsbHost = true;
+
+                var usnhostController = UsbHostController.GetDefault();
+
+                usnhostController.OnConnectionChangedEvent += this.UsbhostController_OnConnectionChangedEvent;
+
+                usnhostController.Enable();
+            }
+        }
+
+        private void UsbhostController_OnConnectionChangedEvent(UsbHostController sender, DeviceConnectionEventArgs e) {
+            if (e.DeviceStatus == DeviceConnectionStatus.Connected) {
+                this.usbConnected = true;
+            }
+            else {
+                this.usbConnected = false;
+            }
         }
 
         private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
@@ -176,32 +189,117 @@ namespace Demos {
 
 
         private void ThreadTest() {
+            const int BlockSize = 1024;
 
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            var data = System.Text.Encoding.UTF8.GetBytes("This is for usb\n");
 
-            var str = string.Empty;
-            while (this.isRunning) {
+            var dataWrite = new byte[BlockSize];
+            var dataRead = new byte[BlockSize];
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
-
-                var s = v.ToString("N2");
-
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
-                }
-
-                Thread.Sleep(500);
+            for (var i = 0; i < BlockSize; i += data.Length) {
+                Array.Copy(data, 0, dataWrite, i, data.Length);
             }
 
-            pin.Dispose();
+            var storageController = StorageController.FromName(SC20260.StorageController.UsbHostMassStorage);
+
+            IDriveProvider drive;
+
+            var timeout = 0;
+
+            while (this.usbConnected == false) {
+                Thread.Sleep(1000);
+
+                timeout++;
+
+                if (timeout > 5) // 5 seconds
+                    break;
+            }
+
+            if (this.usbConnected == false) {
+                this.UpdateStatusText(BadConnect1, true);
+
+                goto _return;
+            }
+
+
+            try {
+                drive = FileSystem.Mount(storageController.Hdc);
+
+                var driveInfo = new DriveInfo(drive.Name);
+
+                this.UpdateStatusText(FreeSize + driveInfo.TotalFreeSpace, true);
+                this.UpdateStatusText(TotalSize + driveInfo.TotalSize, false);
+                this.UpdateStatusText(VolumeLabel + driveInfo.VolumeLabel, false);
+                this.UpdateStatusText(RootDirectory + driveInfo.RootDirectory, false);
+                this.UpdateStatusText(DriveFormat + driveInfo.DriveFormat, false);
+                this.UpdateStatusText(MountSuccess, false);
+
+            }
+            catch {
+
+                this.UpdateStatusText(BadConnect1, true);
+
+                goto _return;
+            }
+
+            var filename = drive.Name + "\\TEST_USB.TXT";
+
+            try {
+                using (var fsWrite = new FileStream(filename, FileMode.Create)) {
+
+                    fsWrite.Write(dataWrite, 0, dataWrite.Length);
+
+                    fsWrite.Flush();
+                    fsWrite.Close();
+                }
+            }
+            catch {
+                this.UpdateStatusText(BadWrite, false);
+
+                goto _unmount;
+            }
+
+            try {
+                using (var fsRead = new FileStream(filename, FileMode.Open)) {
+
+                    fsRead.Read(dataRead, 0, dataRead.Length);
+
+                    for (var i = 0; i < dataRead.Length; i++) {
+
+
+                        if (dataRead[i] != dataWrite[i]) {
+                            this.UpdateStatusText(BadConnect2, false);
+
+                            goto _unmount;
+                        }
+                    }
+
+                    fsRead.Flush();
+                    fsRead.Close();
+                }
+            }
+            catch {
+                this.UpdateStatusText(BadRead, false);
+
+                goto _unmount;
+            }
+
+
+            this.UpdateStatusText(TestSuccess, false);
+
+_unmount:
+            try {
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
+            }
+
+_return:
 
             this.isRunning = false;
-
-            return;
 
         }
 

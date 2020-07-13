@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FEZ Portal")]
+[assembly: AssemblyTitle("Demos")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FEZ Portal")]
+[assembly: AssemblyProduct("Demos")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c6a9ed88-8b3c-41ab-8e07-5d5d35168aed")]
+[assembly: Guid("b2b3cdb7-2644-42b3-9ebc-d6642071a44f")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -4,12 +4,9 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Adc;
-using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Rtc;
 using GHIElectronics.TinyCLR.Devices.Storage;
 using GHIElectronics.TinyCLR.Devices.Uart;
-using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
 using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
@@ -17,18 +14,18 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class UartWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
-        private const string Instruction7 = "  ";
+        private const string Instruction1 = " This will test USART2 only: ";
+        private const string Instruction2 = " - Connect USART2 to PC.";
+        private const string Instruction3 = " - Open TeraTerm application.";
+        private const string Instruction4 = " - Baudrate: 115200, DataBit 8, StopBit: One, Parity: None, ";
+        private const string Instruction5 = "   Flow Control: None. ";
+        private const string Instruction6 = " - Whatever you typed on TeraTerm, SITCore will back these data +1 ";
+        private const string Instruction7 = " Example: Type 123... on TeraTerm, you will get back 234... ";
 
-        private const string Instruction8 = " ";
+        private const string Instruction8 = " Press Test button when you are ready.";
 
         private Button testButton;
 
@@ -38,7 +35,7 @@ namespace Demos {
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public UartWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -179,25 +176,52 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
 
-            var str = string.Empty;
-            while (this.isRunning) {
+            using (var uart2 = UartController.FromName(SC20260.UartPort.Usart2)) {
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
+                var setting = new UartSetting() {
+                    BaudRate = 115200
+                };
 
-                var s = v.ToString("N2");
+                uart2.SetActiveSettings(setting);
+                uart2.Enable();
 
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
+                var totalReceived = 0;
+                var totalSent = 0;
+
+                while (this.isRunning) {
+
+                    this.UpdateStatusText("Total received: " + totalReceived, true);
+                    this.UpdateStatusText("Total sent: " + totalSent, false);
+                    this.UpdateStatusText("Listening data...", false);
+
+                    while (uart2.BytesToRead == 0) {
+                        Thread.Sleep(10);
+                    }
+
+                    var byteToRead = uart2.BytesToRead > uart2.ReadBufferSize ? uart2.ReadBufferSize : uart2.BytesToRead;
+
+                    var read = new byte[byteToRead];
+
+
+                    this.UpdateStatusText("Receiving... " + byteToRead + " byte(s)", false);
+                    totalReceived += uart2.Read(read);
+
+
+
+                    for (var i = 0; i < read.Length; i++) {
+                        var write = new byte[1] { (byte)(read[i] + 1) };
+                        totalSent += uart2.Write(write);
+
+                        uart2.Flush();
+                    }
+
+
+                    this.UpdateStatusText("Writing back... " + byteToRead + " byte(s)", false);
+
                 }
-
-                Thread.Sleep(500);
             }
 
-            pin.Dispose();
 
             this.isRunning = false;
 

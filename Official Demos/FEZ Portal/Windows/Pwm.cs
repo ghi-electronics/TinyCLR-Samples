@@ -17,15 +17,17 @@ using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class AdcWindow : ApplicationWindow {
+    public class PwmWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test Analog input on PA0C pin";
-        private const string Instruction2 = " - Connect PA0C pin to analog source";
-        private const string Instruction3 = " - The screen will show current value from the pin.";
-        private const string Instruction4 = "  ";
-        private const string Instruction5 = "  Press Test button when you are ready.";
-        private const string Instruction6 = "  ";
+      
+
+        private const string Instruction1 = " This will test Pwm on led: ";
+        private const string Instruction2 = " - Red led connect to PB0";
+        private const string Instruction3 = " ";
+        private const string Instruction4 = " ";
+        private const string Instruction5 = " Press Test button when you are ready.";
+        private const string Instruction6 = " ";
         private const string Instruction7 = "  ";
 
         private const string Instruction8 = " ";
@@ -38,7 +40,7 @@ namespace Demos {
 
         private TextFlow textFlow;
 
-        public AdcWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public PwmWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
@@ -175,29 +177,54 @@ namespace Demos {
         }
 
 
+
         private void ThreadTest() {
 
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id);
+            var pwmController5 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller5.Id);
 
-            var str = string.Empty;
+            var pwmPinPB0 = pwmController3.OpenChannel(SC20260.PwmChannel.Controller3.PB0);
+            var pwmPinPH11 = pwmController5.OpenChannel(SC20260.PwmChannel.Controller5.PH11);
+
+            pwmController3.SetDesiredFrequency(1000);
+            pwmController5.SetDesiredFrequency(1000);
+
+            pwmPinPB0.SetActiveDutyCyclePercentage(0.0);
+            pwmPinPH11.SetActiveDutyCyclePercentage(0.0);
+
+            var value = 0.0;
+            var dir = 1;
+
+            this.UpdateStatusText("The test is passed if red is changing brightness.",  true);
+
+
             while (this.isRunning) {
 
-                var v = pin.ReadValue() * 3.3 / 0xFFFF;
 
-                var s = v.ToString("N2");
+                for (var i = 0; i < 10; i++) {
+                    value += 0.1 * dir;
 
-                if (s.CompareTo(str) != 0) {
-                    this.UpdateStatusText("Adc reading value: " + s, true);
-                    str = s;
+                    pwmPinPB0.Start();
+                    pwmPinPH11.Start();
+
+                    Thread.Sleep(100);
+
+                    pwmPinPB0.Stop();
+                    pwmPinPH11.Stop();
+
+                    pwmPinPB0.SetActiveDutyCyclePercentage(value);
+                    pwmPinPH11.SetActiveDutyCyclePercentage(value);
+
+
                 }
 
-                Thread.Sleep(500);
+                dir = 0 - dir;
             }
 
-            pin.Dispose();
+            pwmPinPB0.Dispose();
+            pwmPinPH11.Dispose();
 
             this.isRunning = false;
 

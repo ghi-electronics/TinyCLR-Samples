@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FEZ_Portal.Properties
+namespace Demos.Properties
 {
     
     internal partial class Resources
@@ -20,7 +20,7 @@ namespace FEZ_Portal.Properties
             {
                 if ((Resources.manager == null))
                 {
-                    Resources.manager = new System.Resources.ResourceManager("FEZ_Portal.Properties.Resources", typeof(Resources).Assembly);
+                    Resources.manager = new System.Resources.ResourceManager("Demos.Properties.Resources", typeof(Resources).Assembly);
                 }
                 return Resources.manager;
             }
@@ -34,15 +34,38 @@ namespace FEZ_Portal.Properties
             return ((System.Drawing.Font)(ResourceManager.GetObject(((short)(id)))));
         }
         [System.SerializableAttribute()]
-        internal enum FontResources : short
-        {
-            ArialBlack = 8558,
-            NinaB = 18060,
-        }
-        [System.SerializableAttribute()]
         internal enum BitmapResources : short
         {
-            logo = 17715,
+            Qspi = -32580,
+            analog = -29953,
+            Camera = -29782,
+            Template = -21726,
+            settingImage = -17023,
+            Canfd = -16516,
+            Ethernet = -16161,
+            Pwm = -9888,
+            Piezo = -5876,
+            Usb = 1556,
+            Uart = 11521,
+            Sd = 12737,
+            Rtc = 14704,
+            Generaltest = 16986,
+            Wifi = 17372,
+            Color = 18291,
+        }
+        [System.SerializableAttribute()]
+        internal enum FontResources : short
+        {
+            droid_reg10 = -27850,
+            droid_reg12 = -27848,
+            droid_reg11 = -27847,
+            droid_reg14 = -27846,
+            droid_reg18 = -27842,
+            droid_reg24 = -13442,
+            droid_reg09 = -7428,
+            droid_reg08 = -7427,
+            droid_reg32 = 14655,
+            droid_reg48 = 24547,
         }
     }
 }
