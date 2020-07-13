@@ -121,12 +121,12 @@ namespace Demos {
 
             mainWindow.RegisterWindow(dacWindow); // Register to MainWindow
 
-            // Create Camera Window
-            var iconImageCamera = Resources.GetBitmap(Resources.BitmapResources.Camera); // Icon
-            var iconTextCamera = "Camera";
-            var cameraWindow = new CameraWindow(iconImageCamera, iconTextCamera, Display.Width, Display.Height);
+            //// Create Camera Window
+            //var iconImageCamera = Resources.GetBitmap(Resources.BitmapResources.Camera); // Icon
+            //var iconTextCamera = "Camera";
+            //var cameraWindow = new CameraWindow(iconImageCamera, iconTextCamera, Display.Width, Display.Height);
 
-            mainWindow.RegisterWindow(cameraWindow); // Register to MainWindow
+            //mainWindow.RegisterWindow(cameraWindow); // Register to MainWindow
 
             // Create Camera Window
             var iconImageColor = Resources.GetBitmap(Resources.BitmapResources.Color); // Icon
