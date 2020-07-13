@@ -672,7 +672,7 @@ _return:
             }
             catch {
 
-                this.UpdateStatusText(BadConnect1, true);
+                this.UpdateStatusText("Usb Host: " + BadConnect1, true);
 
                 result = false;
 
@@ -711,7 +711,7 @@ _return:
             }
             catch {
 
-                this.UpdateStatusText(BadConnect1, true);
+                this.UpdateStatusText("Sd: " + BadConnect1, true);
 
                 result = false;
 
