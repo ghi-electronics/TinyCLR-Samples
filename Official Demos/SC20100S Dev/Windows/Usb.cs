@@ -42,8 +42,10 @@ namespace Demos {
         private TextFlow textFlow;
         private bool isRuning;
 
-        private bool enabledUsbHost;
-        private bool usbConnected;
+        private static bool enabledUsbHost;
+        private static bool usbConnected;
+
+        private static UsbHostController usbHostController;
 
         public UsbWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
         }
@@ -94,23 +96,27 @@ namespace Demos {
 
             this.CreateWindow();
 
-            if (this.enabledUsbHost == false) {
-                this.enabledUsbHost = true;
+            InitializeUsbHostController();
+        }
 
-                var usnhostController = UsbHostController.GetDefault();
+        public static void InitializeUsbHostController() {
+            if (enabledUsbHost == false) {
+                enabledUsbHost = true;
 
-                usnhostController.OnConnectionChangedEvent += this.UsnhostController_OnConnectionChangedEvent;
+                var usbHostController = UsbHostController.GetDefault();
 
-                usnhostController.Enable();
+                usbHostController.OnConnectionChangedEvent += UsbHostController_OnConnectionChangedEvent;
+
+                usbHostController.Enable();
             }
         }
 
-        private void UsnhostController_OnConnectionChangedEvent(UsbHostController sender, DeviceConnectionEventArgs e) {
+        private static void UsbHostController_OnConnectionChangedEvent(UsbHostController sender, DeviceConnectionEventArgs e) {
             if (e.DeviceStatus == DeviceConnectionStatus.Connected) {
-                this.usbConnected = true;
+                usbConnected = true;
             }
             else {
-                this.usbConnected = false;
+                usbConnected = false;
             }
         }
 
@@ -191,7 +197,7 @@ namespace Demos {
 
             var timeout = 0;
 
-            while (this.usbConnected == false) {
+            while (usbConnected == false) {
                 Thread.Sleep(1000);
 
                 timeout++;
@@ -200,7 +206,7 @@ namespace Demos {
                     break;
             }
 
-            if (this.usbConnected == false) {
+            if (usbConnected == false) {
                 this.UpdateStatusText(BadConnect1, true);
 
                 goto _return;
@@ -320,5 +326,7 @@ _return:
             GC.WaitForPendingFinalizers();
 
         }
+
+        public static bool IsUsbHostConnected => usbConnected;
     }
 }

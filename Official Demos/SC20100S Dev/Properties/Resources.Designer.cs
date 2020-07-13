@@ -49,6 +49,7 @@ namespace Demos.Properties
             Rtc = 14704,
             Wifi = 17372,
             Color = 18291,
+            Basictest = 21348,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short

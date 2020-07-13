@@ -150,6 +150,17 @@ namespace Demos {
 
             mainWindow.RegisterWindow(colorWindow); // Register to MainWindow
 
+            // Create Camera Window
+            var iconImageBasicTest = Resources.GetBitmap(Resources.BitmapResources.Basictest); // Icon
+            var iconTextBasicTest = "Basic Test";
+            var basicTestWindow = new BasicTestWindow(iconImageBasicTest, iconTextBasicTest, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
+
+            mainWindow.RegisterWindow(basicTestWindow); // Register to MainWindow
+
             // Empty template
             //var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
             //var iconTextTemplate = "Template"; // Text
