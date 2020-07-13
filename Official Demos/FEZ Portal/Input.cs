@@ -25,7 +25,7 @@ namespace Demos {
                 var i2cDevice = i2cController.GetDevice(settings);
 
                 var gpioController = GpioController.GetDefault();
-                var interrupt = gpioController.OpenPin(SC20260.GpioPin.PJ14);
+                var interrupt = gpioController.OpenPin(SC20260.GpioPin.PG9);
 
                 touch = new FT5xx6Controller(i2cDevice, interrupt);
                 touch.TouchDown += Touch_TouchDown;
