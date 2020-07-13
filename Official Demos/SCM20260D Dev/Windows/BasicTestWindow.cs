@@ -275,21 +275,20 @@ namespace Demos {
                                         if (this.isRunning == true && this.DoTestSdcard() == true) {
                                             if (this.isRunning == true && this.DoTestRtc() == true) {
                                                 if (this.isRunning == true && this.DoTestCamera() == true) {
-                                                    if (this.isRunning == true && this.DoTestUart() == true) {
-                                                        if (this.isRunning == true && this.DoTestCan() == true) {
 
-                                                            this.UpdateStatusText(Instruction2 + ": Passed by tester.", true, System.Drawing.Color.Yellow);
-                                                            this.UpdateStatusText(Instruction3 + ": Passed.", false);
-                                                            this.UpdateStatusText(Instruction4 + ": Passed.", false);
-                                                            this.UpdateStatusText(Instruction5 + ": Passed.", false);
-                                                            this.UpdateStatusText(Instruction6 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
-                                                            this.UpdateStatusText(Instruction7 + ": Passed.", false);
-                                                            this.UpdateStatusText(Instruction8 + ": Passed.", false);
-                                                            this.UpdateStatusText(Instruction9 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
-                                                            this.UpdateStatusText(Instruction10 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
-                                                            this.UpdateStatusText(Instruction11 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
-                                                        }
-                                                    }
+                                                    var testUart = this.DoTestUart();
+                                                    var testCan = this.DoTestCan();
+
+                                                    this.UpdateStatusText(Instruction2 + ": Passed by tester.", true, System.Drawing.Color.Yellow);
+                                                    this.UpdateStatusText(Instruction3 + ": Passed.", false);
+                                                    this.UpdateStatusText(Instruction4 + ": Passed.", false);
+                                                    this.UpdateStatusText(Instruction5 + ": Passed.", false);
+                                                    this.UpdateStatusText(Instruction6 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
+                                                    this.UpdateStatusText(Instruction7 + ": Passed.", false);
+                                                    this.UpdateStatusText(Instruction8 + ": Passed.", false);
+                                                    this.UpdateStatusText(Instruction9 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
+                                                    this.UpdateStatusText(Instruction10 + (testUart ? ": Passed " : ": Failed"), false, testUart ? System.Drawing.Color.White : System.Drawing.Color.Red);
+                                                    this.UpdateStatusText(Instruction11 + (testCan ? ": Passed " : ": Failed"), false, testUart ? System.Drawing.Color.White : System.Drawing.Color.Red);
                                                 }
                                             }
                                         }
@@ -595,53 +594,30 @@ _return:
         }
 
         private bool DoTestLeds() {
-            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id);
-            var pwmController5 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller5.Id);
+            var gpioController = GpioController.GetDefault();
 
-            var pwmPinPB0 = pwmController3.OpenChannel(SC20260.PwmChannel.Controller3.PB0);
-            var pwmPinPH11 = pwmController5.OpenChannel(SC20260.PwmChannel.Controller5.PH11);
+            var redLed = gpioController.OpenPin(SC20260.GpioPin.PB0);
+            var greenLed = gpioController.OpenPin(SC20260.GpioPin.PH11);
 
-            pwmController3.SetDesiredFrequency(1000);
-            pwmController5.SetDesiredFrequency(1000);
-
-            pwmPinPB0.SetActiveDutyCyclePercentage(0.0);
-            pwmPinPH11.SetActiveDutyCyclePercentage(0.0);
-
-            var value = 0.0;
-            var dir = 1;
+            redLed.SetDriveMode(GpioPinDriveMode.Output);
+            greenLed.SetDriveMode(GpioPinDriveMode.Output);
 
             this.UpdateStatusText("Testing red and green leds.", true);
-            this.UpdateStatusText("- The test is passed if red and green led are changing brightness.", false);
+            this.UpdateStatusText("- The test is passed if red and green led are blinking.", false);
             this.UpdateStatusText(" ", false);
-            this.UpdateStatusText("- Only press Next button if the test is passed.", false, System.Drawing.Color.Yellow);
+            this.UpdateStatusText("- Only press Next button if those led are blinking.", false, System.Drawing.Color.Yellow);
 
             this.AddNextButton();
 
             while (this.doNext == false && this.isRunning) {
-                for (var i = 0; i < 10; i++) {
-                    value += 0.1 * dir;
+                redLed.Write(redLed.Read() == GpioPinValue.High ? GpioPinValue.Low : GpioPinValue.High);
+                greenLed.Write(greenLed.Read() == GpioPinValue.High ? GpioPinValue.Low : GpioPinValue.High);
 
-                    pwmPinPB0.Start();
-                    pwmPinPH11.Start();
-
-                    Thread.Sleep(100);
-
-                    pwmPinPB0.Stop();
-                    pwmPinPH11.Stop();
-
-                    pwmPinPB0.SetActiveDutyCyclePercentage(value);
-                    pwmPinPH11.SetActiveDutyCyclePercentage(value);
-                }
-
-                dir = 0 - dir;
+                Thread.Sleep(100);
             }
 
-
-            pwmPinPB0.Dispose();
-            pwmPinPH11.Dispose();
-
-            pwmController3.Dispose();
-            pwmController5.Dispose();
+            redLed.Dispose();
+            greenLed.Dispose();
 
             this.RemoveNextButton();
 
@@ -690,15 +666,13 @@ _return:
         private bool DoTestSdcard() {
 
             var result = true;
+
             this.UpdateStatusText("Waiting for Sd initialize...", true);
-
-            UsbWindow.InitializeUsbHostController();
-
-            while (!UsbWindow.IsUsbHostConnected) Thread.Sleep(100);
 
             var storageController = StorageController.FromName(SC20260.StorageController.SdCard);
 
             IDriveProvider drive;
+try_again:
 
             try {
                 drive = FileSystem.Mount(storageController.Hdc);
@@ -712,6 +686,13 @@ _return:
             catch {
 
                 this.UpdateStatusText("Sd: " + BadConnect1, true);
+
+                while (this.doNext == false) {
+
+                    Thread.Sleep(1000);
+
+                    goto try_again;
+                }
 
                 result = false;
 
@@ -727,6 +708,8 @@ _return:
         }
 
         private bool DoTestBuzzer() {
+
+
 
             this.UpdateStatusText("Testing buzzer...", true);
 
@@ -765,8 +748,16 @@ _return:
 
                 pwmPinPB1.Dispose();
 
-                this.UpdateStatusText("Testing is success if you heard three kind of sounds!", false);
+                this.UpdateStatusText("Testing is success if you heard three different sounds!", false, System.Drawing.Color.Yellow);
             }
+
+            this.AddNextButton();
+
+            while (this.doNext == false) {
+                Thread.Sleep(100);
+            }
+
+            this.RemoveNextButton();
 
             return true;
         }
@@ -777,6 +768,7 @@ _return:
 
             var m = new DateTime(2020, 7, 7, 00, 00, 00);
 
+try_again:
             if (rtc.IsValid && rtc.Now > m) {
 
                 return true;
@@ -793,6 +785,9 @@ _return:
                 }
             }
 
+            if (this.isRunning)
+                goto try_again;
+
             return false;
         }
 
@@ -802,9 +797,9 @@ _return:
             this.UpdateStatusText(" - Connect VCOM Uart5 to PC.", false);
             this.UpdateStatusText(" - Open Tera Term. Baudrate: 9600, Data: 8, Parity: None, StopBit: One.", false);
             this.UpdateStatusText(" - Type 'A' or 'a'", false);
-            this.UpdateStatusText(" - The test is passed if you see 'B' 'b' on Tera Term screen.", false);
-            this.UpdateStatusText(" ", false);
-            this.UpdateStatusText("- Only press Next button if the test is passed.", false, System.Drawing.Color.Yellow);
+            this.UpdateStatusText(" - The test is waiting any character on Tera Term screen.", false);
+
+            var result = false;
 
             using (var uart5 = UartController.FromName(SC20260.UartPort.Uart5)) {
 
@@ -815,104 +810,135 @@ _return:
                 uart5.SetActiveSettings(setting);
                 uart5.Enable();
 
-                var totalReceived = 0;
-                var totalSent = 0;
-
                 this.AddNextButton();
 
                 while (this.doNext == false && this.isRunning) {
 
                     if (uart5.BytesToRead == 0) {
-                        Thread.Sleep(10);
+                        Thread.Sleep(100);
+
+                        uart5.Write(new byte[] { (byte)('a') });
                         continue;
                     }
-
 
                     var byteToRead = uart5.BytesToRead > uart5.ReadBufferSize ? uart5.ReadBufferSize : uart5.BytesToRead;
 
                     var read = new byte[byteToRead];
 
-                    totalReceived += uart5.Read(read);
+                    uart5.Read(read);
 
                     for (var i = 0; i < read.Length; i++) {
-                        var write = new byte[1] { (byte)(read[i] + 1) };
-                        totalSent += uart5.Write(write);
-
-                        uart5.Flush();
+                        if (read[i] == 'a') {
+                            result = true;
+                            break;
+                        }
                     }
+
+                    if (result == true)
+                        break;
                 }
             }
 
             this.RemoveNextButton();
 
-            return true;
+            return result;
         }
 
         private bool DoTestCan() {
-            this.UpdateStatusText("Testing CAN1.", true);
-
-            this.UpdateStatusText(" - Open PCAN-View application.", false);
-            this.UpdateStatusText(" - Nominal speed: 1Mbit/s.", false);
-            this.UpdateStatusText(" - Data speed: 2Mbit/.", false);
-            this.UpdateStatusText(" - Send any message from PCAN-View application.", false);
-            this.UpdateStatusText(" - You will see same message send back with ArbitrationId.", false);
-            this.UpdateStatusText(" ", false);
-            this.UpdateStatusText("- Only press Next button if the test is passed.", false, System.Drawing.Color.Yellow);
-
-            var canController = CanController.FromName(SC20260.CanBus.Can1);
-
-            canController.SetNominalBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(13, 2, 3, 1, false)); // 1.0Mb at 48MHz            
-
-            canController.SetDataBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(8, 3, 2, 1, false)); // 2.0Mb at 48MHz
-
-            canController.Filter.AddRangeFilter(Filter.IdType.Standard, 0x100, 0x7FF);
-            canController.Filter.AddRangeFilter(Filter.IdType.Extended, 0x100, 0x999);
-
-            canController.Enable();
 
             this.AddNextButton();
 
+            this.UpdateStatusText("Testing CAN1.", true);
+            this.UpdateStatusText("- Open PCAN-View application.", false);
+            this.UpdateStatusText("- Nominal speed: 250Kbit/s.", false);
+            this.UpdateStatusText("- Data speed: 500Kbit/.", false);
+            this.UpdateStatusText("- The test is waiting for any msg with arbitrationId 0x1234.", false);
+
+            var canController = CanController.FromName(SC20260.CanBus.Can1);
+
+            canController.SetNominalBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(15 + 8, 8, 6, 8, false)); // 250Kbit/s          
+
+            canController.SetDataBitTiming(new GHIElectronics.TinyCLR.Devices.Can.CanBitTiming(15 + 8, 8, 3, 8, false)); //500kbit/s 
+
+            canController.Enable();
+
+            var message = new CanMessage() {
+                ArbitrationId = 0x1234,
+                ExtendedId = true,
+                FdCan = true,
+                BitRateSwitch = true,
+                Data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 },
+                Length = 8
+
+
+
+            };
+
+            var result = false;
+
             while (this.doNext == false && this.isRunning) {
-                var msgs = new GHIElectronics.TinyCLR.Devices.Can.CanMessage[canController.MessagesToRead];
 
-                for (var i = 0; i < msgs.Length; i++)
-                    msgs[i] = new GHIElectronics.TinyCLR.Devices.Can.CanMessage();
-
-                var messageReceiveCount = canController.ReadMessages(msgs, 0, msgs.Length);
-
-                for (var i = 0; i < messageReceiveCount; i++) {
-
-                    var dataText = string.Empty;
-
-                    for (var ii = 0; ii < 8; ii++) {
-                        dataText += msgs[i].Data[ii] + " ";
-                    }
+                if (canController.MessagesToRead == 0) {
                     try {
-                        msgs[i].ArbitrationId += 1;
 
-                        canController.WriteMessage(msgs[i]);
+                        canController.WriteMessage(message);
                     }
                     catch {
                         canController.Disable();
                         Thread.Sleep(100);
                         canController.Enable();
                     }
+
+                    Thread.Sleep(1000);
+
+                    continue;
+
                 }
+
+                var msgs = new GHIElectronics.TinyCLR.Devices.Can.CanMessage[canController.MessagesToRead];
+
+                for (var i = 0; i < msgs.Length; i++) {
+                    msgs[i] = new GHIElectronics.TinyCLR.Devices.Can.CanMessage();
+                }
+
+                for (var i = 0; i < msgs.Length; i++) {
+                    canController.ReadMessages(msgs, 0, msgs.Length);
+
+                    if (msgs[i].ArbitrationId == message.ArbitrationId) {
+                        this.doNext = true;
+
+                        result = true;
+                        break;
+                    }
+                }
+
+                if (result)
+                    break;
+
             }
 
             canController.Disable();
 
             this.RemoveNextButton();
 
-            return true;
+            return result;
         }
 
 
         private bool DoTestCamera() {
             var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
-            this.UpdateStatusText("Testing camera...", true);
-            this.UpdateStatusText("Press any button if the image look good to you.", true);
+            this.UpdateStatusText(" Press Next button to start camera test...", true);
+            this.UpdateStatusText(" After tested camera, press any buttons (LDR, APP or MOD)", false);
+            this.UpdateStatusText(" to move next test.", false);
+
+            this.AddNextButton();
+
+            while (this.doNext == false) {
+                Thread.Sleep(100);
+            }
+
+            this.RemoveNextButton();
 
             var gpioController = GpioController.GetDefault();
 
