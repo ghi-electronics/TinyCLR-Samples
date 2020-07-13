@@ -17,8 +17,8 @@ namespace Demos {
     public class UartWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test UART2 only: ";
-        private const string Instruction2 = " - Connect UART2 to PC.";
+        private const string Instruction1 = " This will test USART2 only: ";
+        private const string Instruction2 = " - Connect USART2 to PC.";
         private const string Instruction3 = " - Open TeraTerm application.";
         private const string Instruction4 = " - Baudrate: 115200, DataBit 8, StopBit: One, Parity: None, ";
         private const string Instruction5 = "   Flow Control: None. ";
@@ -177,7 +177,7 @@ namespace Demos {
             this.isRunning = true;
 
 
-            using (var uart2 = UartController.FromName(SC20260.UartPort.Uart2)) {
+            using (var uart2 = UartController.FromName(SC20260.UartPort.Usart2)) {
 
                 var setting = new UartSetting() {
                     BaudRate = 115200
