@@ -17,8 +17,8 @@ namespace Demos {
     public class UartWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = " This will test UART5 only: ";
-        private const string Instruction2 = " - Connect UART5 to PC.";
+        private const string Instruction1 = " This will test UART2 only: ";
+        private const string Instruction2 = " - Connect UART2 to PC.";
         private const string Instruction3 = " - Open TeraTerm application.";
         private const string Instruction4 = " - Baudrate: 115200, DataBit 8, StopBit: One, Parity: None, ";
         private const string Instruction5 = "   Flow Control: None. ";
@@ -177,14 +177,14 @@ namespace Demos {
             this.isRunning = true;
 
 
-            using (var uart5 = UartController.FromName(SC20260.UartPort.Uart5)) {
+            using (var uart2 = UartController.FromName(SC20260.UartPort.Uart2)) {
 
                 var setting = new UartSetting() {
                     BaudRate = 115200
                 };
 
-                uart5.SetActiveSettings(setting);
-                uart5.Enable();
+                uart2.SetActiveSettings(setting);
+                uart2.Enable();
 
                 var totalReceived = 0;
                 var totalSent = 0;
@@ -195,25 +195,25 @@ namespace Demos {
                     this.UpdateStatusText("Total sent: " + totalSent, false);
                     this.UpdateStatusText("Listening data...", false);
 
-                    while (uart5.BytesToRead == 0) {
+                    while (uart2.BytesToRead == 0) {
                         Thread.Sleep(10);
                     }
 
-                    var byteToRead = uart5.BytesToRead > uart5.ReadBufferSize ? uart5.ReadBufferSize : uart5.BytesToRead;
+                    var byteToRead = uart2.BytesToRead > uart2.ReadBufferSize ? uart2.ReadBufferSize : uart2.BytesToRead;
 
                     var read = new byte[byteToRead];
 
 
                     this.UpdateStatusText("Receiving... " + byteToRead + " byte(s)", false);
-                    totalReceived += uart5.Read(read);
+                    totalReceived += uart2.Read(read);
 
 
 
                     for (var i = 0; i < read.Length; i++) {
                         var write = new byte[1] { (byte)(read[i] + 1) };
-                        totalSent += uart5.Write(write);
+                        totalSent += uart2.Write(write);
 
-                        uart5.Flush();
+                        uart2.Flush();
                     }
 
 
