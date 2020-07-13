@@ -14,7 +14,7 @@ namespace Demos {
     public class CanFdWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel
 
-        private const string Instruction1 = "This test will run on CAN1, FD mode.";
+        private const string Instruction1 = "This test will run on CAN1 (PH13, PH14), FD mode.";
         private const string Instruction2 = " Nominal speed: 1Mbit/s.";
         private const string Instruction3 = " Data speed: 2Mbit/.,";
         private const string Instruction4 = " Filter Id: 0x100...0x999.";
