@@ -25,7 +25,7 @@ namespace Demos {
         private const string Instruction4 = " - Ethernet.";
         private const string Instruction5 = " ";
         private const string Instruction6 = " ** Please connect ethernet cable for Ethernet testing **";
-        private const string Instruction7 = " ** Ethernet test is not available on FEZ Portal **";
+        private const string Instruction7 = " ";
         private const string Instruction8 = " Press Test button when you are ready.";
 
 

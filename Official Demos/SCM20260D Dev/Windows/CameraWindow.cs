@@ -22,10 +22,10 @@ namespace Demos {
         private const string Instruction1 = " This will test Camera module: ";
         private const string Instruction2 = " - Connect Camera module to Camare Interface on 20260Dev board.";
         private const string Instruction3 = " ";
-        private const string Instruction4 = " ** This feature is not available on FEZ Portal **";
-        private const string Instruction5 = "  ";
-        private const string Instruction6 = "  Press Test button when you are ready.";
-        private const string Instruction7 = "  ";
+        private const string Instruction4 = " ";
+        private const string Instruction5 = " ";
+        private const string Instruction6 = " Press Test button when you are ready.";
+        private const string Instruction7 = " ";
 
         private const string Instruction8 = " ";
 
