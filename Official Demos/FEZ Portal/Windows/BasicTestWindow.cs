@@ -52,6 +52,8 @@ namespace Demos
 
         private bool doNext = false;
 
+        private bool doTestWifiPassed = false;
+
         public BasicTestWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height)
         {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
@@ -492,6 +494,10 @@ namespace Demos
 
         private bool DoTestWifi()
         {
+            this.UpdateStatusText("Checking wifi firmware...", true);
+
+            if (this.doTestWifiPassed)
+                return true;
 
             var gpioController = GpioController.GetDefault();
 
@@ -510,7 +516,7 @@ namespace Demos
             enPin.Write(GpioPinValue.High);
             resetPin.Write(GpioPinValue.High);
 
-            var result = true;
+            var result = false;
 
             var settings = new GHIElectronics.TinyCLR.Devices.Spi.SpiConnectionSettings()
             {
@@ -554,19 +560,18 @@ namespace Demos
             networkController.SetInterfaceSettings(networkInterfaceSetting);
             networkController.SetCommunicationInterfaceSettings(networkCommunicationInterfaceSettings);
             networkController.SetAsDefaultController();
-
             var firmware = Winc15x0Interface.GetFirmwareVersion();
 
-
-            if (firmware.IndexOf("255.255.255.65535") == 0)
-            {
-                result = false;
+            if (firmware.IndexOf("19.5.") == 0 || (firmware.IndexOf("19.6.") == 0)) {
+                result = true;
             }
 
             resetPin.Dispose();
             csPin.Dispose();
             intPin.Dispose();
             enPin.Dispose();
+
+            this.doTestWifiPassed = result;
 
             return result;
         }
@@ -634,7 +639,10 @@ namespace Demos
 
             UsbWindow.InitializeUsbHostController();
 
-            while (!UsbWindow.IsUsbHostConnected) Thread.Sleep(100);
+            while (!UsbWindow.IsUsbHostConnected && this.isRunning) Thread.Sleep(100);
+
+            if (this.isRunning == false)
+                return false;
 
             var storageController = StorageController.FromName(SC20260.StorageController.UsbHostMassStorage);
 
@@ -662,8 +670,14 @@ namespace Demos
 
         _return:
 
-            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
-            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            try {
+
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
+
+            }
 
             return result;
         }
@@ -679,6 +693,12 @@ namespace Demos
 
             IDriveProvider drive;
         try_again:
+
+            if (this.isRunning == false) {
+                result = false;
+
+                goto _return;
+            }
 
             try
             {
@@ -710,8 +730,14 @@ namespace Demos
 
         _return:
 
-            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
-            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            try {
+
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
+
+            }
 
             return result;
         }
@@ -762,7 +788,7 @@ namespace Demos
 
             this.AddNextButton();
 
-            while (this.doNext == false)
+            while (this.doNext == false && this.isRunning)
             {
                 Thread.Sleep(100);
             }
@@ -808,52 +834,6 @@ namespace Demos
 
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color)
-        {
-
-            var timeout = 100;
-
-            try
-            {
-
-                var count = this.textFlow.TextRuns.Count + 2;
-
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ =>
-                {
-
-                    if (clearscreen)
-                        this.textFlow.TextRuns.Clear();
-
-                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
-                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-                    return null;
-
-                }, null);
-
-                if (clearscreen)
-                {
-                    while (this.textFlow.TextRuns.Count < 2)
-                    {
-                        Thread.Sleep(10);
-                    }
-                }
-                else
-                {
-                    while (this.textFlow.TextRuns.Count < count)
-                    {
-                        Thread.Sleep(10);
-                    }
-                }
-            }
-            catch
-            {
-
-            }
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-        }
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
     }
 }
