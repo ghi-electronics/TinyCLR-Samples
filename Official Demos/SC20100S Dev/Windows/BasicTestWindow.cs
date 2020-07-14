@@ -518,7 +518,7 @@ _return:
             var m = new DateTime(2020, 7, 7, 00, 00, 00);
 
 try_again:
-            if (rtc.IsValid && rtc.Now > m) {
+            if (rtc.IsValid && rtc.Now >= m) {
 
                 return true;
             }
@@ -528,7 +528,7 @@ try_again:
 
                 rtc.SetTime(newDt);
 
-                if (rtc.IsValid && rtc.Now > m) {
+                if (rtc.IsValid && rtc.Now >= m) {
 
                     return true;
                 }
