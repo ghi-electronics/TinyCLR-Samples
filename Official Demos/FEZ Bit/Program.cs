@@ -41,8 +41,8 @@ namespace Demos {
             mainWindow.RegisterWindow(systemWindow);
 
             // Create Ethernet Window
-            var iconImageEthernet = Resources.GetBitmap(Resources.BitmapResources.Ethernet); // Icon
-            var iconTextEthernet = "Eth-Wifi";
+            var iconImageEthernet = Resources.GetBitmap(Resources.BitmapResources.Wifi); // Icon
+            var iconTextEthernet = "Wifi";
             var networkWindow = new NetworkWindow(iconImageEthernet, iconTextEthernet, Display.Width, Display.Height) {
                 EnableButtomBack = true,
 
@@ -74,37 +74,37 @@ namespace Demos {
             mainWindow.RegisterWindow(sdWindow); // Register to MainWindow
 
             // Create Usb Window
-            var iconImageUsb = Resources.GetBitmap(Resources.BitmapResources.Usb); // Icon
-            var iconTextUsb = "Usb";
-            var usbdWindow = new UsbWindow(iconImageUsb, iconTextUsb, Display.Width, Display.Height) {
-                EnableButtomBack = true,
-                EnableButtomNext = true,
-                EnableClockOnTopBar = true
-            };
+            //var iconImageUsb = Resources.GetBitmap(Resources.BitmapResources.Usb); // Icon
+            //var iconTextUsb = "Usb";
+            //var usbdWindow = new UsbWindow(iconImageUsb, iconTextUsb, Display.Width, Display.Height) {
+            //    EnableButtomBack = true,
+            //    EnableButtomNext = true,
+            //    EnableClockOnTopBar = true
+            //};
 
-            mainWindow.RegisterWindow(usbdWindow); // Register to MainWindow
+            //mainWindow.RegisterWindow(usbdWindow); // Register to MainWindow
 
             // Create QSpi Window
-            var iconImageQspi = Resources.GetBitmap(Resources.BitmapResources.Qspi); // Icon
-            var iconTextQspi = "Quad Spi";
-            var qspiWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height) {
+            //var iconImageQspi = Resources.GetBitmap(Resources.BitmapResources.Qspi); // Icon
+            //var iconTextQspi = "Quad Spi";
+            //var qspiWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height) {
+            //    EnableButtomBack = true,
+            //    EnableButtomNext = true,
+            //    EnableClockOnTopBar = true
+            //};
+
+            //mainWindow.RegisterWindow(qspiWindow); // Register to MainWindow
+
+            // Create I2C Window
+           var iconImageI2c = Resources.GetBitmap(Resources.BitmapResources.I2c); // Icon
+            var iconTextI2c = "I2C";
+            var i2cWindow = new I2cWindow(iconImageI2c, iconTextI2c, Display.Width, Display.Height) {
                 EnableButtomBack = true,
                 EnableButtomNext = true,
                 EnableClockOnTopBar = true
             };
 
-            mainWindow.RegisterWindow(qspiWindow); // Register to MainWindow
-
-            // Create CanFd Window
-            var iconImageCanFd = Resources.GetBitmap(Resources.BitmapResources.Canfd); // Icon
-            var iconTextCanFd = "CAN FD";
-            var canFdWindow = new CanFdWindow(iconImageCanFd, iconTextCanFd, Display.Width, Display.Height) {
-                EnableButtomBack = true,
-                EnableButtomNext = true,
-                EnableClockOnTopBar = true
-            };
-
-            mainWindow.RegisterWindow(canFdWindow); // Register to MainWindow
+            mainWindow.RegisterWindow(i2cWindow); // Register to MainWindow
 
             // Create Uart Window
             var iconImageUart = Resources.GetBitmap(Resources.BitmapResources.Uart); // Icon

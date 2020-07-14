@@ -54,6 +54,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Windows\I2cWindow.cs" />
     <Compile Include="Windows\Pwm.cs" />
     <Compile Include="Windows\QspiWindow.cs" />
     <Compile Include="Windows\RtcWindow.cs" />
@@ -106,6 +107,9 @@
     <Reference Include="GHIElectronics.TinyCLR.Devices.Gpio, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Gpio.dll</HintPath>
     </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.I2c, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.I2c.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.I2c.dll</HintPath>
+    </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Devices.Network, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Network.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Devices.Network.dll</HintPath>
     </Reference>
@@ -132,6 +136,9 @@
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.STMicroelectronics.LIS2HH12, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.STMicroelectronics.LIS2HH12.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Drivers.STMicroelectronics.LIS2HH12.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.IO, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.IO.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.IO.dll</HintPath>
@@ -181,6 +188,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Basictest.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\I2c.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
