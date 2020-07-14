@@ -222,45 +222,8 @@ namespace Demos {
         }
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
 
-            var timeout = 100;
-
-            try {
-
-                var count = this.textFlow.TextRuns.Count + 2;
-
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
-
-                    if (clearscreen)
-                        this.textFlow.TextRuns.Clear();
-
-                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
-                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-                    return null;
-
-                }, null);
-
-                if (clearscreen) {
-                    while (this.textFlow.TextRuns.Count < 2) {
-                        Thread.Sleep(10);
-                    }
-                }
-                else {
-                    while (this.textFlow.TextRuns.Count < count) {
-                        Thread.Sleep(10);
-                    }
-                }
-            }
-            catch {
-
-            }
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-        }
 
         private void ThreadTest() {
             this.isRunning = true;
@@ -513,7 +476,7 @@ _return:
 
             networkController.Enable();
 
-            while (this.ethernetConnect == false) {
+            while (this.ethernetConnect == false && this.isRunning) {
                 var end = DateTime.Now - start;
 
                 this.UpdateStatusText("Testing ethernet. If the connecting take more than 10 seconds, the test is failed.", true);
@@ -645,7 +608,10 @@ _return:
 
             UsbWindow.InitializeUsbHostController();
 
-            while (!UsbWindow.IsUsbHostConnected) Thread.Sleep(100);
+            while (!UsbWindow.IsUsbHostConnected && this.isRunning) Thread.Sleep(100);
+
+            if (this.isRunning == false)
+                return false;
 
             var storageController = StorageController.FromName(SC20260.StorageController.UsbHostMassStorage);
 
@@ -670,9 +636,13 @@ _return:
             }
 
 _return:
+            try {
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
 
-            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
-            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
 
             return result;
         }
@@ -687,6 +657,12 @@ _return:
 
             IDriveProvider drive;
 try_again:
+            if (this.isRunning == false) {
+                result = false;
+
+                goto _return;
+            }
+
 
             try {
                 drive = FileSystem.Mount(storageController.Hdc);
@@ -714,9 +690,13 @@ try_again:
             }
 
 _return:
+            try {
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
 
-            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
-            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
 
             return result;
         }
@@ -767,7 +747,7 @@ _return:
 
             this.AddNextButton();
 
-            while (this.doNext == false) {
+            while (this.doNext == false && this.isRunning) {
                 Thread.Sleep(100);
             }
 
@@ -940,7 +920,7 @@ try_again:
 
 
         private bool DoTestCamera() {
-            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
+            
 
             this.UpdateStatusText(" Press Next button to start camera test...", true);
             this.UpdateStatusText(" After tested camera, press any buttons (LDR, APP or MOD)", false);
@@ -948,11 +928,17 @@ try_again:
 
             this.AddNextButton();
 
-            while (this.doNext == false) {
+            while (this.doNext == false && this.isRunning) {
                 Thread.Sleep(100);
             }
 
             this.RemoveNextButton();
+
+            if (this.isRunning == false) {
+                return false;
+            }
+
+            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
             var gpioController = GpioController.GetDefault();
 
@@ -984,7 +970,7 @@ try_again:
                 ov9655.SetResolution(Ov9655.Resolution.Vga);
                 var displayController = Display.DisplayController;
 
-                while (ldrButton.Read() == GpioPinValue.High && appButton.Read() == GpioPinValue.High && modeButton.Read() == GpioPinValue.High) {
+                while (ldrButton.Read() == GpioPinValue.High && appButton.Read() == GpioPinValue.High && modeButton.Read() == GpioPinValue.High && this.isRunning) {
 
                     try {
                         ov9655.Capture(data, 500);
