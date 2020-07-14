@@ -294,38 +294,7 @@ _return:
 
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
-
-            var timeout = 100;
-            var count = this.textFlow.TextRuns.Count + 2;
-
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
-
-                if (clearscreen)
-                    this.textFlow.TextRuns.Clear();
-
-                this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
-                this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-                return null;
-
-            }, null);
-
-            if (clearscreen) {
-                while (this.textFlow.TextRuns.Count < 2) {
-                    Thread.Sleep(1);
-                }
-            }
-            else {
-                while (this.textFlow.TextRuns.Count < count) {
-                    Thread.Sleep(1);
-                }
-            }
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-        }
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
 
         public static bool IsUsbHostConnected => usbConnected;
     }

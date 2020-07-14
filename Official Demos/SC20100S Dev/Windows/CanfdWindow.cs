@@ -246,35 +246,8 @@ namespace Demos {
             }
         }
 
-        private void UpdateStatusText(string text, bool clearscreen) {
+        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-            var timeout = 100;
-            var count = this.textFlow.TextRuns.Count + 2;
-
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
-
-                if (clearscreen)
-                    this.textFlow.TextRuns.Clear();
-
-                this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-                this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-                return null;
-
-            }, null);
-
-            if (clearscreen) {
-                while (this.textFlow.TextRuns.Count < 2) {
-                    Thread.Sleep(1);
-                }
-            }
-            else {
-                while (this.textFlow.TextRuns.Count < count) {
-                    Thread.Sleep(1);
-                }
-            }
-
-
-        }
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
     }
 }

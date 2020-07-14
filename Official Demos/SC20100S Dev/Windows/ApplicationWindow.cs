@@ -7,6 +7,7 @@ using System.Threading;
 using Demos.Properties;
 using Demos.Utils;
 using GHIElectronics.TinyCLR.UI;
+using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media.Imaging;
 
@@ -168,6 +169,60 @@ namespace Demos {
             //    return;
 
             //this.bottomBar.ButtonNext.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
+
+        }
+
+        public void UpdateStatusText(TextFlow textFlow, string text, Font font, bool clearscreen) => this.UpdateStatusText(textFlow, text, font, clearscreen, Color.White);
+
+        public void UpdateStatusText(TextFlow textFlow, string text, Font font, bool clearscreen, Color color) {
+
+            var timeout = 100;
+            var count = 0;
+
+            if (textFlow == null)
+                goto _return;
+
+            lock (textFlow) {
+
+                count = textFlow.TextRuns.Count + 2;
+            }
+
+            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
+
+                if (textFlow == null)
+                    return null;
+
+                lock (textFlow) {
+                    if (clearscreen)
+                        textFlow.TextRuns.Clear();
+
+                    textFlow.TextRuns.Add(text, font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
+                    textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+                    return null;
+                }
+
+            }, null);
+
+            if (textFlow == null)
+                goto _return;
+
+            lock (textFlow) {
+
+                if (clearscreen) {
+                    while (textFlow.TextRuns.Count < 2) {
+                        Thread.Sleep(1);
+                    }
+                }
+                else {
+                    while (textFlow.TextRuns.Count < count) {
+                        Thread.Sleep(1);
+                    }
+                }
+            }
+_return:
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
         }
     }
