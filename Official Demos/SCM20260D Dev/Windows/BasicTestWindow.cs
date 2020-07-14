@@ -222,45 +222,8 @@ namespace Demos {
         }
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
 
-            var timeout = 100;
-
-            try {
-
-                var count = this.textFlow.TextRuns.Count + 2;
-
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
-
-                    if (clearscreen)
-                        this.textFlow.TextRuns.Clear();
-
-                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
-                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-                    return null;
-
-                }, null);
-
-                if (clearscreen) {
-                    while (this.textFlow.TextRuns.Count < 2) {
-                        Thread.Sleep(10);
-                    }
-                }
-                else {
-                    while (this.textFlow.TextRuns.Count < count) {
-                        Thread.Sleep(10);
-                    }
-                }
-            }
-            catch {
-
-            }
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-        }
 
         private void ThreadTest() {
             this.isRunning = true;
@@ -317,8 +280,33 @@ namespace Demos {
             this.isRunning = false;
         }
 
+        private bool startSdRamTest = false;
+
+        private void ThreadBlinkLed() {
+            var gpioController = GpioController.GetDefault();
+
+            var redLed = gpioController.OpenPin(SC20260.GpioPin.PB0);
+
+            redLed.SetDriveMode(GpioPinDriveMode.Output);
+
+
+            while (this.startSdRamTest && this.doNext == false && this.isRunning) {
+                redLed.Write(redLed.Read() == GpioPinValue.High ? GpioPinValue.Low : GpioPinValue.High);
+
+                Thread.Sleep(100);
+            }
+
+            redLed.Dispose();
+        }
+
         private bool DoTestExternalRam() {
             var result = true;
+
+            if (this.startSdRamTest)
+                return false;
+
+            this.startSdRamTest = true;
+            new Thread(this.ThreadBlinkLed).Start();
 
             var externalRam1 = new UnmanagedBuffer(16 * 1024 * 1024);
             var externalRam2 = new UnmanagedBuffer(14 * 1024 * 1024);
@@ -341,7 +329,6 @@ namespace Demos {
             }
 
 
-
             var md5 = GHIElectronics.TinyCLR.Cryptography.MD5.Create();
 
             var hashValue = md5.ComputeHash(buf1); //data is a byte array.
@@ -352,7 +339,8 @@ namespace Demos {
             this.UpdateStatusText(" ", false);
             this.UpdateStatusText("External ram test is starting...", false);
             this.UpdateStatusText(" ", false);
-            this.UpdateStatusText("**If you are waiting more than 5 seconds, meaning RAM test is failed.**", false);
+            this.UpdateStatusText("Ram test is failed if the led stops blinking ", false);
+            this.UpdateStatusText("(or the test stop at this step more than 2 seconds) ", false);
 
             Thread.Sleep(100);
 
@@ -383,10 +371,11 @@ namespace Demos {
             else
                 this.UpdateStatusText("Test external ram failed.", false, System.Drawing.Color.Red);
 
+            this.startSdRamTest = false;
+
             return result;
 
         }
-
         private bool DoTestExternalFlash() {
             var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
             var drive = storeController.Provider;
@@ -513,7 +502,7 @@ _return:
 
             networkController.Enable();
 
-            while (this.ethernetConnect == false) {
+            while (this.ethernetConnect == false && this.isRunning) {
                 var end = DateTime.Now - start;
 
                 this.UpdateStatusText("Testing ethernet. If the connecting take more than 10 seconds, the test is failed.", true);
@@ -645,7 +634,10 @@ _return:
 
             UsbWindow.InitializeUsbHostController();
 
-            while (!UsbWindow.IsUsbHostConnected) Thread.Sleep(100);
+            while (!UsbWindow.IsUsbHostConnected && this.isRunning) Thread.Sleep(100);
+
+            if (this.isRunning == false)
+                return false;
 
             var storageController = StorageController.FromName(SC20260.StorageController.UsbHostMassStorage);
 
@@ -670,9 +662,13 @@ _return:
             }
 
 _return:
+            try {
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
 
-            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
-            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
 
             return result;
         }
@@ -687,6 +683,12 @@ _return:
 
             IDriveProvider drive;
 try_again:
+            if (this.isRunning == false) {
+                result = false;
+
+                goto _return;
+            }
+
 
             try {
                 drive = FileSystem.Mount(storageController.Hdc);
@@ -714,9 +716,13 @@ try_again:
             }
 
 _return:
+            try {
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
 
-            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
-            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
 
             return result;
         }
@@ -767,7 +773,7 @@ _return:
 
             this.AddNextButton();
 
-            while (this.doNext == false) {
+            while (this.doNext == false && this.isRunning) {
                 Thread.Sleep(100);
             }
 
@@ -940,7 +946,7 @@ try_again:
 
 
         private bool DoTestCamera() {
-            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
+            
 
             this.UpdateStatusText(" Press Next button to start camera test...", true);
             this.UpdateStatusText(" After tested camera, press any buttons (LDR, APP or MOD)", false);
@@ -948,11 +954,17 @@ try_again:
 
             this.AddNextButton();
 
-            while (this.doNext == false) {
+            while (this.doNext == false && this.isRunning) {
                 Thread.Sleep(100);
             }
 
             this.RemoveNextButton();
+
+            if (this.isRunning == false) {
+                return false;
+            }
+
+            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
             var gpioController = GpioController.GetDefault();
 
@@ -984,7 +996,7 @@ try_again:
                 ov9655.SetResolution(Ov9655.Resolution.Vga);
                 var displayController = Display.DisplayController;
 
-                while (ldrButton.Read() == GpioPinValue.High && appButton.Read() == GpioPinValue.High && modeButton.Read() == GpioPinValue.High) {
+                while (ldrButton.Read() == GpioPinValue.High && appButton.Read() == GpioPinValue.High && modeButton.Read() == GpioPinValue.High && this.isRunning) {
 
                     try {
                         ov9655.Capture(data, 500);

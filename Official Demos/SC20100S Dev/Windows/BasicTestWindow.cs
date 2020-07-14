@@ -190,45 +190,7 @@ namespace Demos {
         }
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
-
-            var timeout = 100;
-
-            try {
-
-                var count = this.textFlow.TextRuns.Count + 2;
-
-                Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
-
-                    if (clearscreen)
-                        this.textFlow.TextRuns.Clear();
-
-                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
-                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-                    return null;
-
-                }, null);
-
-                if (clearscreen) {
-                    while (this.textFlow.TextRuns.Count < 2) {
-                        Thread.Sleep(10);
-                    }
-                }
-                else {
-                    while (this.textFlow.TextRuns.Count < count) {
-                        Thread.Sleep(10);
-                    }
-                }
-            }
-            catch {
-
-            }
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-        }
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
 
         private void ThreadTest() {
             this.isRunning = true;
@@ -403,7 +365,10 @@ _return:
 
             UsbWindow.InitializeUsbHostController();
 
-            while (!UsbWindow.IsUsbHostConnected) Thread.Sleep(100);
+            while (!UsbWindow.IsUsbHostConnected && this.isRunning) Thread.Sleep(100);
+
+            if (this.isRunning == false)
+                return false;
 
             var storageController = StorageController.FromName(SC20100.StorageController.UsbHostMassStorage);
 
@@ -428,9 +393,13 @@ _return:
             }
 
 _return:
+            try {
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
 
-            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
-            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
 
             return result;
         }
@@ -445,6 +414,11 @@ _return:
 
             IDriveProvider drive;
 try_again:
+            if (this.isRunning == false) {
+                result = false;
+
+                goto _return;
+            }
 
             try {
                 drive = FileSystem.Mount(storageController.Hdc);
@@ -473,8 +447,14 @@ try_again:
 
 _return:
 
-            GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
-            GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            try {
+
+                GHIElectronics.TinyCLR.IO.FileSystem.Flush(storageController.Hdc);
+                GHIElectronics.TinyCLR.IO.FileSystem.Unmount(storageController.Hdc);
+            }
+            catch {
+
+            }
 
             return result;
         }
@@ -524,7 +504,7 @@ _return:
             this.UpdateStatusText("Testing is success if you heard three", false, System.Drawing.Color.Yellow);
             this.UpdateStatusText("kind of sounds!", false, System.Drawing.Color.Yellow);
 
-            while (this.doNext == false) {
+            while (this.doNext == false && this.isRunning) {
                 Thread.Sleep(100);
             }
 
