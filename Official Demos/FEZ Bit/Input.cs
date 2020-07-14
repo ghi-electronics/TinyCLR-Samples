@@ -17,8 +17,8 @@ namespace Demos {
                 var gpioController = GpioController.GetDefault();
 
                 buttonLeft = gpioController.OpenPin(SC20100.GpioPin.PE3);
-                buttonRight = gpioController.OpenPin(SC20100.GpioPin.PD7);
-                buttonCenter = gpioController.OpenPin(SC20100.GpioPin.PB7);
+                buttonRight = gpioController.OpenPin(SC20100.GpioPin.PB7);
+                buttonCenter = gpioController.OpenPin(SC20100.GpioPin.PA1);
 
                 buttonLeft.SetDriveMode(GpioPinDriveMode.InputPullUp);
                 buttonRight.SetDriveMode(GpioPinDriveMode.InputPullUp);
