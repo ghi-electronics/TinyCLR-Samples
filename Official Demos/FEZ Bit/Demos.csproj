@@ -42,7 +42,6 @@
     <Compile Include="Display.cs" />
     <Compile Include="Windows\BasicTestWindow.cs" />
     <Compile Include="Windows\Buzzer.cs" />
-    <Compile Include="Windows\CanfdWindow.cs" />
     <Compile Include="Windows\ColorWindow.cs" />
     <Compile Include="Windows\EthernetWindow.cs" />
     <Compile Include="Utils\Icon.cs" />
@@ -56,15 +55,12 @@
     </Compile>
     <Compile Include="Windows\I2cWindow.cs" />
     <Compile Include="Windows\Pwm.cs" />
-    <Compile Include="Windows\QspiWindow.cs" />
     <Compile Include="Windows\RtcWindow.cs" />
     <Compile Include="Windows\Sd.cs" />
     <Compile Include="Windows\SystemWindow.cs" />
     <Compile Include="Utils\TopBar.cs" />
     <Compile Include="Windows\TemplateWindow.cs" />
     <Compile Include="Touch.cs" />
-    <Compile Include="Windows\UartWindow.cs" />
-    <Compile Include="Windows\Usb.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -133,6 +129,9 @@
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drawing.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.dll</HintPath>

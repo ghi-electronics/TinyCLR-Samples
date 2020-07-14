@@ -73,30 +73,9 @@ namespace Demos {
 
             mainWindow.RegisterWindow(sdWindow); // Register to MainWindow
 
-            // Create Usb Window
-            //var iconImageUsb = Resources.GetBitmap(Resources.BitmapResources.Usb); // Icon
-            //var iconTextUsb = "Usb";
-            //var usbdWindow = new UsbWindow(iconImageUsb, iconTextUsb, Display.Width, Display.Height) {
-            //    EnableButtomBack = true,
-            //    EnableButtomNext = true,
-            //    EnableClockOnTopBar = true
-            //};
-
-            //mainWindow.RegisterWindow(usbdWindow); // Register to MainWindow
-
-            // Create QSpi Window
-            //var iconImageQspi = Resources.GetBitmap(Resources.BitmapResources.Qspi); // Icon
-            //var iconTextQspi = "Quad Spi";
-            //var qspiWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height) {
-            //    EnableButtomBack = true,
-            //    EnableButtomNext = true,
-            //    EnableClockOnTopBar = true
-            //};
-
-            //mainWindow.RegisterWindow(qspiWindow); // Register to MainWindow
 
             // Create I2C Window
-           var iconImageI2c = Resources.GetBitmap(Resources.BitmapResources.I2c); // Icon
+            var iconImageI2c = Resources.GetBitmap(Resources.BitmapResources.I2c); // Icon
             var iconTextI2c = "I2C";
             var i2cWindow = new I2cWindow(iconImageI2c, iconTextI2c, Display.Width, Display.Height) {
                 EnableButtomBack = true,
@@ -105,17 +84,6 @@ namespace Demos {
             };
 
             mainWindow.RegisterWindow(i2cWindow); // Register to MainWindow
-
-            // Create Uart Window
-            var iconImageUart = Resources.GetBitmap(Resources.BitmapResources.Uart); // Icon
-            var iconTextUart = "Uart";
-            var uartWindow = new UartWindow(iconImageUart, iconTextUart, Display.Width, Display.Height) {
-                EnableButtomBack = true,
-                EnableButtomNext = true,
-                EnableClockOnTopBar = true
-            };
-
-            mainWindow.RegisterWindow(uartWindow); // Register to MainWindow
 
             // Create Buzzer Window
             var iconImageRtc = Resources.GetBitmap(Resources.BitmapResources.Rtc); // Icon
@@ -141,7 +109,7 @@ namespace Demos {
 
             // Create Camera Window
             var iconImageColor = Resources.GetBitmap(Resources.BitmapResources.Color); // Icon
-            var iconTextColor = "Test Color";
+            var iconTextColor = "Color";
             var colorWindow = new ColorWindow(iconImageColor, iconTextColor, Display.Width, Display.Height) {
                 EnableButtomBack = true,
                 EnableButtomNext = true,
@@ -162,15 +130,15 @@ namespace Demos {
             mainWindow.RegisterWindow(basicTestWindow); // Register to MainWindow
 
             // Empty template
-            //var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
-            //var iconTextTemplate = "Template"; // Text
-            //var templateWindow = new TemplateWindow(iconImageTemplate, iconTextTemplate, Display.Width, Display.Height) {
-            //    EnableButtomBack = true,
-            //    EnableButtomNext = true,
-            //    EnableClockOnTopBar = true
-            //};
+            var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
+            var iconTextTemplate = "Template"; // Text
+            var templateWindow = new TemplateWindow(iconImageTemplate, iconTextTemplate, Display.Width, Display.Height) {
+                EnableButtomBack = true,
+                EnableButtomNext = true,
+                EnableClockOnTopBar = true
+            };
 
-            //mainWindow.RegisterWindow(templateWindow); // Register to MainWindow
+            mainWindow.RegisterWindow(templateWindow); // Register to MainWindow
 
 
 

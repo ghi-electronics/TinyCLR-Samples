@@ -136,17 +136,23 @@ namespace Demos {
 
             this.isRuning = true;
 
-            var i2cController = I2cController.FromName("GHIElectronics.TinyCLR.NativeApis.STM32H7.I2cController\\0");
-            var lis2hh12 = new LIS2HH12Controller(i2cController);
+            try {
 
-            while (this.isRuning) {
-                var x = (int)lis2hh12.X;
-                var y = (int)lis2hh12.Y;
-                var z = (int)lis2hh12.Z;
+                var i2cController = I2cController.FromName("GHIElectronics.TinyCLR.NativeApis.STM32H7.I2cController\\0");
+                var lis2hh12 = new LIS2HH12Controller(i2cController);
 
-                this.UpdateStatusText("X = " + x + ", Y = " + y + ", Z = " + z, true);
+                while (this.isRuning) {
+                    var x = (int)lis2hh12.X;
+                    var y = (int)lis2hh12.Y;
+                    var z = (int)lis2hh12.Z;
 
-                Thread.Sleep(1);
+                    this.UpdateStatusText("X = " + x + ", Y = " + y + ", Z = " + z, true);
+
+                    Thread.Sleep(1);
+                }
+            }
+            catch {
+
             }
 
             this.isRuning = false;
@@ -157,57 +163,6 @@ namespace Demos {
 
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) {
-
-            var timeout = 100;
-            var count = 0;
-
-            if (this.textFlow == null)
-                goto _return;
-
-            lock (this.textFlow) {
-
-                count = this.textFlow.TextRuns.Count + 2;
-            }
-
-
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
-
-                if (this.textFlow == null)
-                    return null;
-
-                lock (this.textFlow) {
-                    if (clearscreen)
-                        this.textFlow.TextRuns.Clear();
-
-                    this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
-                    this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-                    return null;
-                }
-
-            }, null);
-
-            if (this.textFlow == null)
-                goto _return;
-
-            lock (this.textFlow) {
-
-                if (clearscreen) {
-                    while (this.textFlow.TextRuns.Count < 2) {
-                        Thread.Sleep(1);
-                    }
-                }
-                else {
-                    while (this.textFlow.TextRuns.Count < count) {
-                        Thread.Sleep(1);
-                    }
-                }
-            }
-_return:
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-        }
+        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
     }
 }

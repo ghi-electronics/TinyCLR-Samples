@@ -57,6 +57,23 @@ namespace Demos {
                 //CreateClockTimer();
             }
 
+            public static void DeinitializeButtons() {
+
+                buttonLeft.ValueChanged -= ButtonLeft_ValueChanged;
+                buttonRight.ValueChanged -= ButtonRight_ValueChanged;
+                buttonCenter.ValueChanged -= ButtonCenter_ValueChanged;
+                buttonUp.ValueChanged -= ButtonCenter_ValueChanged;
+                buttonA.ValueChanged -= ButtonCenter_ValueChanged;
+                buttonB.ValueChanged -= ButtonCenter_ValueChanged;
+
+                buttonLeft.Dispose();
+                buttonRight.Dispose();
+                buttonCenter.Dispose();
+                buttonUp.Dispose();
+                buttonA.Dispose();
+                buttonB.Dispose();
+            }
+
 
             private static void ButtonRight_ValueChanged(GpioPin sender, GpioPinValueChangedEventArgs e) => Program.MainApp.InputProvider.RaiseButton(GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right, true, DateTime.UtcNow);
 
