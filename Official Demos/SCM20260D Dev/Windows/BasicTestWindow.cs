@@ -280,8 +280,33 @@ namespace Demos {
             this.isRunning = false;
         }
 
+        private bool startSdRamTest = false;
+
+        private void ThreadBlinkLed() {
+            var gpioController = GpioController.GetDefault();
+
+            var redLed = gpioController.OpenPin(SC20260.GpioPin.PB0);
+
+            redLed.SetDriveMode(GpioPinDriveMode.Output);
+
+
+            while (this.startSdRamTest && this.doNext == false && this.isRunning) {
+                redLed.Write(redLed.Read() == GpioPinValue.High ? GpioPinValue.Low : GpioPinValue.High);
+
+                Thread.Sleep(100);
+            }
+
+            redLed.Dispose();
+        }
+
         private bool DoTestExternalRam() {
             var result = true;
+
+            if (this.startSdRamTest)
+                return false;
+
+            this.startSdRamTest = true;
+            new Thread(this.ThreadBlinkLed).Start();
 
             var externalRam1 = new UnmanagedBuffer(16 * 1024 * 1024);
             var externalRam2 = new UnmanagedBuffer(14 * 1024 * 1024);
@@ -304,7 +329,6 @@ namespace Demos {
             }
 
 
-
             var md5 = GHIElectronics.TinyCLR.Cryptography.MD5.Create();
 
             var hashValue = md5.ComputeHash(buf1); //data is a byte array.
@@ -315,7 +339,8 @@ namespace Demos {
             this.UpdateStatusText(" ", false);
             this.UpdateStatusText("External ram test is starting...", false);
             this.UpdateStatusText(" ", false);
-            this.UpdateStatusText("**If you are waiting more than 5 seconds, meaning RAM test is failed.**", false);
+            this.UpdateStatusText("Ram test is failed if the led stops blinking ", false);
+            this.UpdateStatusText("(or the test stop at this step more than 2 seconds) ", false);
 
             Thread.Sleep(100);
 
@@ -346,10 +371,11 @@ namespace Demos {
             else
                 this.UpdateStatusText("Test external ram failed.", false, System.Drawing.Color.Red);
 
+            this.startSdRamTest = false;
+
             return result;
 
         }
-
         private bool DoTestExternalFlash() {
             var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
             var drive = storeController.Provider;
