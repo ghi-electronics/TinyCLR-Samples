@@ -448,10 +448,6 @@ _return:
             var m = new DateTime(2020, 7, 7, 00, 00, 00);
 
 try_again:
-            if (this.isRunning == false) {
-                return false;
-            }
-
             if (rtc.IsValid && rtc.Now > m) {
 
                 return true;

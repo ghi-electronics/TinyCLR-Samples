@@ -53,8 +53,6 @@ namespace Demos {
                 buttonUp.ValueChanged += ButtonCenter_ValueChanged;                
                 buttonA.ValueChanged += ButtonCenter_ValueChanged;                
                 buttonB.ValueChanged += ButtonCenter_ValueChanged;                
-
-                //CreateClockTimer();
             }
 
             public static void DeinitializeButtons() {
@@ -81,43 +79,6 @@ namespace Demos {
 
             private static void ButtonCenter_ValueChanged(GpioPin sender, GpioPinValueChangedEventArgs e) => Program.MainApp.InputProvider.RaiseButton(GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select, true, DateTime.UtcNow);
 
-            //private static uint buttonLeftMask = 0;
-            //private static uint buttonRightMask = 0;
-
-            //public static bool IsButtonLeftPressed() => (buttonLeftMask & 1) >  0;
-            //public static bool IsButtonRightPressed() => (buttonRightMask & 1) > 0;
-
-            //public static void ClearButtonLeftState() => buttonLeftMask = 0;
-            //public static void ClearButtonRightState() => buttonRightMask = 0;
-
-            //static private DispatcherTimer clockTimer;
-
-            //static private void CreateClockTimer() {
-            //    clockTimer = new DispatcherTimer();
-
-            //    clockTimer.Tick += ClockTimer_Tick;
-            //    clockTimer.Interval = new TimeSpan(0, 0, 0,0, 50);
-            //    clockTimer.Start();
-            //}
-
-            //static bool isButtonCenterPressed = false;
-
-            //static private void ClockTimer_Tick(object sender, EventArgs e) {
-            //    if (buttonCenter.Read() == GpioPinValue.Low) {
-            //        if (isButtonCenterPressed == false) {
-            //            isButtonCenterPressed = true;
-            //        }
-            //    }
-
-            //    if (buttonCenter.Read() == GpioPinValue.High) {
-            //        if (isButtonCenterPressed == true) {
-
-            //            isButtonCenterPressed = false;
-
-            //            ButtonCenter_ValueChanged(buttonCenter, null);
-            //        }
-            //    }
-            //}
         }
     }
 }
