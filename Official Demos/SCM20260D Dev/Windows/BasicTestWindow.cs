@@ -265,15 +265,24 @@ namespace Demos {
         private void ThreadTest() {
             this.isRunning = true;
 
-            if (this.DoTestLeds() == true) {
-                if (this.isRunning == true && this.DoTestButtons() == true) {
-                    if (this.isRunning == true && this.DoTestExternalRam() == true) {
-                        if (this.isRunning == true && this.DoTestExternalFlash() == true) {
-                            if (this.isRunning == true && this.DoTestEthernet() == true) {
+            if (this.isRunning == true && this.DoTestExternalRam() == true) {
+                this.doNext = false;
+                if (this.isRunning == true && this.DoTestExternalFlash() == true) {
+                    this.doNext = false;
+                    if (this.isRunning == true && this.DoTestEthernet() == true) {
+                        this.doNext = false;
+                        if (this.isRunning == true && this.DoTestLeds() == true) {
+                            this.doNext = false;
+                            if (this.isRunning == true && this.DoTestButtons() == true) {
+                                this.doNext = false;
                                 if (this.isRunning == true && this.DoTestBuzzer() == true) {
+                                    this.doNext = false;
                                     if (this.isRunning == true && this.DoTestUsbHost()) {
+                                        this.doNext = false;
                                         if (this.isRunning == true && this.DoTestSdcard() == true) {
+                                            this.doNext = false;
                                             if (this.isRunning == true && this.DoTestRtc() == true) {
+                                                this.doNext = false;
                                                 if (this.isRunning == true && this.DoTestCamera() == true) {
 
                                                     var testUart = this.DoTestUart();
