@@ -8,6 +8,8 @@ namespace Demos {
     public class SystemWindow : ApplicationWindow {
         private Canvas canvas;
 
+        const string DemoVersion = "071520"; // Jul-15-2020
+
         public SystemWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
 
         }
@@ -28,13 +30,11 @@ namespace Demos {
                 ForeColor = Colors.White,
             };
 
-            var ramText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Memory: 512KB Total")
-            {
+            var ramText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Memory: 512KB Total") {
                 ForeColor = Colors.White,
             };
 
-            var ramExtText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "External Memory: 32MB Total")
-            {
+            var ramExtText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "External Memory: 32MB Total") {
                 ForeColor = Colors.White,
             };
 
@@ -44,13 +44,18 @@ namespace Demos {
             var mText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Manufacture: GHI Electronics, LLC") {
                 ForeColor = Colors.White,
             };
-  
+
+            var mVesion = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Demo version: " + DemoVersion) {
+                ForeColor = Colors.White,
+            };
+
             Canvas.SetLeft(devText, startX); Canvas.SetTop(devText, startY); startY += offsetY;
             Canvas.SetLeft(clockText, startX); Canvas.SetTop(clockText, startY); startY += offsetY;
             Canvas.SetLeft(ramText, startX); Canvas.SetTop(ramText, startY); startY += offsetY;
             Canvas.SetLeft(ramExtText, startX); Canvas.SetTop(ramExtText, startY); startY += offsetY;
             Canvas.SetLeft(osText, startX); Canvas.SetTop(osText, startY); startY += offsetY;
             Canvas.SetLeft(mText, startX); Canvas.SetTop(mText, startY); startY += offsetY;
+            Canvas.SetLeft(mVesion, startX); Canvas.SetTop(mVesion, startY); startY += offsetY;
 
             this.canvas.Children.Add(devText);
             this.canvas.Children.Add(clockText);
@@ -58,6 +63,7 @@ namespace Demos {
             this.canvas.Children.Add(ramExtText);
             this.canvas.Children.Add(osText);
             this.canvas.Children.Add(mText);
+            this.canvas.Children.Add(mVesion);
 
             // Enable TopBar
             Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
