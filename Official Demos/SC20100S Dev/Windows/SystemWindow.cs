@@ -17,6 +17,7 @@ namespace Demos {
         private const string Instruction4 = "External Memory: ";
         private const string Instruction5 = "OS: TinyCLR OS v";
         private const string Instruction6 = "Manufacture: ";
+        private const string Instruction7 = "Demo version: 071520"; // Jul-15-2020
 
         public SystemWindow(Bitmap icon, string title, int width, int height) : base(icon, title, width, height) {
 
@@ -30,7 +31,7 @@ namespace Demos {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
 
             this.textFlow = new TextFlow();
-            
+
             this.textFlow.TextRuns.Add(Instruction1 + GHIElectronics.TinyCLR.Native.DeviceInformation.DeviceName, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
@@ -47,6 +48,9 @@ namespace Demos {
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction6 + GHIElectronics.TinyCLR.Native.DeviceInformation.ManufacturerName, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+
+            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
         }
@@ -100,9 +104,9 @@ namespace Demos {
             var startY = 20;
 
             Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
-            this.canvas.Children.Add(this.textFlow);            
-        }      
-        
+            this.canvas.Children.Add(this.textFlow);
+        }
+
 
         protected override void Active() {
             this.Initialize();
