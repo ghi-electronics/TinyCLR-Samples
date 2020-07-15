@@ -281,6 +281,8 @@ namespace Demos {
                                                     this.doNext = false;
 
                                                     this.UpdateStatusText("Testing gpio....", true);
+                                                    this.UpdateStatusText("* Ignored: PB8, PB9 (I2C1 - Touch)", false, System.Drawing.Color.Yellow);
+                                                    this.UpdateStatusText("* Ignored: PB3, PB4, PB5 (SPI3 - wifi) ", false, System.Drawing.Color.Yellow);
 
                                                     this.DoTestGpio();
                                                 }
