@@ -170,7 +170,7 @@ namespace Demos {
 
             var m = new DateTime(2020, 7, 7, 00, 00, 00);
 
-            if (this.rtc.IsValid && this.rtc.Now > m) {
+            if (this.rtc.IsValid && this.rtc.Now >= m) {
 
                 while (this.isRuning) {
                     var time = this.rtc.Now.ToString();
