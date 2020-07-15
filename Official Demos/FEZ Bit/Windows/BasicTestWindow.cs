@@ -199,15 +199,30 @@ namespace Demos {
                                     this.doNext = false;
                                     if (this.isRunning == true && this.DoTestRtc() == true) {
                                         this.doNext = false;
-                                        this.UpdateStatusText(Instruction2 + ": Passed.", true, System.Drawing.Color.Yellow);
-                                        this.UpdateStatusText(Instruction3 + ": Passed.", false, System.Drawing.Color.Yellow);
-                                        this.UpdateStatusText(Instruction4 + ": Passed.", false);
-                                        this.UpdateStatusText(Instruction5 + ": Passed.", false);
-                                        this.UpdateStatusText(Instruction6 + ": Passed.", false);
-                                        this.UpdateStatusText(Instruction7 + ": Passed.", false);
-                                        this.UpdateStatusText("Testing Gpio...", false);
 
-                                        this.DoTestGpio();
+                                        this.UpdateStatusText("Last step is Gpio testing.", true);
+                                        this.UpdateStatusText("Warning: This step will toggle all", false, System.Drawing.Color.Yellow);
+                                        this.UpdateStatusText("exposed gpio. ", false, System.Drawing.Color.Yellow);
+                                        this.UpdateStatusText("Only needed for production test.", false, System.Drawing.Color.Yellow);
+                                        this.UpdateStatusText("Next to do gpio test, or", false);
+                                        this.UpdateStatusText("Back to return main menu", false);
+
+                                        while (this.doNext == false && this.isRunning == true) {
+                                            Thread.Sleep(10);
+                                        }
+
+                                        if (this.doNext && this.isRunning == true) {
+                                            this.doNext = false;
+
+                                            this.UpdateStatusText("Testing gpio....", true);
+
+                                            this.DoTestGpio();
+                                        }
+
+                                        while (this.doNext == false && this.isRunning == true) {
+                                            Thread.Sleep(10);
+                                        }
+
                                     }
                                 }
                             }

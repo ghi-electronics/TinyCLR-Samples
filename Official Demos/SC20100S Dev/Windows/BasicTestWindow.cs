@@ -216,13 +216,28 @@ namespace Demos {
 
                                     this.doNext = false;
 
-                                    this.UpdateStatusText(Instruction2 + ": Passed.", true, System.Drawing.Color.Yellow);
-                                    this.UpdateStatusText(Instruction3 + ": Passed.", false);
-                                    this.UpdateStatusText(Instruction4 + ": Passed.", false, System.Drawing.Color.Yellow);
-                                    this.UpdateStatusText(Instruction5 + ": Passed.", false);
-                                    this.UpdateStatusText(Instruction6 + ": Passed.", false);
-                                    this.UpdateStatusText(Instruction7 + (testUart ? ": Passed " : ": Failed"), false, testUart ? System.Drawing.Color.White : System.Drawing.Color.Red);
+                                    this.UpdateStatusText(Instruction7 + (testUart ? ": Passed " : ": Failed"), true, testUart ? System.Drawing.Color.White : System.Drawing.Color.Red);
                                     this.UpdateStatusText(Instruction8 + (testCan ? ": Passed " : ": Failed"), false, testCan ? System.Drawing.Color.White : System.Drawing.Color.Red);
+                                    this.UpdateStatusText("Last step is Gpio testing.", false);
+                                    this.UpdateStatusText("Warning: This step will toggle all", false, System.Drawing.Color.Yellow);
+                                    this.UpdateStatusText("exposed gpio. ", false, System.Drawing.Color.Yellow);
+                                    this.UpdateStatusText("Only needed for production test.", false, System.Drawing.Color.Yellow);
+                                    this.UpdateStatusText("Next to do gpio test, or", false);
+                                    this.UpdateStatusText("Back to return main menu", false);
+
+                                    while (this.doNext == false && this.isRunning == true) {
+                                        Thread.Sleep(10);
+                                    }
+
+                                    if (this.doNext && this.isRunning == true) {
+                                        this.doNext = false;
+
+
+                                        this.UpdateStatusText("Testing gpio....", true);
+
+                                        this.DoTestGpio();
+                                    }
+
                                 }
                             }
                         }
@@ -663,6 +678,57 @@ try_again:
             canController.Disable();
 
             return result;
+        }
+
+        private void DoTestGpio() {
+            var pinsDefs = new int[] {SC20100.GpioPin.PC6
+                               };
+
+            var gpioController = GpioController.GetDefault();
+
+            var gpios = new GpioPin[pinsDefs.Length];
+
+            for (var i = 0; i < pinsDefs.Length; i++) {
+                try {
+                    gpios[i] = gpioController.OpenPin(pinsDefs[i]);
+                    gpios[i].SetDriveMode(GpioPinDriveMode.Output);
+                }
+                catch {
+                    this.UpdateStatusText(" Gpio test failed at: " + GetGpioPinName(pinsDefs[i]), true);
+                    goto _return;
+                }
+            }
+
+            var idx = 0;
+
+            while (this.doNext == false && this.isRunning) {
+                for (var i = 0; i < pinsDefs.Length; i++) {
+                    if (i == idx) {
+                        gpios[i].Write(gpios[i].Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
+                    }
+                    else {
+                        gpios[i].Write(GpioPinValue.Low);
+                    }
+                }
+
+                idx++;
+
+                if (idx == pinsDefs.Length)
+                    idx = 0;
+
+                Thread.Sleep(300 / pinsDefs.Length);
+            }
+_return:
+            for (var i = 0; i < pinsDefs.Length; i++) {
+                if (gpios[i] != null)
+                    gpios[i].Dispose();
+            }
+        }
+
+        static string GetGpioPinName(int pinId) {
+            var port = (char)((pinId / 16) + 'A');
+            var pin = pinId % 16;
+            return "P" + port + "" + pin;
         }
 
     }
