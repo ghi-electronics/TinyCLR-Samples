@@ -234,6 +234,7 @@ namespace Demos {
 
 
                                         this.UpdateStatusText("Testing gpio....", true);
+                                        this.UpdateStatusText("* Ignored: PE12, PE13, PE14 (Display)", false, System.Drawing.Color.Yellow);
 
                                         this.DoTestGpio();
                                     }
@@ -681,7 +682,10 @@ try_again:
         }
 
         private void DoTestGpio() {
-            var pinsDefs = new int[] {SC20100.GpioPin.PC6
+            var pinsDefs = new int[] {SC20100.GpioPin.PE4, SC20100.GpioPin.PC2, SC20100.GpioPin.PC3, SC20100.GpioPin.PA5, SC20100.GpioPin.PA6, SC20100.GpioPin.PA7, SC20100.GpioPin.PE8, SC20100.GpioPin.PE7, SC20100.GpioPin.PE10, SC20100.GpioPin.PE9, SC20100.GpioPin.PB10, SC20100.GpioPin.PB11, SC20100.GpioPin.PB13, SC20100.GpioPin.PB12, SC20100.GpioPin.PA13
+                , SC20100.GpioPin.PE1, SC20100.GpioPin.PE0, SC20100.GpioPin.PB8, SC20100.GpioPin.PB9, SC20100.GpioPin.PC13, SC20100.GpioPin.PA0, SC20100.GpioPin.PA1, SC20100.GpioPin.PA2, SC20100.GpioPin.PA4, SC20100.GpioPin.PC6, SC20100.GpioPin.PC7, SC20100.GpioPin.PE6, SC20100.GpioPin.PB3, SC20100.GpioPin.PB4, SC20100.GpioPin.PB5, SC20100.GpioPin.PA14
+                , SC20100.GpioPin.PC0, SC20100.GpioPin.PD4, SC20100.GpioPin.PD3, SC20100.GpioPin.PE5, SC20100.GpioPin.PC5, SC20100.GpioPin.PD6, SC20100.GpioPin.PD5
+                , SC20100.GpioPin.PC1, SC20100.GpioPin.PD15, SC20100.GpioPin.PD14, SC20100.GpioPin.PA3, SC20100.GpioPin.PA8, SC20100.GpioPin.PD9, SC20100.GpioPin.PD8
                                };
 
             var gpioController = GpioController.GetDefault();
