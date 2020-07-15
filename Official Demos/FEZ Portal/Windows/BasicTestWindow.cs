@@ -261,13 +261,31 @@ namespace Demos {
                                             this.doNext = false;
                                             if (this.isRunning == true && this.DoTestRtc() == true) {
                                                 this.doNext = false;
-                                                this.UpdateStatusText(Instruction2 + ": Passed by tester.", true, System.Drawing.Color.Yellow);
-                                                this.UpdateStatusText(Instruction3 + ": Passed.", false);
-                                                this.UpdateStatusText(Instruction4 + ": Passed.", false);
-                                                this.UpdateStatusText(Instruction5 + ": Passed.", false);
-                                                this.UpdateStatusText(Instruction6 + ": Passed by tester.", false, System.Drawing.Color.Yellow);
-                                                this.UpdateStatusText(Instruction7 + ": Passed.", false);
-                                                this.UpdateStatusText(Instruction8 + ": Passed.", false);
+
+                                                this.UpdateStatusText("Last step is Gpio testing.", true);
+                                                this.UpdateStatusText("Warning: This step will toggle all exposed gpio.", false, System.Drawing.Color.Yellow);
+                                                this.UpdateStatusText("Only needed for production test.", false, System.Drawing.Color.Yellow);
+                                                this.UpdateStatusText("Next to do gpio test, or Back to return main menu", false);
+
+                                                this.AddNextButton();
+
+                                                while (this.doNext == false && this.isRunning == true) {
+                                                    Thread.Sleep(10);
+                                                }
+
+                                                var doGpioTest = this.doNext;
+
+                                                this.RemoveNextButton();
+
+                                                if (doGpioTest && this.isRunning == true) {
+                                                    this.doNext = false;
+
+                                                    this.UpdateStatusText("Testing gpio....", true);
+                                                    this.UpdateStatusText("* Ignored: PB8, PB9 (I2C1 - Touch)", false, System.Drawing.Color.Yellow);
+                                                    this.UpdateStatusText("* Ignored: PB3, PB4, PB5 (SPI3 - wifi) ", false, System.Drawing.Color.Yellow);
+
+                                                    this.DoTestGpio();
+                                                }
 
                                             }
                                         }
@@ -788,5 +806,58 @@ try_again:
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 
         private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
+
+        private void DoTestGpio() {
+            var pinsDefs = new int[] {SC20260.GpioPin.PD7, SC20260.GpioPin.PB13, SC20260.GpioPin.PB12, SC20260.GpioPin.PF7, SC20260.GpioPin.PF6, SC20260.GpioPin.PH12,SC20260.GpioPin.PE4,SC20260.GpioPin.PI4, SC20260.GpioPin.PA0, SC20260.GpioPin.PA4, SC20260.GpioPin.PJ8, SC20260.GpioPin.PJ9, SC20260.GpioPin.PA5, SC20260.GpioPin.PE6, SC20260.GpioPin.PH13, SC20260.GpioPin.PH14, SC20260.GpioPin.PC6, SC20260.GpioPin.PC7,
+                SC20260.GpioPin.PH9, SC20260.GpioPin.PG10, SC20260.GpioPin.PA3, SC20260.GpioPin.PH10, SC20260.GpioPin.PF9, SC20260.GpioPin.PC3, SC20260.GpioPin.PJ10, SC20260.GpioPin.PJ11, SC20260.GpioPin.PK0,
+                SC20260.GpioPin.PC0, SC20260.GpioPin.PD4, SC20260.GpioPin.PI1, SC20260.GpioPin.PI2, SC20260.GpioPin.PI3, SC20260.GpioPin.PC13, SC20260.GpioPin.PE5, SC20260.GpioPin.PC2, SC20260.GpioPin.PD6, SC20260.GpioPin.PD5
+                               };
+
+            var gpioController = GpioController.GetDefault();
+
+            var gpios = new GpioPin[pinsDefs.Length];
+
+            for (var i = 0; i < pinsDefs.Length; i++) {
+                try {
+                    gpios[i] = gpioController.OpenPin(pinsDefs[i]);
+                    gpios[i].SetDriveMode(GpioPinDriveMode.Output);
+                }
+                catch {
+                    this.UpdateStatusText(" Gpio test failed at: " + GetGpioPinName(pinsDefs[i]), true);
+                    goto _return;
+                }
+            }
+
+            var idx = 0;
+
+            while (this.doNext == false && this.isRunning) {
+                for (var i = 0; i < pinsDefs.Length; i++) {
+                    if (i == idx) {
+                        gpios[i].Write(gpios[i].Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
+                    }
+                    else {
+                        gpios[i].Write(GpioPinValue.Low);
+                    }
+                }
+
+                idx++;
+
+                if (idx == pinsDefs.Length)
+                    idx = 0;
+
+                Thread.Sleep(300 / pinsDefs.Length);
+            }
+_return:
+            for (var i = 0; i < pinsDefs.Length; i++) {
+                if (gpios[i] != null)
+                    gpios[i].Dispose();
+            }
+        }
+
+        static string GetGpioPinName(int pinId) {
+            var port = (char)((pinId / 16) + 'A');
+            var pin = pinId % 16;
+            return "P" + port + "" + pin;
+        }
     }
 }
