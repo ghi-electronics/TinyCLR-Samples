@@ -205,6 +205,9 @@ namespace Demos {
                                         this.UpdateStatusText(Instruction5 + ": Passed.", false);
                                         this.UpdateStatusText(Instruction6 + ": Passed.", false);
                                         this.UpdateStatusText(Instruction7 + ": Passed.", false);
+                                        this.UpdateStatusText("Testing Gpio...", false);
+
+                                        this.DoTestGpio();
                                     }
                                 }
                             }
@@ -549,6 +552,59 @@ try_again:
             this.doTestWifiPassed = result;
 
             return result;
+        }
+
+        private void DoTestGpio() {
+            var pinsDefs = new int[] {SC20100.GpioPin.PC6, SC20100.GpioPin.PC7 ,SC20100.GpioPin.PA0,SC20100.GpioPin.PB0,SC20100.GpioPin.PA4,SC20100.GpioPin.PD13,
+                               SC20100.GpioPin.PD12,SC20100.GpioPin.PD11,SC20100.GpioPin.PE8,SC20100.GpioPin.PC3,SC20100.GpioPin.PC0,SC20100.GpioPin.PD1,
+                               SC20100.GpioPin.PD0,SC20100.GpioPin.PA5,SC20100.GpioPin.PA6,SC20100.GpioPin.PA7,SC20100.GpioPin.PE7
+                               };
+
+            var gpioController = GpioController.GetDefault();
+
+            var gpios = new GpioPin[pinsDefs.Length];
+
+            for (var i = 0; i < pinsDefs.Length; i++) {
+                try {
+                    gpios[i] = gpioController.OpenPin(pinsDefs[i]);
+                    gpios[i].SetDriveMode(GpioPinDriveMode.Output);
+                }
+                catch {
+                    this.UpdateStatusText(" Gpio test failed at: " + GetGpioPinName(pinsDefs[i]), true);
+                    goto _return;
+                }
+            }
+
+            var idx = 0;
+
+            while (this.doNext == false && this.isRunning) {
+                for (var i = 0; i < pinsDefs.Length; i++) {
+                    if (i == idx) {
+                        gpios[i].Write(gpios[i].Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
+                    }
+                    else {
+                        gpios[i].Write(GpioPinValue.Low);
+                    }
+                }
+
+                idx++;
+
+                if (idx == pinsDefs.Length)
+                    idx = 0;
+
+                Thread.Sleep(300 / pinsDefs.Length);
+            }
+_return:
+            for (var i = 0; i < pinsDefs.Length; i++) {
+                if (gpios[i] != null)
+                    gpios[i].Dispose();
+            }
+        }
+
+        static string GetGpioPinName(int pinId) {
+            var port = (char)((pinId / 16) + 'A');
+            var pin = pinId % 16;
+            return "P" + port + "" + pin;
         }
 
     }
