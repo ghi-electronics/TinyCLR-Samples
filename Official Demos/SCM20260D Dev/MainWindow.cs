@@ -33,6 +33,8 @@ namespace Demos {
             this.Child = this.mainStackPanel;
 
             this.Background = new LinearGradientBrush(Colors.Blue, Colors.Teal, 0, 0, width, height);
+           
+
 
             this.CreateTopBar();
             this.CreateIcons();
