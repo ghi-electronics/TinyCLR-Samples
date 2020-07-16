@@ -128,8 +128,6 @@ namespace Demos {
                         new Thread(this.ThreadTest).Start();
                     }
                     break;
-                
-
             }
         }
 
@@ -156,8 +154,11 @@ namespace Demos {
             var sectorSize = drive.Descriptor.RegionSizes[0];
 
             var textWrite = System.Text.UTF8Encoding.UTF8.GetBytes("this is for test");
-            var dataRead = new byte[sectorSize];
 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            var dataRead = new byte[sectorSize];
             var dataWrite = new byte[sectorSize];
 
             for (var i = 0; i < sectorSize; i += textWrite.Length) {
@@ -181,18 +182,6 @@ _again:
 
                 // Erase
                 drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
-
-                // Read - check for blank
-                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
-
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != 0xFF) {
-
-                        this.UpdateStatusText("Erase failed at: " + idx, false);
-
-                        goto _return;
-                    }
-                }
 
                 // Write
                 this.UpdateStatusText("Writing sector " + s, false);
