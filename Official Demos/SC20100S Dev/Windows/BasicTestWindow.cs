@@ -234,7 +234,9 @@ namespace Demos {
 
 
                                         this.UpdateStatusText("Testing gpio....", true);
-                                        this.UpdateStatusText("* Ignored: PE12, PE13, PE14 (Display)", false, System.Drawing.Color.Yellow);
+                                        this.UpdateStatusText("* Ignored: PE12, PE13, PE14 (Display)", false, System.Drawing.Color.Yellow);                                        
+                                        this.UpdateStatusText("* Do NOT forget to test external", false, System.Drawing.Color.Yellow);
+                                        this.UpdateStatusText("* power *", false, System.Drawing.Color.Yellow);
 
                                         this.DoTestGpio();
                                     }
@@ -258,14 +260,14 @@ namespace Demos {
             var drive = storeController.Provider;
             var result = true;
 
-
-
             drive.Open();
-
 
             var sectorSize = drive.Descriptor.RegionSizes[0];
 
             var textWrite = System.Text.UTF8Encoding.UTF8.GetBytes("this is for test");
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             var dataRead = new byte[sectorSize];
             var dataWrite = new byte[sectorSize];
@@ -292,18 +294,6 @@ _again:
                 this.UpdateStatusText("External flash - Erasing sector " + s, false);
                 // Erase
                 drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
-
-                // Read - check for blank
-                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
-
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != 0xFF) {
-
-                        this.UpdateStatusText("External flash - Erase failed at: " + idx, false);
-                        result = false;
-                        goto _return;
-                    }
-                }
 
                 // Write
                 this.UpdateStatusText("External flash - Writing sector " + s, false);

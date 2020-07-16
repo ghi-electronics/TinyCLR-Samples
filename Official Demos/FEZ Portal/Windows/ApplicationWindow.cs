@@ -61,13 +61,13 @@ namespace Demos {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
-                Debug.WriteLine("" + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
+                //Debug.WriteLine("" + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
 
                 this.topBar = new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
                 this.topBar.OnClose += this.OnClose;
 
                 if (this.EnableButtonBack || this.EnableButtonNext) {
-                    this.bottomBar = new BottomBar(this.Width, this.EnableButtonBack, this.EnableButtonNext);                    
+                    this.bottomBar = new BottomBar(this.Width, this.EnableButtonBack, this.EnableButtonNext);
                 }
 
 
@@ -132,7 +132,7 @@ namespace Demos {
             }
         }
 
-        private void OnButtonUp(object sender, RoutedEventArgs e) => OnBottomBarButtonUpEvent?.Invoke(sender, e);        
+        private void OnButtonUp(object sender, RoutedEventArgs e) => OnBottomBarButtonUpEvent?.Invoke(sender, e);
 
         private void OnClose(object sender, RoutedEventArgs e) => this.Close();
 

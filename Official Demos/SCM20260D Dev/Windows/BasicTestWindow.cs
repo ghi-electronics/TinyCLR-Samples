@@ -277,8 +277,9 @@ namespace Demos {
                                                     this.doNext = false;
 
                                                     this.UpdateStatusText("Testing gpio....", true);
-                                                    this.UpdateStatusText("* Ignored: PB8, PB9 (I2C1 - Touch)", false, System.Drawing.Color.Yellow);                                                    
+                                                    this.UpdateStatusText("* Ignored: PB8, PB9 (I2C1 - Touch)", false, System.Drawing.Color.Yellow);
                                                     this.UpdateStatusText("* Ignored: X2 header (LCD) ", false, System.Drawing.Color.Yellow);
+                                                    this.UpdateStatusText("* Do NOT forget to test external power *", false, System.Drawing.Color.Yellow);
 
                                                     this.DoTestGpio();
                                                 }
@@ -433,18 +434,6 @@ _again:
                 this.UpdateStatusText("External flash - Erasing sector " + s, false);
                 // Erase
                 drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
-
-                // Read - check for blank
-                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
-
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != 0xFF) {
-
-                        this.UpdateStatusText("External flash - Erase failed at: " + idx, false);
-                        result = false;
-                        goto _return;
-                    }
-                }
 
                 // Write
                 this.UpdateStatusText("External flash - Writing sector " + s, false);

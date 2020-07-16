@@ -20,7 +20,7 @@ namespace Demos {
         private Canvas canvas; // can be StackPanel
 
         private const string Instruction1 = " This will test Camera module: ";
-        private const string Instruction2 = " - Connect Camera module to Camare Interface on 20260Dev board.";
+        private const string Instruction2 = " - Connect Camera module to Camera Interface on the 20260Dev board.";
         private const string Instruction3 = " ";
         private const string Instruction4 = " ";
         private const string Instruction5 = " ";

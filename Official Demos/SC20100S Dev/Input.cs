@@ -28,10 +28,10 @@ namespace Demos {
                 buttonRight.DebounceTimeout = TimeSpan.FromMilliseconds(50);
 
                 buttonLeft.ValueChangedEdge = GpioPinEdge.RisingEdge;
-                buttonRight.ValueChangedEdge = GpioPinEdge.RisingEdge;                
+                buttonRight.ValueChangedEdge = GpioPinEdge.RisingEdge;
 
                 buttonLeft.ValueChanged += ButtonLeft_ValueChanged;
-                buttonRight.ValueChanged += ButtonRight_ValueChanged;                
+                buttonRight.ValueChanged += ButtonRight_ValueChanged;
 
                 CreateClockTimer();
             }
@@ -46,40 +46,41 @@ namespace Demos {
             private static uint buttonLeftMask = 0;
             private static uint buttonRightMask = 0;
 
-            public static bool IsButtonLeftPressed() => (buttonLeftMask & 1) >  0;
+            public static bool IsButtonLeftPressed() => (buttonLeftMask & 1) > 0;
             public static bool IsButtonRightPressed() => (buttonRightMask & 1) > 0;
 
             public static void ClearButtonLeftState() => buttonLeftMask = 0;
             public static void ClearButtonRightState() => buttonRightMask = 0;
 
-            static private DispatcherTimer clockTimer;
+            static void ThreadTimer() {
+                while (true) {
+                    Thread.Sleep(50);
 
-            static private void CreateClockTimer() {
-                clockTimer = new DispatcherTimer();
+                    if (buttonCenter == null) {
+                        continue;
+                    }
 
-                clockTimer.Tick += ClockTimer_Tick;
-                clockTimer.Interval = new TimeSpan(0, 0, 0,0, 50);
-                clockTimer.Start();
+                    if (buttonCenter.Read() == GpioPinValue.Low) {
+                        if (isButtonCenterPressed == false) {
+                            isButtonCenterPressed = true;
+                        }
+                    }
+
+                    if (buttonCenter.Read() == GpioPinValue.High) {
+                        if (isButtonCenterPressed == true) {
+
+                            isButtonCenterPressed = false;
+
+                            ButtonCenter_ValueChanged(buttonCenter, null);
+                        }
+                    }
+
+                }
             }
+
+            static private void CreateClockTimer() => new Thread(ThreadTimer).Start();
 
             static bool isButtonCenterPressed = false;
-
-            static private void ClockTimer_Tick(object sender, EventArgs e) {
-                if (buttonCenter.Read() == GpioPinValue.Low) {
-                    if (isButtonCenterPressed == false) {
-                        isButtonCenterPressed = true;
-                    }
-                }
-
-                if (buttonCenter.Read() == GpioPinValue.High) {
-                    if (isButtonCenterPressed == true) {
-
-                        isButtonCenterPressed = false;
-
-                        ButtonCenter_ValueChanged(buttonCenter, null);
-                    }
-                }
-            }
         }
     }
 }
