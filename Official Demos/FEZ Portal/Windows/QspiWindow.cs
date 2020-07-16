@@ -193,18 +193,6 @@ _again:
                 // Erase
                 drive.Erase(address, sectorSize, TimeSpan.FromSeconds(100));
 
-                // Read - check for blank
-                drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
-
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != 0xFF) {
-
-                        this.UpdateStatusText("Erase failed at: " + idx, false);
-
-                        goto _return;
-                    }
-                }
-
                 // Write
                 this.UpdateStatusText("Writing sector " + s, false);
                 drive.Write(address, sectorSize, dataWrite, 0, TimeSpan.FromSeconds(100));
