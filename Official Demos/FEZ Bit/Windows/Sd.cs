@@ -72,10 +72,17 @@ namespace Demos {
 
         private void Deinitialize() {
 
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
+
             this.textFlow.TextRuns.Clear();
-            this.textFlow = null;
+            this.canvas.Children.Clear();
 
             this.font.Dispose();
+
+            this.textFlow = null;
+            this.canvas = null;
 
         }
 
@@ -93,11 +100,9 @@ namespace Demos {
         }
 
 
-        protected override void Deactive() {
+        protected override void Deactive() =>
             // To stop or free, uinitialize variable resource
-            this.canvas.Children.Clear();
             this.Deinitialize();
-        }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();

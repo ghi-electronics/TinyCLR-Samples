@@ -47,7 +47,7 @@ namespace Demos {
             if (this.Select) {
 
                 if (this.bitmapImage != null) {
-                    dc.Scale9Image(x, y, w, h, this.bitmapImage, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, alpha);
+                    dc.DrawImage(this.bitmapImage, x, y);
                 }
 
                 if (this.IconText != null && this.Font != null) {

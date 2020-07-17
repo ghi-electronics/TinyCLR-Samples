@@ -78,24 +78,15 @@ namespace Demos {
                 //this.topBar.OnClose += this.OnClose;
 
                 if (this.EnableButtomBack || this.EnableButtomNext) {
-                    try {
-                        this.bottomBar = sBottomBar;// new BottomBar(this.Width, this.EnableButtomBack, this.EnableButtomNext);
-
-
-                    }
-                    catch {
-                        //if (this.topBar != null)
-                        //    this.topBar.Dispose();
-
-                        //if (this.bottomBar != null)
-                        //    this.bottomBar.Dispose();
-
-                        return null;
-                    }
+                    this.bottomBar = sBottomBar;// new BottomBar(this.Width, this.EnableButtomBack, this.EnableButtomNext);
                 }
 
-
-                this.Active();
+                try {
+                    this.Active();
+                }
+                catch {
+                    return null;
+                }
 
                 if (this.EnableButtomBack || this.EnableButtomNext) {
                     this.Child.AddHandler(Buttons.ButtonUpEvent, new RoutedEventHandler(this.OnButtonUp), true);
@@ -147,10 +138,14 @@ namespace Demos {
                 //if (this.bottomBar != null)
                 //    this.bottomBar.Dispose();
 
-                //if (this.bottomBar != null) {
-                //    this.bottomBar.ButtonBack.Click -= this.ButtonBack_Click;
-                //    this.bottomBar.ButtonNext.Click -= this.ButtonNext_Click;
-                //}
+                if (this.bottomBar != null) {
+                    this.bottomBar.ButtonBack.Click -= this.ButtonBack_Click;
+                    this.bottomBar.ButtonNext.Click -= this.ButtonNext_Click;
+
+                }
+                if (this.Child != null) {
+                    this.Child.IsVisibleChanged -= this.Child_IsVisibleChanged;
+                }
 
                 this.actived = false;
             }

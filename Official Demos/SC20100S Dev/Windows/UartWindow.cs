@@ -29,7 +29,7 @@ namespace Demos {
 
         private Font font;
 
-        private bool isRuning;        
+        private bool isRuning;
 
         private TextFlow textFlow;
 
@@ -68,10 +68,17 @@ namespace Demos {
         }
 
         private void Deinitialize() {
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
+
             this.textFlow.TextRuns.Clear();
-            this.textFlow = null;
+            this.canvas.Children.Clear();
 
             this.font.Dispose();
+
+            this.textFlow = null;
+            this.canvas = null;
         }
 
         protected override void Active() {
@@ -99,8 +106,8 @@ namespace Demos {
             this.isRuning = false;
 
             Thread.Sleep(100); // Wait for test thread is stop => no update canvas
-            // To stop or free, uinitialize variable resource
-            this.canvas.Children.Clear();
+
+            this.Deinitialize();
         }
 
         private void ClearScreen() {
@@ -149,7 +156,7 @@ namespace Demos {
             var startX = 2;
             var startY = 20;
 
-            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY); 
+            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
             this.canvas.Children.Add(this.textFlow);
         }
 
@@ -172,33 +179,33 @@ namespace Demos {
                 var totalSent = 0;
 
                 while (this.isRuning) {
-                    this.UpdateStatusText("Total received: " + totalReceived,  true); 
-                    this.UpdateStatusText("Total sent: " + totalSent,  false); 
-                    this.UpdateStatusText(WaitForMessage, false); 
+                    this.UpdateStatusText("Total received: " + totalReceived, true);
+                    this.UpdateStatusText("Total sent: " + totalSent, false);
+                    this.UpdateStatusText(WaitForMessage, false);
 
                     while (uart1.BytesToRead == 0) {
                         Thread.Sleep(10);
                     }
-                    
+
                     var byteToRead = uart1.BytesToRead > uart1.ReadBufferSize ? uart1.ReadBufferSize : uart1.BytesToRead;
 
                     var read = new byte[byteToRead];
 
 
-                    this.UpdateStatusText("Receiving... " + byteToRead + " byte(s)", false); 
-                    totalReceived +=uart1.Read(read);
+                    this.UpdateStatusText("Receiving... " + byteToRead + " byte(s)", false);
+                    totalReceived += uart1.Read(read);
 
-                    
+
 
                     for (var i = 0; i < read.Length; i++) {
                         var write = new byte[1] { (byte)(read[i] + 1) };
-                        totalSent +=uart1.Write(write);
+                        totalSent += uart1.Write(write);
 
                         uart1.Flush();
                     }
 
-                    
-                    this.UpdateStatusText("Writing back... " + byteToRead + " byte(s)", false); 
+
+                    this.UpdateStatusText("Writing back... " + byteToRead + " byte(s)", false);
 
                 }
             }
