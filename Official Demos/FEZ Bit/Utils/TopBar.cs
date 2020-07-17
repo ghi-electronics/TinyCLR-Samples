@@ -57,14 +57,13 @@ namespace Demos {
             this.enableClock = enableClock;
 
             if (this.enableClock == false) { // then enable button
-                
+
                 this.buttonClose = new Button() {
                     Child = closeText,
                     Width = this.height,
                     Height = this.height,
                 };
             }
-           
 
             this.CreateBar();
             this.Child.IsVisibleChanged += this.Element_IsVisibleChanged;
@@ -79,7 +78,6 @@ namespace Demos {
             };
 
             this.canvas.Children.Add(rect);
-            
 
             this.leftLabel = new Text {
                 ForeColor = Colors.White,
@@ -134,13 +132,13 @@ namespace Demos {
             if (this.OnClose != null) {
                 if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
                     this.OnClose?.Invoke(sender, e);
-                }                
+                }
             }
         }
 
         public void Dispose() {
             this.canvas.Children.Clear();
-            
+
             this.font.Dispose();
 
             if (this.buttonClose != null)
