@@ -25,8 +25,8 @@ namespace Demos {
         private bool isRuning;
 
         public BuzzerWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-           
-         
+
+
         }
 
         private void Initialize() {
@@ -53,10 +53,17 @@ namespace Demos {
 
         private void Deinitialize() {
 
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
+
             this.textFlow.TextRuns.Clear();
-            this.textFlow = null;
+            this.canvas.Children.Clear();
 
             this.font.Dispose();
+
+            this.textFlow = null;
+            this.canvas = null;
 
         }
 
@@ -72,11 +79,9 @@ namespace Demos {
             this.CreateWindow();
         }
 
-        protected override void Deactive() {
+        protected override void Deactive() =>
             // To stop or free, uinitialize variable resource
             this.Deinitialize();
-            this.canvas.Children.Clear();
-        }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();
@@ -139,7 +144,7 @@ namespace Demos {
                 pwmController3.SetDesiredFrequency(500);
                 pwmPinPB1.SetActiveDutyCyclePercentage(0.5);
 
-                this.UpdateStatusText("Generate Pwm 500Hz...",  true); 
+                this.UpdateStatusText("Generate Pwm 500Hz...", true);
 
                 pwmPinPB1.Start();
 
@@ -147,7 +152,7 @@ namespace Demos {
 
                 pwmPinPB1.Stop();
 
-                this.UpdateStatusText("Generate Pwm 1000Hz...",  false); 
+                this.UpdateStatusText("Generate Pwm 1000Hz...", false);
 
                 pwmController3.SetDesiredFrequency(1000);
 
@@ -155,7 +160,7 @@ namespace Demos {
 
                 Thread.Sleep(1000);
 
-                this.UpdateStatusText("Generate Pwm 2000Hz...",  false); 
+                this.UpdateStatusText("Generate Pwm 2000Hz...", false);
 
                 pwmController3.SetDesiredFrequency(2000);
 
@@ -167,8 +172,8 @@ namespace Demos {
 
                 pwmPinPB1.Dispose();
 
-                this.UpdateStatusText("Testing is success if you heard three",  false); 
-                this.UpdateStatusText("kind of sounds!",  false); 
+                this.UpdateStatusText("Testing is success if you heard three", false);
+                this.UpdateStatusText("kind of sounds!", false);
             }
 
             this.isRuning = false;

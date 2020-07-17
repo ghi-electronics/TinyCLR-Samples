@@ -55,10 +55,17 @@ namespace Demos {
 
         private void Deinitialize() {
 
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
+
             this.textFlow.TextRuns.Clear();
-            this.textFlow = null;
+            this.canvas.Children.Clear();
 
             this.font.Dispose();
+
+            this.textFlow = null;
+            this.canvas = null;
 
         }
 
@@ -81,7 +88,6 @@ namespace Demos {
             Thread.Sleep(10);
 
             this.Deinitialize();
-            this.canvas.Children.Clear();
         }
 
         private void ClearScreen() {

@@ -75,10 +75,17 @@ namespace Demos {
 
         private void Deinitialize() {
 
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
+
             this.textFlow.TextRuns.Clear();
-            this.textFlow = null;
+            this.canvas.Children.Clear();
 
             this.font.Dispose();
+
+            this.textFlow = null;
+            this.canvas = null;
 
         }
 
@@ -108,7 +115,6 @@ namespace Demos {
 
             Thread.Sleep(100); // Wait for test thread is stop => no update canvas
             // To stop or free, uinitialize variable resource
-            this.canvas.Children.Clear();
 
             this.Deinitialize();
         }
@@ -126,7 +132,7 @@ namespace Demos {
             if (this.BottomBar != null) {
                 Canvas.SetLeft(this.BottomBar, 0); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
                 this.canvas.Children.Add(this.BottomBar);
-               
+
                 // Regiter touch event for button back or next
                 // Regiter Button event
                 this.OnBottomBarButtonUpEvent += this.TemplateWindow_OnBottomBarButtonUpEvent;
