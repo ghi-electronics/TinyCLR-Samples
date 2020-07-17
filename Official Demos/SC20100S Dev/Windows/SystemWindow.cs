@@ -56,11 +56,17 @@ namespace Demos {
         }
 
         private void Deinitialize() {
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
 
             this.textFlow.TextRuns.Clear();
-            this.textFlow = null;
+            this.canvas.Children.Clear();
 
             this.font.Dispose();
+
+            this.textFlow = null;
+            this.canvas = null;
 
         }
 
@@ -120,11 +126,7 @@ namespace Demos {
             this.CreateWindow();
         }
 
-        protected override void Deactive() {
-            this.canvas.Children.Clear();
-
-            this.Deinitialize();
-        }
+        protected override void Deactive() => this.Deinitialize();
 
         private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
 

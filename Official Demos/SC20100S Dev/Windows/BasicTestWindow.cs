@@ -82,26 +82,18 @@ namespace Demos {
         }
 
         private void Deinitialize() {
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
 
             this.textFlow.TextRuns.Clear();
+            this.canvas.Children.Clear();
+
+            this.font.Dispose();
+
             this.textFlow = null;
+            this.canvas = null;
         }
-
-        //private void TestButton_Click(object sender, RoutedEventArgs e) {
-        //    if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-
-        //        if (!this.isRunning) {
-        //            this.ClearScreen();
-
-        //            this.CreateWindow(false);
-
-        //            this.textFlow.TextRuns.Clear();
-
-        //            new Thread(this.ThreadTest).Start();
-        //        }
-        //    }
-        //}
-
 
         protected override void Active() {
             // To initialize, reset your variable, design...
@@ -130,8 +122,6 @@ namespace Demos {
             this.isRunning = false;
 
             Thread.Sleep(10);
-            // To stop or free, uinitialize variable resource
-            this.canvas.Children.Clear();
 
             this.Deinitialize();
         }
@@ -234,7 +224,7 @@ namespace Demos {
 
 
                                         this.UpdateStatusText("Testing gpio....", true);
-                                        this.UpdateStatusText("* Ignored: PE12, PE13, PE14 (Display)", false, System.Drawing.Color.Yellow);                                        
+                                        this.UpdateStatusText("* Ignored: PE12, PE13, PE14 (Display)", false, System.Drawing.Color.Yellow);
                                         this.UpdateStatusText("* Do NOT forget to test external", false, System.Drawing.Color.Yellow);
                                         this.UpdateStatusText("* power *", false, System.Drawing.Color.Yellow);
 

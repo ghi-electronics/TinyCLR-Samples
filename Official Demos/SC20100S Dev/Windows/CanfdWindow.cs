@@ -79,10 +79,17 @@ namespace Demos {
 
         private void Deinitialize() {
 
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
+
             this.textFlow.TextRuns.Clear();
-            this.textFlow = null;
+            this.canvas.Children.Clear();
 
             this.font.Dispose();
+
+            this.textFlow = null;
+            this.canvas = null;
 
         }
 
@@ -103,14 +110,12 @@ namespace Demos {
             this.CreateWindow();
 
             this.SetEnableButtonNext(true);
-        }       
+        }
 
         protected override void Deactive() {
             this.isRuning = false;
 
             Thread.Sleep(10);
-            // To stop or free, uinitialize variable resource
-            this.canvas.Children.Clear();
 
             this.Deinitialize();
         }
@@ -158,19 +163,19 @@ namespace Demos {
                         new Thread(this.ThreadTest).Start();
                     }
                     break;
-                
+
 
             }
         }
 
         private void CreateWindow() {
             var startX = 5;
-            var startY = 20;            
+            var startY = 20;
 
             Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
             this.canvas.Children.Add(this.textFlow);
         }
-        
+
         private void ThreadTest() {
             this.isRuning = true;
 

@@ -10,7 +10,7 @@ using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
-    public class TemplateWindow : ApplicationWindow  {
+    public class TemplateWindow : ApplicationWindow {
         private Canvas canvas; // can be StackPanel        
 
         public TemplateWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
@@ -59,8 +59,14 @@ namespace Demos {
             }
         }
 
-        protected override void Deactive() =>
+        protected override void Deactive() {
             // To stop or free, uinitialize variable resource
-            this.canvas.Children.Clear();
+            if (this.BottomBar != null) {
+                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
+            }
+
+            if (this.canvas != null)
+                this.canvas.Children.Clear();
+        }
     }
 }
