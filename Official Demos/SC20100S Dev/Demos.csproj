@@ -85,15 +85,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\settingImage.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Ethernet.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Template.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="GHIElectronics.TinyCLR.Cryptography, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Cryptography.2.0.0-rc1\lib\net452\GHIElectronics.TinyCLR.Cryptography.dll</HintPath>
     </Reference>
@@ -150,37 +141,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Piezo.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Sd.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Usb.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Qspi.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Canfd.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Uart.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Rtc.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Pwm.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Color.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Wifi.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Basictest.jpg" />
+    <Content Include="Resources\Basictest.jpg" />
+    <Content Include="Resources\Canfd.jpg" />
+    <Content Include="Resources\Color.jpg" />
+    <Content Include="Resources\Ethernet.jpg" />
+    <Content Include="Resources\Piezo.jpg" />
+    <Content Include="Resources\Pwm.jpg" />
+    <Content Include="Resources\Qspi.jpg" />
+    <Content Include="Resources\Rtc.jpg" />
+    <Content Include="Resources\Sd.jpg" />
+    <Content Include="Resources\settingImage.jpg" />
+    <Content Include="Resources\Template.jpg" />
+    <Content Include="Resources\Uart.jpg" />
+    <Content Include="Resources\Usb.jpg" />
+    <Content Include="Resources\wifi.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

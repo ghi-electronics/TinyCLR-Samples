@@ -75,7 +75,8 @@ namespace Demos {
         private void CreateBar() {
 
             var rect = new GHIElectronics.TinyCLR.UI.Shapes.Rectangle(this.width, this.height) {
-                Fill = new SolidColorBrush(Colors.Green),
+                Fill = new LinearGradientBrush(GHIElectronics.TinyCLR.UI.Media.Color.FromArgb(0xff, 0xc4, 0x83, 0x41), GHIElectronics.TinyCLR.UI.Media.Color.FromArgb(0xff, 0x66, 0x44, 0x22), 0, 0, this.width, this.height),
+                //Fill = new SolidColorBrush(Colors.Green),
             };
 
             this.canvas.Children.Add(rect);
