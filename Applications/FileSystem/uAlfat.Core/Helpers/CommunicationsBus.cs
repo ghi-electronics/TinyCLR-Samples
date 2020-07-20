@@ -17,7 +17,7 @@ namespace uAlfat.Core {
         private StreamReader commandFile;
         private UartController serialPort;
         private bool disposed;
-        public event IncomingDataEventHandler DataReceived;
+
         public delegate void IncomingDataEventHandler(string data);
         private string uartPort;
         public enum CommunicationsProtocal {
@@ -63,29 +63,8 @@ namespace uAlfat.Core {
             this.serialPort.ReadBufferSize = 16 * 1024;
 
             this.serialPort.Enable();
-
-            this.serialPort.DataReceived += this.SerialPort_DataReceived;
-
         }
-        private void SerialPort_DataReceived(UartController sender, DataReceivedEventArgs e) {
-            var rxBuffer = new byte[e.Count];
-            var bytesReceived = this.serialPort.Read(rxBuffer, 0, e.Count);
-            var dataStr = Encoding.UTF8.GetString(rxBuffer, 0, bytesReceived);
-            if (uAlfatModule.IsEchoEnabled) {
-                for (var i = 0; i < rxBuffer.Length; i++) {
-                    // send back whatever the host sent except for terminal line                    
-                    this.serialPort.Write(rxBuffer, i, 1);
-                }
-            }
 
-            //Debug.WriteLine(dataStr);
-            this.TempData += dataStr;
-            if (dataStr.IndexOf(Strings.NewLine) > -1) {
-                DataReceived?.Invoke(this.TempData.Trim());
-                this.TempData = string.Empty;
-            }
-
-        }
         public CommunicationsBus(string portName, StreamReader commandFile) : this(portName) => this.commandFile = commandFile;
 
         public void Dispose() {
@@ -138,6 +117,9 @@ namespace uAlfat.Core {
         }
 
         public int ByteToWrite => this.serialPort != null ? this.serialPort.BytesToRead : 0;
+        public int ByteToRead => this.serialPort != null ? this.serialPort.BytesToRead : 0;
+        public int ReadBufferSize => this.serialPort != null ? this.serialPort.ReadBufferSize : 0;
+
         public void Write(byte[] data) => this.Write(data, 0, data.Length);
 
         public void Write(byte[] data, int offset, int count) {
