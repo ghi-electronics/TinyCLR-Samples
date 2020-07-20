@@ -56,7 +56,6 @@ namespace uAlfat.Core {
             handles = new MediaHandler();
             storages = new StorageContainer();
             Bus = new CommunicationsBus(uartPort);
-            Bus.DataReceived += this.ProcessCommandEvent;
             this.StorageControllerName = storageControllerName;
             this.SDControllerName = sDControllerName;
             this.dataBlock = new byte[DataBlockSize];
@@ -72,27 +71,41 @@ namespace uAlfat.Core {
             //Console.WriteLine($" GHI Electronics, LLC{Strings.NewLine}----------------------{Strings.NewLine}   Boot Loader 2.05{Strings.NewLine}   uALFAT(TM) 3.13{Strings.NewLine}{ResponseCode.Success}"); 
         }
 
-        string dataToProcess = string.Empty;
-        bool newData = false;
-
         public void Run() {
+            var cmd = string.Empty;
+
             while (true) {
-                if (this.newData == false) {
+                var dataToRead = Bus.ByteToRead;
 
-                    Thread.Sleep(1);
-                    continue;
+                if (dataToRead > 0) {
+                    dataToRead = dataToRead < Bus.ReadBufferSize ? dataToRead : Bus.ReadBufferSize;
+
+                    var data = new byte[dataToRead];
+                    Bus.Read(data);
+
+                    var dataStr = Encoding.UTF8.GetString(data, 0, dataToRead);
+
+                    if (uAlfatModule.IsEchoEnabled) {
+                        for (var i = 0; i < data.Length; i++) {
+                            // send back whatever the host sent except for terminal line                    
+                            Bus.Write(data, i, 1);
+                        }
+                    }
+
+                    cmd += dataStr;
+
+                    if (dataStr.IndexOf(Strings.NewLine) > -1) {
+                        var trim = cmd.Trim();
+
+                        this.ProcessCommand(trim);
+
+                        cmd = string.Empty;
+                    }
                 }
-
-                this.ProcessCommand(this.dataToProcess);
-
-                this.newData = false;
+                else {
+                    Thread.Sleep(1);
+                }
             }
-        }
-
-        private void ProcessCommandEvent(string data) {
-            this.dataToProcess = data;
-
-            this.newData = true;
         }
 
         private void ProcessCommand(string data) {
