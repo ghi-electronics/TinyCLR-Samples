@@ -468,25 +468,31 @@ _return:
 
         private bool DoTestRtc() {
             this.UpdateStatusText("Testing real time clock... ", true);
-            var rtc = RtcController.GetDefault();
-
-            var m = new DateTime(2020, 7, 7, 00, 00, 00);
-
 try_again:
-            if (rtc.IsValid && rtc.Now >= m) {
+            try {
+                var rtc = RtcController.GetDefault();
 
-                return true;
-            }
+                var m = new DateTime(2020, 7, 7, 00, 00, 00);
 
-            else {
-                var newDt = RtcDateTime.FromDateTime(m);
-
-                rtc.SetTime(newDt);
 
                 if (rtc.IsValid && rtc.Now >= m) {
 
                     return true;
                 }
+
+                else {
+                    var newDt = RtcDateTime.FromDateTime(m);
+
+                    rtc.SetTime(newDt);
+
+                    if (rtc.IsValid && rtc.Now >= m) {
+
+                        return true;
+                    }
+                }
+            }
+            catch {
+                this.UpdateStatusText("Try Rtc again... ", true);
             }
 
             if (this.isRunning)

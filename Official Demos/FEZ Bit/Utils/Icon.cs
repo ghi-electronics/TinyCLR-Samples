@@ -22,8 +22,13 @@ namespace Demos {
         static GHIElectronics.TinyCLR.UI.Media.Color TextColor { get; set; }
 
         public Icon(Bitmap icon, string text) : base() {
-            if (icon != null)
-                this.bitmapImage = BitmapImage.FromGraphics(Graphics.FromImage(icon));
+            if (icon != null) {
+                var gfx = Graphics.FromImage(icon);
+
+                gfx.MakeTransparent(0xFFFFFF);  // MakeTransparent is only available from TinyCLR OS rc2
+
+                this.bitmapImage = BitmapImage.FromGraphics(gfx);
+            }
 
             this.IconText = text;
             this.Font = Resources.GetFont(Resources.FontResources.droid_reg08);
