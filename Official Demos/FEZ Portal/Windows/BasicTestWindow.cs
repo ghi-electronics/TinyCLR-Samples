@@ -802,7 +802,7 @@ try_again:
 
         private void DoTestGpio() {
             var pinsDefs = new int[] {SC20260.GpioPin.PD7, SC20260.GpioPin.PB13, SC20260.GpioPin.PB12, SC20260.GpioPin.PF7, SC20260.GpioPin.PF6, SC20260.GpioPin.PH12,SC20260.GpioPin.PE4,SC20260.GpioPin.PI4, SC20260.GpioPin.PA0, SC20260.GpioPin.PA4, SC20260.GpioPin.PJ8, SC20260.GpioPin.PJ9, SC20260.GpioPin.PA5, SC20260.GpioPin.PE6, SC20260.GpioPin.PH13, SC20260.GpioPin.PH14, SC20260.GpioPin.PC6, SC20260.GpioPin.PC7,
-                SC20260.GpioPin.PH9, SC20260.GpioPin.PG10, SC20260.GpioPin.PA3, SC20260.GpioPin.PH10, SC20260.GpioPin.PF9, SC20260.GpioPin.PC3, SC20260.GpioPin.PJ10, SC20260.GpioPin.PJ11, SC20260.GpioPin.PK0,
+                SC20260.GpioPin.PH9, SC20260.GpioPin.PG10, SC20260.GpioPin.PA3, SC20260.GpioPin.PH10, SC20260.GpioPin.PF9, SC20260.GpioPin.PF8, SC20260.GpioPin.PJ10, SC20260.GpioPin.PJ11, SC20260.GpioPin.PK0,
                 SC20260.GpioPin.PC0, SC20260.GpioPin.PD4, SC20260.GpioPin.PI1, SC20260.GpioPin.PI2, SC20260.GpioPin.PI3, SC20260.GpioPin.PC13, SC20260.GpioPin.PE5, SC20260.GpioPin.PC2, SC20260.GpioPin.PD6, SC20260.GpioPin.PD5
                                };
 
