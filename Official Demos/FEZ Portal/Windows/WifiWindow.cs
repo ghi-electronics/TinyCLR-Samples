@@ -231,7 +231,7 @@ namespace Demos {
             try {
                 Thread.Sleep(100);
 
-                this.resetPin = gpioController.OpenPin(SC20260.GpioPin.PF8);
+                this.resetPin = gpioController.OpenPin(SC20260.GpioPin.PC3);
                 this.csPin = gpioController.OpenPin(SC20260.GpioPin.PA6);
                 this.intPin = gpioController.OpenPin(SC20260.GpioPin.PF10);
                 this.enPin = gpioController.OpenPin(SC20260.GpioPin.PA8);

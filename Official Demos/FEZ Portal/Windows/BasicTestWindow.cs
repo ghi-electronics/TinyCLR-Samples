@@ -480,7 +480,7 @@ _return:
 
             var gpioController = GpioController.GetDefault();
 
-            var resetPin = gpioController.OpenPin(SC20260.GpioPin.PF8);
+            var resetPin = gpioController.OpenPin(SC20260.GpioPin.PC3);
             var csPin = gpioController.OpenPin(SC20260.GpioPin.PA6);
             var intPin = gpioController.OpenPin(SC20260.GpioPin.PF10);
             var enPin = gpioController.OpenPin(SC20260.GpioPin.PA8);
