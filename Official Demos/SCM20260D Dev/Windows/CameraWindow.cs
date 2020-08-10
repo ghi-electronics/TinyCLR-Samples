@@ -185,7 +185,7 @@ namespace Demos {
 
             try {
 
-                var ov9655 = new Ov9655(i2cController);
+                var ov9655 = new Ov9655Controller(i2cController);
 
                 var id = ov9655.ReadId();
 
@@ -200,7 +200,7 @@ namespace Demos {
                     data = new byte[640 * 480 * 2];
                 }
 
-                ov9655.SetResolution(Ov9655.Resolution.Vga);
+                ov9655.SetResolution(Ov9655Controller.Resolution.Vga);
                 var displayController = Display.DisplayController;
 
                 while (this.isRunning) {

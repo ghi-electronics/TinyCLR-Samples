@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
+using GHIElectronics.TinyCLR.Cryptography;
 using GHIElectronics.TinyCLR.Devices.Can;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Network;
@@ -402,25 +403,20 @@ namespace Demos {
             var drive = storeController.Provider;
             var result = true;
 
-
-
             drive.Open();
 
-
             var sectorSize = drive.Descriptor.RegionSizes[0];
-
-            var textWrite = System.Text.UTF8Encoding.UTF8.GetBytes("this is for test");
 
             var dataRead = new byte[sectorSize];
             var dataWrite = new byte[sectorSize];
 
-            for (var i = 0; i < sectorSize; i += textWrite.Length) {
-                Array.Copy(textWrite, 0, dataWrite, i, textWrite.Length);
-            }
+            var rd = new Random();
 
             var roundTest = 0;
             var startSector = 0;
             var endSector = 8;
+
+            var md5 = MD5.Create();
 
 _again:
             if (roundTest == 1) {
@@ -429,6 +425,11 @@ _again:
             }
 
             for (var s = startSector; s < endSector; s++) {
+                md5.Clear();
+
+                rd.NextBytes(dataWrite);
+
+                var md5dataWrite = md5.ComputeHash(dataWrite);
 
                 this.UpdateStatusText("Testing external flash.", true);
 
@@ -442,17 +443,20 @@ _again:
                 drive.Write(address, sectorSize, dataWrite, 0, TimeSpan.FromSeconds(100));
 
                 this.UpdateStatusText("External flash - Reading sector " + s, false);
+
                 //Read to compare
                 drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
 
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != dataWrite[idx]) {
+                md5.Clear();
 
-                        this.UpdateStatusText("External flash - Compare failed at: " + idx, false);
+                var md5Read = md5.ComputeHash(dataRead);
+
+                for (var i = 0; i < md5Read.Length; i++) {
+                    if (md5Read[i] != md5dataWrite[i]) {
+                        this.UpdateStatusText("External flash - Compare failed at: " + s, false);
                         result = false;
                         goto _return;
                     }
-
                 }
             }
 
@@ -464,7 +468,6 @@ _again:
             else {
                 goto _again;
             }
-
 
 _return:
             drive.Close();
@@ -480,7 +483,7 @@ _return:
 
             var gpioController = GpioController.GetDefault();
 
-            var resetPin = gpioController.OpenPin(SC20260.GpioPin.PF8);
+            var resetPin = gpioController.OpenPin(SC20260.GpioPin.PC3);
             var csPin = gpioController.OpenPin(SC20260.GpioPin.PA6);
             var intPin = gpioController.OpenPin(SC20260.GpioPin.PF10);
             var enPin = gpioController.OpenPin(SC20260.GpioPin.PA8);
@@ -802,7 +805,7 @@ try_again:
 
         private void DoTestGpio() {
             var pinsDefs = new int[] {SC20260.GpioPin.PD7, SC20260.GpioPin.PB13, SC20260.GpioPin.PB12, SC20260.GpioPin.PF7, SC20260.GpioPin.PF6, SC20260.GpioPin.PH12,SC20260.GpioPin.PE4,SC20260.GpioPin.PI4, SC20260.GpioPin.PA0, SC20260.GpioPin.PA4, SC20260.GpioPin.PJ8, SC20260.GpioPin.PJ9, SC20260.GpioPin.PA5, SC20260.GpioPin.PE6, SC20260.GpioPin.PH13, SC20260.GpioPin.PH14, SC20260.GpioPin.PC6, SC20260.GpioPin.PC7,
-                SC20260.GpioPin.PH9, SC20260.GpioPin.PG10, SC20260.GpioPin.PA3, SC20260.GpioPin.PH10, SC20260.GpioPin.PF9, SC20260.GpioPin.PC3, SC20260.GpioPin.PJ10, SC20260.GpioPin.PJ11, SC20260.GpioPin.PK0,
+                SC20260.GpioPin.PH9, SC20260.GpioPin.PG10, SC20260.GpioPin.PA3, SC20260.GpioPin.PH10, SC20260.GpioPin.PF9, SC20260.GpioPin.PF8, SC20260.GpioPin.PJ10, SC20260.GpioPin.PJ11, SC20260.GpioPin.PK0,
                 SC20260.GpioPin.PC0, SC20260.GpioPin.PD4, SC20260.GpioPin.PI1, SC20260.GpioPin.PI2, SC20260.GpioPin.PI3, SC20260.GpioPin.PC13, SC20260.GpioPin.PE5, SC20260.GpioPin.PC2, SC20260.GpioPin.PD6, SC20260.GpioPin.PD5
                                };
 

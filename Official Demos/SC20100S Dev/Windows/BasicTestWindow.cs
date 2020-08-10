@@ -3,9 +3,11 @@ using System.Collections;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using Demos.Properties;
+using GHIElectronics.TinyCLR.Cryptography;
 using GHIElectronics.TinyCLR.Devices.Can;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Network;
@@ -246,7 +248,7 @@ namespace Demos {
 
 
         private bool DoTestExternalFlash() {
-            var storeController = StorageController.FromName(SC20100.StorageController.QuadSpi);
+            var storeController = StorageController.FromName(SC20260.StorageController.QuadSpi);
             var drive = storeController.Provider;
             var result = true;
 
@@ -254,21 +256,16 @@ namespace Demos {
 
             var sectorSize = drive.Descriptor.RegionSizes[0];
 
-            var textWrite = System.Text.UTF8Encoding.UTF8.GetBytes("this is for test");
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
             var dataRead = new byte[sectorSize];
             var dataWrite = new byte[sectorSize];
 
-            for (var i = 0; i < sectorSize; i += textWrite.Length) {
-                Array.Copy(textWrite, 0, dataWrite, i, textWrite.Length);
-            }
+            var rd = new Random();
 
             var roundTest = 0;
             var startSector = 0;
             var endSector = 8;
+
+            var md5 = MD5.Create();
 
 _again:
             if (roundTest == 1) {
@@ -277,6 +274,11 @@ _again:
             }
 
             for (var s = startSector; s < endSector; s++) {
+                md5.Clear();
+
+                rd.NextBytes(dataWrite);
+
+                var md5dataWrite = md5.ComputeHash(dataWrite);
 
                 this.UpdateStatusText("Testing external flash.", true);
 
@@ -290,17 +292,20 @@ _again:
                 drive.Write(address, sectorSize, dataWrite, 0, TimeSpan.FromSeconds(100));
 
                 this.UpdateStatusText("External flash - Reading sector " + s, false);
+
                 //Read to compare
                 drive.Read(address, sectorSize, dataRead, 0, TimeSpan.FromSeconds(100));
 
-                for (var idx = 0; idx < sectorSize; idx++) {
-                    if (dataRead[idx] != dataWrite[idx]) {
+                md5.Clear();
 
-                        this.UpdateStatusText("External flash - Compare failed at: " + idx, false);
+                var md5Read = md5.ComputeHash(dataRead);
+
+                for (var i = 0; i < md5Read.Length; i++) {
+                    if (md5Read[i] != md5dataWrite[i]) {
+                        this.UpdateStatusText("External flash - Compare failed at: " + s, false);
                         result = false;
                         goto _return;
                     }
-
                 }
             }
 
@@ -312,7 +317,6 @@ _again:
             else {
                 goto _again;
             }
-
 
 _return:
             drive.Close();
