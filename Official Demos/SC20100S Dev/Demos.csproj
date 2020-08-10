@@ -94,6 +94,39 @@
     <None Include="Resources\Template.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Piezo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sd.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Usb.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Qspi.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Canfd.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Uart.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Rtc.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Pwm.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Color.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Wifi.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Basictest.jpg" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="GHIElectronics.TinyCLR.Cryptography, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Cryptography.2.0.0-rc2\lib\net452\GHIElectronics.TinyCLR.Cryptography.dll</HintPath>
     </Reference>
@@ -148,39 +181,6 @@
     <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.UI.2.0.0-rc2\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Piezo.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Sd.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Usb.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Qspi.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Canfd.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Uart.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Rtc.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Pwm.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Color.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Wifi.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Basictest.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
