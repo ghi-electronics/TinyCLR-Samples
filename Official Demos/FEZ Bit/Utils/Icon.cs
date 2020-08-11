@@ -25,7 +25,7 @@ namespace Demos {
             if (icon != null) {
                 var gfx = Graphics.FromImage(icon);
 
-                gfx.MakeTransparent(0xFFFFFF);  // MakeTransparent is only available from TinyCLR OS rc2
+                //gfx.MakeTransparent(0xFFFFFF);  // MakeTransparent is only available from TinyCLR OS rc2
 
                 this.bitmapImage = BitmapImage.FromGraphics(gfx);
             }
