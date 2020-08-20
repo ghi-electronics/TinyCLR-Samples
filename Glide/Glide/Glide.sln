@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glide", "Glide.csproj", "{26F945BE-A88C-409D-9B4E-31008F67F585}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHIElectronics.TinyCLR.Glide", "..\GHIElectronics.TinyCLR.Glide\GHIElectronics.TinyCLR.Glide.csproj", "{2236A86B-DD34-4852-9FEF-A5CE6979C1C1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{26F945BE-A88C-409D-9B4E-31008F67F585}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26F945BE-A88C-409D-9B4E-31008F67F585}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26F945BE-A88C-409D-9B4E-31008F67F585}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{26F945BE-A88C-409D-9B4E-31008F67F585}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26F945BE-A88C-409D-9B4E-31008F67F585}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26F945BE-A88C-409D-9B4E-31008F67F585}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{2236A86B-DD34-4852-9FEF-A5CE6979C1C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2236A86B-DD34-4852-9FEF-A5CE6979C1C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2236A86B-DD34-4852-9FEF-A5CE6979C1C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2236A86B-DD34-4852-9FEF-A5CE6979C1C1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {347604CD-BC8E-4185-8EDA-438F7132FD6F}
+	EndGlobalSection
+EndGlobal
