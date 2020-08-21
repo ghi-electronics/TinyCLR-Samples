@@ -1,0 +1,1 @@
+Glide is an old graphical library built around NETMF. We have it available here for reference only. It is not documented and not supported.

@@ -1,0 +1,1 @@
+This folder contains full applications utilizing multiple features of TinyCLR OS.
