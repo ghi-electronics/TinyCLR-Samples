@@ -25,7 +25,7 @@ namespace Demos {
             if (icon != null) {
                 var gfx = Graphics.FromImage(icon);
 
-                //gfx.MakeTransparent(0xFFFFFF);  // MakeTransparent is only available from TinyCLR OS rc2
+                gfx.MakeTransparent(0xFF00F2);  // MakeTransparent is only available from TinyCLR OS rc2
 
                 this.bitmapImage = BitmapImage.FromGraphics(gfx);
             }
@@ -50,7 +50,7 @@ namespace Demos {
             }
 
             if (this.bitmapImage != null) {
-                dc.Scale9Image(x + w / 4, y + h / 4, w - w / 2, h - h / 2, this.bitmapImage, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, this.RadiusBorder, alpha);
+                dc.DrawImage(this.bitmapImage, x + w / 4, y + h / 4);
             }
 
             if (this.IconText != null && this.Font != null) {

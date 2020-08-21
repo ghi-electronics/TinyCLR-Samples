@@ -37,6 +37,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Input.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utils\BottomBar.cs" />
     <Compile Include="Windows\Adc.cs" />
     <Compile Include="Windows\ApplicationWindow.cs" />
@@ -59,81 +64,18 @@
     <Compile Include="MainWindow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Windows\SystemWindow.cs" />
     <Compile Include="Utils\TopBar.cs" />
     <Compile Include="Windows\TemplateWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\droid_reg08.tinyfnt" />
-    <None Include="Resources\droid_reg09.tinyfnt" />
-    <None Include="Resources\droid_reg10.tinyfnt" />
-    <None Include="Resources\droid_reg11.tinyfnt" />
-    <None Include="Resources\droid_reg12.tinyfnt" />
-    <None Include="Resources\droid_reg14.tinyfnt" />
-    <None Include="Resources\droid_reg18.tinyfnt" />
-    <None Include="Resources\droid_reg24.tinyfnt" />
-    <None Include="Resources\droid_reg32.tinyfnt" />
-    <None Include="Resources\droid_reg48.tinyfnt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\settingImage.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Ethernet.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Template.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\wifi.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Usb.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Sd.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Canfd.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Qspi.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Piezo.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Rtc.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Uart.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Camera.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\analog.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Pwm.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Color.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Generaltest.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GHIElectronics.TinyCLR.Cryptography, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -208,6 +150,51 @@
     <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.UI.2.0.0-rc2\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Canfd.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Color.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Generaltest.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Piezo.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Pwm.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Qspi.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Rtc.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sd.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\settingImage.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Template.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Uart.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Usb.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Wifi.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\analog.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Camera.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
