@@ -42,7 +42,6 @@ namespace Demos.Properties
             Template = -21726,
             settingImage = -17023,
             Canfd = -16516,
-            Ethernet = -16161,
             Pwm = -9888,
             Piezo = -5876,
             Usb = 1556,
