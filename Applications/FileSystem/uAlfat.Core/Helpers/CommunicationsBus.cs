@@ -36,8 +36,6 @@ namespace uAlfat.Core {
 
             };
 
-            CloseHandshakingPins(this.uartPort);
-
             this.serialPort.SetActiveSettings(uartSetting);
         }
         public CommunicationsBus(string uartPort, int baudRate = 9600) {
@@ -209,42 +207,6 @@ namespace uAlfat.Core {
             else {
                 throw new NotImplementedException();
             }
-        }
-
-        private static void CloseHandshakingPins(string uartPort) {
-            var cts = -1;
-            var rts = -1;
-
-            // This is Workaround  to fix the issue: https://github.com/ghi-electronics/TinyCLR-Libraries/issues/641
-            switch (uartPort) {
-                case SC20260.UartPort.Usart2:
-                    cts = SC20260.GpioPin.PD3;
-                    rts = SC20260.GpioPin.PD4;
-                    break;
-
-                case SC20260.UartPort.Uart4:
-                    cts = SC20260.GpioPin.PB0;
-                    rts = SC20260.GpioPin.PA15;
-                    break;
-                case SC20260.UartPort.Uart5:
-                    cts = SC20260.GpioPin.PC9;
-                    rts = SC20260.GpioPin.PC8;
-                    break;
-
-                case SC20260.UartPort.Uart7:
-                    cts = DeviceInformation.DeviceName.CompareTo("SC20260") == 0 ? SC20260.GpioPin.PF9 : SC20260.GpioPin.PE10;
-                    rts = DeviceInformation.DeviceName.CompareTo("SC20260") == 0 ? SC20260.GpioPin.PF8 : SC20260.GpioPin.PE9;
-                    break;
-            }
-
-            if (cts >= 0 && rts >= 0) {
-                var gpioController = new GpioControllerApiWrapper(NativeApi.Find(NativeApi.GetDefaultName(NativeApiType.GpioController), NativeApiType.GpioController));
-
-                gpioController.ClosePin(cts);
-                gpioController.ClosePin(rts);
-
-                gpioController.Dispose();
-            }
-        }
+        }        
     }
 }
