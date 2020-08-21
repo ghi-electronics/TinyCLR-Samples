@@ -88,15 +88,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\settingImage.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Ethernet.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Template.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="GHIElectronics.TinyCLR.Cryptography, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Cryptography.2.0.0-rc2\lib\net452\GHIElectronics.TinyCLR.Cryptography.dll</HintPath>
     </Reference>
@@ -171,35 +162,49 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Usb.jpg" />
+    <None Include="Resources\Wifi.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Qspi.jpg" />
+    <None Include="Resources\analog.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Piezo.jpg" />
+    <None Include="Resources\Canfd.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Uart.jpg" />
+    <None Include="Resources\Color.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Camera.jpg" />
+    <None Include="Resources\Piezo.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Pwm.jpg" />
+    <None Include="Resources\Pwm.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Color.jpg" />
+    <None Include="Resources\Qspi.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Generaltest.jpg" />
+    <None Include="Resources\Rtc.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\analog.jpg" />
-    <Content Include="Resources\Canfd.jpg" />
-    <Content Include="Resources\Rtc.jpg" />
-    <Content Include="Resources\Sd.jpg" />
-    <Content Include="Resources\wifi.jpg" />
+    <None Include="Resources\Sd.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\settingImage.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Template.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Uart.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Usb.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Generaltest.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Camera.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
