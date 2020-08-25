@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Threading;
+using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
 using GHIElectronics.TinyCLR.Pins;
 using WS2812_16x16.Properties;
@@ -8,7 +9,7 @@ using WS2812_16x16.Properties;
 namespace WS2812_16x16 {
     class Program {
         const int NUM_LED = 256;
-        static WS2812 leds;
+        static WS2812Controller leds;
         const string Text = "TinyCLR OS";
 
         static void Main() {
@@ -18,7 +19,9 @@ namespace WS2812_16x16 {
 
             Graphics.OnFlushEvent += Graphics_OnFlushEvent;
 
-            leds = new WS2812(SC20260.GpioPin.PA0, NUM_LED);
+            var pin = GpioController.GetDefault().OpenPin(SC20260.GpioPin.PA0);
+
+            leds = new WS2812Controller(pin, NUM_LED);
 
             var x = 9;
 
@@ -26,7 +29,7 @@ namespace WS2812_16x16 {
 
             while (true) {
 
-                graphic.Clear(Color.Black);
+                graphic.Clear();
 
                 var t1 = DateTime.Now.Ticks ;
 
@@ -95,7 +98,7 @@ namespace WS2812_16x16 {
                 x++;
             }
 
-            leds.Draw();
+            leds.Flush();
         }
     }
 }
