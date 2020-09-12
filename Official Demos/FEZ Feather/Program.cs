@@ -10,7 +10,7 @@ namespace FEZ_Feather {
     class Program {
         static void Blinker() {
             var led = GpioController.GetDefault().OpenPin(
-                SC20100.GpioPin.PB0);
+                SC20100.GpioPin.PE11);
             led.SetDriveMode(GpioPinDriveMode.Output);
             while (true) {
                 led.Write(GpioPinValue.High);
