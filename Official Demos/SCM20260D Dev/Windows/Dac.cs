@@ -179,7 +179,7 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var controlelr = GHIElectronics.TinyCLR.Devices.Dac.DacController.FromName(SC20100.DacChannel.Id);
+            var controlelr = GHIElectronics.TinyCLR.Devices.Dac.DacController.FromName(SC20100.Dac.Id);
 
             var channel0 = controlelr.OpenChannel(0);
             var channel1 = controlelr.OpenChannel(1);

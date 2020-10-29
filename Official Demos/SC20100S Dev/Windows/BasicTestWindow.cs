@@ -463,9 +463,9 @@ _return:
 
             this.UpdateStatusText("Testing buzzer...", true);
 
-            using (var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.PwmChannel.Controller3.Id)) {
+            using (var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.Timer.Pwm.Controller3.Id)) {
 
-                var pwmPinPB1 = pwmController3.OpenChannel(SC20100.PwmChannel.Controller3.PB1);
+                var pwmPinPB1 = pwmController3.OpenChannel(SC20100.Timer.Pwm.Controller3.PB1);
 
                 pwmController3.SetDesiredFrequency(500);
                 pwmPinPB1.SetActiveDutyCyclePercentage(0.5);

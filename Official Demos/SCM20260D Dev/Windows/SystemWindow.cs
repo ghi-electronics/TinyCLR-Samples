@@ -1,5 +1,6 @@
 using System.Drawing;
 using Demos.Properties;
+using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
@@ -26,7 +27,9 @@ namespace Demos {
                 ForeColor = Colors.White,
             };
 
-            var clockText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Clock: 480MHz") {
+            var speed = Power.GetSystemClock() == SystemClock.High ? "Clock: 480MHz" : "Clock: 240MHz";
+
+            var clockText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, speed) {
                 ForeColor = Colors.White,
             };
 

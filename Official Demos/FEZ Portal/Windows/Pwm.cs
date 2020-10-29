@@ -182,11 +182,11 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller3.Id);
-            var pwmController5 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.PwmChannel.Controller5.Id);
+            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.Timer.Pwm.Controller3.Id);
+            var pwmController5 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.Timer.Pwm.Controller5.Id);
 
-            var pwmPinPB0 = pwmController3.OpenChannel(SC20260.PwmChannel.Controller3.PB0);
-            var pwmPinPH11 = pwmController5.OpenChannel(SC20260.PwmChannel.Controller5.PH11);
+            var pwmPinPB0 = pwmController3.OpenChannel(SC20260.Timer.Pwm.Controller3.PB0);
+            var pwmPinPH11 = pwmController5.OpenChannel(SC20260.Timer.Pwm.Controller5.PH11);
 
             pwmController3.SetDesiredFrequency(1000);
             pwmController5.SetDesiredFrequency(1000);

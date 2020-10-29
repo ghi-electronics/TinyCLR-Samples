@@ -187,7 +187,13 @@ namespace Demos {
 
                 var ov9655 = new Ov9655Controller(i2cController);
 
-                var id = ov9655.ReadId();
+                read_id:
+                try {
+                    var id = ov9655.ReadId();
+                }
+                catch {
+                    goto read_id;
+                }
 
                 byte[] data = null;
                 UnmanagedBuffer unmangedBuffer = null;
