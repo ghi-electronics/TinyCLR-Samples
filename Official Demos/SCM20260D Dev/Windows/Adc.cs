@@ -179,8 +179,8 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var adc1 = AdcController.FromName(SC20100.AdcChannel.Controller1.Id);
-            var pin = adc1.OpenChannel(SC20260.AdcChannel.Controller1.PA0C);
+            var adc1 = AdcController.FromName(SC20100.Adc.Controller1.Id);
+            var pin = adc1.OpenChannel(SC20260.Adc.Controller1.PA0C);
 
             var str = string.Empty;
             while (this.isRunning) {
