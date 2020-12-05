@@ -84,7 +84,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
             this.distanceEcho = distanceEcho;
             this.distanceTrigger = distanceTrigger;
 
-            this.pulseFeedback = new PulseFeedback(distanceTrigger, this.distanceEcho, PulseFeedbackMode.EchoDuration) {
+            this.pulseFeedback = new PulseFeedback(this.distanceTrigger, this.distanceEcho, PulseFeedbackMode.EchoDuration) {
                 DisableInterrupts = false,
                 Timeout = TimeSpan.FromSeconds(1),
                 PulseLength = TimeSpan.FromTicks(100),
