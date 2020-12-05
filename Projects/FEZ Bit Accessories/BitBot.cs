@@ -36,10 +36,10 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
         private AdcChannel frontSensorValue;
         private PulseFeedback pulseFeedback;
         private AdcChannel leftLineSensor, rightLineSensor;
-        private WS2812 ws2812;
+        private WS2812Controller ws2812;
         public void SetColorLeds(int index, int red, int green, int blue) {
             this.ws2812.SetColor(index, red, green, blue);
-            this.ws2812.Draw();
+            this.ws2812.Flush();
         }
         public int ReadDistance() {
             var time = this.pulseFeedback.Trigger();
@@ -109,7 +109,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
             this.frontSensorEnable.SetDriveMode(GpioPinDriveMode.Output);
             this.frontSensorEnable.Write(GpioPinValue.High);
            
-            this.ws2812 = new WS2812(colorLedPin, 3);
+            this.ws2812 = new WS2812Controller(colorLedPin, 3);
         }
         public void SetMotorSpeed(double left, double right) {
 

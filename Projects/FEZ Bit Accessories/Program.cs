@@ -44,10 +44,10 @@ namespace FEZ_Bit {
             var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
             var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
             var frontsensorenable = gpioController.OpenPin(FEZBit.GpioPin.EdgeP9);
-            var frontsensorvaluecontroller = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id);
-            var frontvalue = frontsensorvaluecontroller.OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP3);
-            var lineDetectLeft = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id).OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP2);
-            var lineDetectRight = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id).OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP1);
+            var frontsensorvaluecontroller = AdcController.FromName(FEZBit.Adc.Controller1.Id);
+            var frontvalue = frontsensorvaluecontroller.OpenChannel(FEZBit.Adc.Controller1.EdgeP3);
+            var lineDetectLeft = AdcController.FromName(FEZBit.Adc.Controller1.Id).OpenChannel(FEZBit.Adc.Controller1.EdgeP2);
+            var lineDetectRight = AdcController.FromName(FEZBit.Adc.Controller1.Id).OpenChannel(FEZBit.Adc.Controller1.EdgeP1);
             var p2remove = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP1);
             p2remove.SetDriveMode(GpioPinDriveMode.Input);
 
@@ -136,7 +136,7 @@ namespace FEZ_Bit {
             var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
             var lineDetectLeft = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP13);
             var lineDetectRight = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP14);
-            var voiceSensor = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id).OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP1);
+            var voiceSensor = AdcController.FromName(FEZBit.Adc.Controller1.Id).OpenChannel(FEZBit.Adc.Controller1.EdgeP1);
             var p2remove = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP1);
             var distanceTrigger = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP16);
             var distanceEcho = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP15);
@@ -261,7 +261,7 @@ namespace FEZ_Bit {
             wifics.Write(GpioPinValue.High);
 
 
-            //InitDisplay();
+            InitDisplay();
             //TestTouchPads();
             //TestYahboomPiano();
             //TestMaqueen();

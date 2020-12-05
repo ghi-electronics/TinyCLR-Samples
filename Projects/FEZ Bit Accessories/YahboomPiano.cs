@@ -20,14 +20,14 @@ namespace GHIElectronics.TinyCLR.Yahboom.Piano {
     class YahboomPianoController {
         private I2cDevice i2c;
         private PwmChannel buzzer;
-        private WS2812 ws2812;
+        private WS2812Controller ws2812;
         private byte[] b1 = new byte[1];
         private byte[] b2 = new byte[2];
 
         public YahboomPianoController(I2cController i2cController, PwmChannel buzzer, int colorLedPin) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x50, 100_000));
             this.buzzer = buzzer;
-            this.ws2812 = new WS2812(GpioController.GetDefault().OpenPin(colorLedPin), 2);
+            this.ws2812 = new WS2812Controller(GpioController.GetDefault().OpenPin(colorLedPin), 2);
         }
         public void Beep() {
             this.buzzer.Controller.SetDesiredFrequency(4000);
@@ -46,7 +46,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.Piano {
         }
         public void SetColorLeds(int index, int red, int green, int blue) {
             this.ws2812.SetColor(index, red, green, blue);
-            this.ws2812.Draw();
+            this.ws2812.Flush();
         }
     }
 }

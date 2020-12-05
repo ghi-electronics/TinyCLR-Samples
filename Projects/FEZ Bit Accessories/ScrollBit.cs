@@ -5,7 +5,6 @@ using System;
 using System.Threading;
 using System.Collections;
 using System.Text;
-using System.Threading;
 using GHIElectronics.TinyCLR.Devices.I2c;
 
 namespace GHIElectronics.TinyCLR.Pimoroni.ScrollBit {

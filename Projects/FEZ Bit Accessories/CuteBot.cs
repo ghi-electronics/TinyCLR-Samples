@@ -29,7 +29,7 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
         private GpioPin leftLineSensor, rightLineSensor;
         private PwmChannel buzzer;
         private byte[] b4 = new byte[4];
-        private WS2812 ws2812;
+        private WS2812Controller ws2812;
 
         public CuteBotController(I2cController i2cController, PwmChannel buzzer, GpioPin leftLineSensor, GpioPin rightLineSensor, GpioPin colorLedPin) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x10, 50_000));
@@ -38,7 +38,7 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
             this.leftLineSensor.SetDriveMode(GpioPinDriveMode.Input);
             this.rightLineSensor = rightLineSensor;
             this.rightLineSensor.SetDriveMode(GpioPinDriveMode.Input);
-            this.ws2812 = new WS2812(colorLedPin, 2);
+            this.ws2812 = new WS2812Controller(colorLedPin, 2);
         }
         public void SetMotorSpeed(double left, double right) {
             this.b4[0] = 0x01;
@@ -91,7 +91,7 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
         }
         public void SetColorLeds(int index, int red, int green, int blue) {
             this.ws2812.SetColor(index, red, green, blue);
-            this.ws2812.Draw();
+            this.ws2812.Flush();
         }
     }
 }

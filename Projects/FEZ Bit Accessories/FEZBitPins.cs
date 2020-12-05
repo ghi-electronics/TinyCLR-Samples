@@ -73,43 +73,43 @@ namespace GHIElectronics.TinyCLR.Pins {
         public static class PwmChannel {
             public static class Controller3 {
                 /// <summary>API id.</summary>
-                public const string Id = SC20100.PwmChannel.Controller3.Id;
+                public const string Id = SC20100.Timer.Pwm.Controller3.Id;
 
                 /// <summary>PWM pin.</summary>
-                public const int BuzzerChannel = SC20100.PwmChannel.Controller3.PB1;
+                public const int BuzzerChannel = SC20100.Timer.Pwm.Controller3.PB1;
                 /// <summary>PWM pin.</summary>
-                public const int EdgeP0Channel = SC20100.PwmChannel.Controller3.PC6;
+                public const int EdgeP0Channel = SC20100.Timer.Pwm.Controller3.PC6;
                 /// <summary>PWM pin.</summary>
-                public const int EdgeP1Channel = SC20100.PwmChannel.Controller3.PC7;
+                public const int EdgeP1Channel = SC20100.Timer.Pwm.Controller3.PC7;
                 /// <summary>PWM pin.</summary>
                 //public const int EdgeP3Channel = ???
             }
         }
         /// <summary>ADC channel definitions.</summary>
-        public static class AdcChannel {
+        public static class Adc {
             public static class Controller1 {
                 /// <summary>API id.</summary>
-                public const string Id = SC20100.AdcChannel.Controller1.Id;
+                public const string Id = SC20100.Adc.Controller1.Id;
 
                 /// <summary>ADC pin.</summary>
-                public const int EdgeP1 = SC20100.AdcChannel.Controller1.PA3;
+                public const int EdgeP1 = SC20100.Adc.Controller1.PA3;
                 /// <summary>ADC pin.</summary>
-                public const int EdgeP2 = SC20100.AdcChannel.Controller1.PA5;
+                public const int EdgeP2 = SC20100.Adc.Controller1.PA5;
                 /// <summary>ADC pin.</summary>
-                public const int EdgeP3 = SC20100.AdcChannel.Controller1.PA0;
+                public const int EdgeP3 = SC20100.Adc.Controller1.PA0;
                 /// <summary>ADC pin.</summary>
-                public const int EdgeP4 = SC20100.AdcChannel.Controller1.PA4;
+                public const int EdgeP4 = SC20100.Adc.Controller1.PA4;
                 /// <summary>ADC pin.</summary>
-                public const int EdgeP10 = SC20100.AdcChannel.Controller1.PC0;
+                public const int EdgeP10 = SC20100.Adc.Controller1.PC0;
             }
             public static class Controller3 {
                 /// <summary>API id.</summary>
-                public const string Id = SC20100.AdcChannel.Controller3.Id;
+                public const string Id = SC20100.Adc.Controller3.Id;
 
                 /// <summary>ADC pin.</summary>
-                public const int EdgeP0 = SC20100.AdcChannel.Controller3.PC2;
+                public const int EdgeP0 = SC20100.Adc.Controller3.PC2;
                 /// <summary>ADC pin.</summary>
-                public const int EdgeP9 = SC20100.AdcChannel.Controller3.PC3;
+                public const int EdgeP9 = SC20100.Adc.Controller3.PC3;
             }
            
         }

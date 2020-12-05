@@ -25,10 +25,11 @@ using GHIElectronics.TinyCLR.Devices.Signals;
 
 namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
     class TinyBitController {
+        
         private I2cDevice i2c;
         private AdcChannel voiceSensor;
         private GpioPin leftLineSensor, rightLineSensor, distanceTrigger, distanceEcho;
-        private WS2812 ws2812;
+        private WS2812Controller ws2812;
         private byte[] b4 = new byte[4];
         private byte[] b5 = new byte[5];
         private PwmChannel buzzer;
@@ -79,7 +80,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
             this.leftLineSensor.SetDriveMode(GpioPinDriveMode.Input);
             this.rightLineSensor = rightLineSensor;
             this.rightLineSensor.SetDriveMode(GpioPinDriveMode.Input);
-            this.ws2812 = new WS2812(GpioController.GetDefault().OpenPin(colorLedPin), 2);
+            this.ws2812 = new WS2812Controller(GpioController.GetDefault().OpenPin(colorLedPin), 2);
             this.distanceEcho = distanceEcho;
             this.distanceTrigger = distanceTrigger;
 
@@ -108,7 +109,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
         public double ReadVoiceLevel() => this.voiceSensor.ReadRatio();
         public void SetColorLeds(int index, int red, int green, int blue) {
             this.ws2812.SetColor(index, red, green, blue);
-            this.ws2812.Draw();
+            this.ws2812.Flush();
         }
     }
 }
