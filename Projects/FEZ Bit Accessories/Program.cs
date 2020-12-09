@@ -179,6 +179,14 @@ namespace FEZ_Bit {
                     Thread.Sleep(200);
                     bot.SetMotorSpeed(0, 0);
                     Thread.Sleep(1000);
+
+
+                    bot.Beep();
+                    Thread.Sleep(100);
+                    bot.Beep();
+                    Thread.Sleep(100);
+                    bot.Beep();
+                    Thread.Sleep(100);
                 }
                 Thread.Sleep(10);
             }

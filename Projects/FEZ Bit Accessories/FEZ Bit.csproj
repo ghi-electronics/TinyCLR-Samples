@@ -57,6 +57,7 @@
     <Compile Include="ScrollBit.cs" />
     <Compile Include="SuperBit.cs" />
     <Compile Include="TinyBit.cs" />
+    <Compile Include="TpBot.cs" />
     <Compile Include="YahboomPiano.cs" />
   </ItemGroup>
   <ItemGroup>
