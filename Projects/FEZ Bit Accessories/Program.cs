@@ -44,10 +44,10 @@ namespace FEZ_Bit {
             var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
             var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
             var frontsensorenable = gpioController.OpenPin(FEZBit.GpioPin.EdgeP9);
-            var frontsensorvaluecontroller = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id);
-            var frontvalue = frontsensorvaluecontroller.OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP3);
-            var lineDetectLeft = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id).OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP2);
-            var lineDetectRight = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id).OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP1);
+            var frontsensorvaluecontroller = AdcController.FromName(FEZBit.Adc.Controller1.Id);
+            var frontvalue = frontsensorvaluecontroller.OpenChannel(FEZBit.Adc.Controller1.EdgeP3);
+            var lineDetectLeft = AdcController.FromName(FEZBit.Adc.Controller1.Id).OpenChannel(FEZBit.Adc.Controller1.EdgeP2);
+            var lineDetectRight = AdcController.FromName(FEZBit.Adc.Controller1.Id).OpenChannel(FEZBit.Adc.Controller1.EdgeP1);
             var p2remove = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP1);
             p2remove.SetDriveMode(GpioPinDriveMode.Input);
 
@@ -136,7 +136,7 @@ namespace FEZ_Bit {
             var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
             var lineDetectLeft = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP13);
             var lineDetectRight = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP14);
-            var voiceSensor = AdcController.FromName(FEZBit.AdcChannel.Controller1.Id).OpenChannel(FEZBit.AdcChannel.Controller1.EdgeP1);
+            var voiceSensor = AdcController.FromName(FEZBit.Adc.Controller1.Id).OpenChannel(FEZBit.Adc.Controller1.EdgeP1);
             var p2remove = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP1);
             var distanceTrigger = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP16);
             var distanceEcho = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP15);
@@ -149,6 +149,47 @@ namespace FEZ_Bit {
                 lineDetectLeft, lineDetectRight, distanceTrigger, distanceEcho,
                 FEZBit.GpioPin.EdgeP12
                 );
+
+
+            new Thread(() => {
+                while (true) {
+                    bot.SetHeadlight(100,0,0);
+                    Thread.Sleep(200);
+                    bot.SetHeadlight(0,0,100);
+                    Thread.Sleep(300);
+                }
+            }).Start();
+            /*new Thread(() => {
+                while (true) {
+                    bot.Beep();
+                    Thread.Sleep(2_000);
+                }
+            }).Start();
+            */
+            while (true) {
+                bot.SetMotorSpeed(0.5, 0.5);
+                var l = bot.ReadLineSensor(true);
+                var r = bot.ReadLineSensor(false);
+                var v = bot.ReadVoiceLevel();
+                var d = bot.ReadDistance();
+                if (d<20) {
+                    bot.SetMotorSpeed(-0.5, -0.5);
+                    Thread.Sleep(200);
+                    bot.SetMotorSpeed(-0.5, 0.5);
+                    Thread.Sleep(200);
+                    bot.SetMotorSpeed(0, 0);
+                    Thread.Sleep(1000);
+
+
+                    bot.Beep();
+                    Thread.Sleep(100);
+                    bot.Beep();
+                    Thread.Sleep(100);
+                    bot.Beep();
+                    Thread.Sleep(100);
+                }
+                Thread.Sleep(10);
+            }
 
             bot.SetHeadlight(30, 100, 100);
             bot.SetColorLeds(1, 200, 0, 0);
@@ -176,7 +217,7 @@ namespace FEZ_Bit {
             var bot = new GHIElectronics.TinyCLR.Dfrobot.MicroMaqueen.MaqueenController(
                 I2cController.FromName(FEZBit.I2cBus.Edge),
                 buzzerChannel,
-                leftHeadlight,rightHeadight,
+                leftHeadlight, rightHeadight,
                 lineDetectLeft, lineDetectRight,
                 GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP15)
                 );
@@ -184,8 +225,33 @@ namespace FEZ_Bit {
             bot.Beep();
             bot.SetColorLeds(1, 100, 0, 0);
             bot.SetColorLeds(0, 0, 50, 100);
-            bot.SetHeadlight(true, true);
-            bot.SetHeadlight(false, true);
+            new Thread(() => {
+                while (true) {
+                    bot.SetHeadlight(true, true);
+                    Thread.Sleep(200);
+                    bot.SetHeadlight(false, true);
+                    Thread.Sleep(300);
+                }
+            }).Start();
+            new Thread(() => {
+                while (true) {
+                    bot.Beep();
+                    Thread.Sleep(5_000);
+                }
+            }).Start();
+
+            while (true) {
+                bot.SetMotorSpeed(0.5, 0.5);
+                if (bot.ReadLineSensor(true) || bot.ReadLineSensor(false)) {
+                    bot.SetMotorSpeed(-0.5, -0.5);
+                    Thread.Sleep(200);
+                    bot.SetMotorSpeed(-0.5, 0.5);
+                    Thread.Sleep(200);
+                    bot.SetMotorSpeed(0, 0);
+                    Thread.Sleep(1000);
+                }
+                Thread.Sleep(10);
+            }
             bot.SetMotorSpeed(0.5, 0.5);
             bot.SetMotorSpeed(0.5, -0.5);
             bot.SetMotorSpeed(-0.5, 0.5);
@@ -261,7 +327,7 @@ namespace FEZ_Bit {
             wifics.Write(GpioPinValue.High);
 
 
-            //InitDisplay();
+            InitDisplay();
             //TestTouchPads();
             //TestYahboomPiano();
             //TestMaqueen();

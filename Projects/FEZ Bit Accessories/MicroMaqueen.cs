@@ -32,7 +32,7 @@ namespace GHIElectronics.TinyCLR.Dfrobot.MicroMaqueen {
         private GpioPin leftHeadlight, rightHeadlight;
         private PwmChannel buzzer;
         private byte[] b3 = new byte[3];
-        private WS2812 ws2812;
+        private WS2812Controller ws2812;
 
         public MaqueenController(I2cController i2cController, PwmChannel buzzer, GpioPin leftHeadlight, GpioPin rightHeadlight, GpioPin leftLineSensor, GpioPin rightLineSensor, GpioPin colorLedPin) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x10, 100_000));
@@ -45,7 +45,7 @@ namespace GHIElectronics.TinyCLR.Dfrobot.MicroMaqueen {
             this.leftHeadlight.SetDriveMode(GpioPinDriveMode.Output);
             this.rightHeadlight = rightHeadlight;
             this.rightHeadlight.SetDriveMode(GpioPinDriveMode.Output);
-            this.ws2812 = new WS2812(colorLedPin, 2);
+            this.ws2812 = new WS2812Controller(colorLedPin, 2);
         }
         public void SetMotorSpeed(double left, double right) {
             this.b3[0] = 0x00;
@@ -95,7 +95,7 @@ namespace GHIElectronics.TinyCLR.Dfrobot.MicroMaqueen {
         }
         public void SetColorLeds(int index, int red, int green, int blue) {
             this.ws2812.SetColor(index, red, green, blue);
-            this.ws2812.Draw();
+            this.ws2812.Flush();
         }
     }
 }

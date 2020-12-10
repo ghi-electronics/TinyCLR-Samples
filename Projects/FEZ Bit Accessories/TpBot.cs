@@ -1,17 +1,16 @@
 //elecfrek
-// https://github.com/elecfreaks/pxt-cutebot/blob/master/cutebot.ts
-// P8 ultrasonic trig
-// P12 ultrasonic echo
-// P13 left line sensor, digital
-// P14 right line sensor, digital
-// P15 neopixel x24 in code but I see only x2
+// https://github.com/elecfreaks/pxt-TPBot/blob/master/main.ts
+
+// P13 left line sensor, digital no pull
+// P14 right line sensor, digital no pull
+// P15 echo
+// P16 trig
 
 // P19 I2C for PWM address 0x10. unknown chip!
 // P20 I2C for PWM
-// for headlight RGB 0x04 left 0x08 right, red, green, blue max255
-// for motor 1=left 2 =right, 1=CW 2=CCW, speed max 100, 0
-// servo control 0x05 left 0x06 right, angle,0,0
-
+// motor speed: 0x01, leftspeed, rightspeed, direction?(0,1,2,3)
+// for headlight RGB 0x20,r,g,b (max255)
+// servo control (four of them 0x10, 0x11, 0x12, x013), angle
 
 using System;
 using System.Collections;
@@ -24,21 +23,20 @@ using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
 
 
 namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
-    class CuteBotController {
+    class TpBotController {
         private I2cDevice i2c;
         private GpioPin leftLineSensor, rightLineSensor;
         private PwmChannel buzzer;
         private byte[] b4 = new byte[4];
-        private WS2812Controller ws2812;
-
-        public CuteBotController(I2cController i2cController, PwmChannel buzzer, GpioPin leftLineSensor, GpioPin rightLineSensor, GpioPin colorLedPin) {
+      
+        public TpBotController(I2cController i2cController, PwmChannel buzzer, GpioPin leftLineSensor, GpioPin rightLineSensor) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x10, 50_000));
             this.buzzer = buzzer;
             this.leftLineSensor = leftLineSensor;
             this.leftLineSensor.SetDriveMode(GpioPinDriveMode.Input);
             this.rightLineSensor = rightLineSensor;
             this.rightLineSensor.SetDriveMode(GpioPinDriveMode.Input);
-            this.ws2812 = new WS2812Controller(colorLedPin, 2);
+           
         }
         public void SetMotorSpeed(double left, double right) {
             this.b4[0] = 0x01;
@@ -65,12 +63,8 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
             this.b4[2] = (byte)(right * 100);
             this.i2c.Write(this.b4);
         }
-        public void SetHeadlight(bool left, int red, int green, int blue) {
-            if(left)
-                this.b4[0] = 0x04;
-            else
-                this.b4[0] = 0x08;
-
+        public void SetHeadlight(int red, int green, int blue) {
+            this.b4[0] = 0x20;
             this.b4[1] = (byte)(red);
             this.b4[2] = (byte)(green);
             this.b4[3] = (byte)(blue);
@@ -89,9 +83,27 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
             else
                 return this.rightLineSensor.Read() == GpioPinValue.High;
         }
-        public void SetColorLeds(int index, int red, int green, int blue) {
-            this.ws2812.SetColor(index, red, green, blue);
-            this.ws2812.Flush();
+        public void SetServo(int servo, int angle) {
+            var servoCode = 0x10;
+            switch (servo) {
+                case 0:
+                    servoCode = 0x10;
+                    break;
+                case 1:
+                    servoCode = 0x11;
+                    break;
+                case 2:
+                    servoCode = 0x12;
+                    break;
+                case 3:
+                    servoCode = 0x13;
+                    break;
+            }
+            this.b4[0] = (byte)(servoCode);
+            this.b4[1] = (byte)angle;
+            this.b4[2] = 0;
+            this.b4[3] = 0;
+            this.i2c.Write(this.b4);
         }
     }
 }
