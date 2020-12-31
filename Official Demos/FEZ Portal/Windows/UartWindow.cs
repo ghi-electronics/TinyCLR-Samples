@@ -177,7 +177,7 @@ namespace Demos {
             this.isRunning = true;
 
 
-            using (var uart2 = UartController.FromName(SC20260.UartPort.Usart2)) {
+            using (var uart2 = UartController.FromName(SC20260.UartPort.Uart2)) {
 
                 var setting = new UartSetting() {
                     BaudRate = 115200

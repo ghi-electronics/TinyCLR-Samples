@@ -277,8 +277,8 @@ namespace Demos {
                 networkInterfaceSetting.DnsAddresses = new IPAddress[] { new IPAddress(new byte[] { 75, 75, 75, 75 }), new IPAddress(new byte[] { 75, 75, 75, 76 }) };
 
                 //networkInterfaceSetting.MacAddress = new byte[] { 0x00, 0x04, 0x00, 0x00, 0x00, 0x00 };
-                networkInterfaceSetting.IsDhcpEnabled = true;
-                networkInterfaceSetting.IsDynamicDnsEnabled = true;
+                networkInterfaceSetting.DhcpEnable = true;
+                networkInterfaceSetting.DynamicDnsEnable = true;
 
                 this.networkController.SetInterfaceSettings(networkInterfaceSetting);
                 this.networkController.SetCommunicationInterfaceSettings(this.networkCommunicationInterfaceSettings);

@@ -174,11 +174,11 @@ namespace Demos {
 
             var gpioController = GpioController.GetDefault();
 
-            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.PwmChannel.Controller3.Id);
-            //var pwmController1 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.PwmChannel.Controller1.Id);
+            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.Timer.Pwm.Controller3.Id);
+            //var pwmController1 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.Timer.Pwm.Controller1.Id);
 
-            var pwmPinPB0 = pwmController3.OpenChannel(SC20100.PwmChannel.Controller3.PB0);
-            //var pwmPinPE11 = pwmController1.OpenChannel(SC20100.PwmChannel.Controller1.PE11);
+            var pwmPinPB0 = pwmController3.OpenChannel(SC20100.Timer.Pwm.Controller3.PB0);
+            //var pwmPinPE11 = pwmController1.OpenChannel(SC20100.Timer.Pwm.Controller1.PE11);
             var pwmPinPE11 = gpioController.OpenPin(SC20100.GpioPin.PE11);
 
             pwmPinPE11.SetDriveMode(GpioPinDriveMode.Output);
