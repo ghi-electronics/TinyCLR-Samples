@@ -556,7 +556,7 @@ try_again:
 
             var result = false;
 
-            using (var uart1 = UartController.FromName(SC20100.UartPort.Usart1)) {
+            using (var uart1 = UartController.FromName(SC20100.UartPort.Uart1)) {
 
                 var setting = new UartSetting() {
                     BaudRate = 9600

@@ -38,7 +38,7 @@ namespace Demos {
             Graphics.OnFlushEvent += Graphics_OnFlushEvent;
         }
 
-        private static void Graphics_OnFlushEvent(IntPtr hdc, byte[] data) => DisplayController.DrawBuffer(data);
+        private static void Graphics_OnFlushEvent(Graphics sender, byte[] data, int x, int y, int width, int height, int originalWidth) => DisplayController.DrawBuffer(data);
 
         public static int Width => 160;
         public static int Height => 128;

@@ -557,8 +557,8 @@ try_again:
             networkInterfaceSetting.GatewayAddress = new IPAddress(new byte[] { 192, 168, 1, 1 });
             networkInterfaceSetting.DnsAddresses = new IPAddress[] { new IPAddress(new byte[] { 75, 75, 75, 75 }), new IPAddress(new byte[] { 75, 75, 75, 76 }) };
 
-            networkInterfaceSetting.IsDhcpEnabled = true;
-            networkInterfaceSetting.IsDynamicDnsEnabled = true;
+            networkInterfaceSetting.DhcpEnable = true;
+            networkInterfaceSetting.DynamicDnsEnable = true;
 
             var networkController = NetworkController.FromName("GHIElectronics.TinyCLR.NativeApis.ATWINC15xx.NetworkController");
 
