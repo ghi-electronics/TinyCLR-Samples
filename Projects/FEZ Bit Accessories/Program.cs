@@ -15,6 +15,8 @@ using System.Drawing;
 using GHIElectronics.TinyCLR.Yahboom.BitBot;
 using GHIElectronics.TinyCLR.Devices.Signals;
 using GHIElectronics.TinyCLR.Yahboom.TinyBit;
+using GHIElectronics.TinyCLR.Elecfreaks.TinyBit;
+using GHIElectronics.TinyCLR.Waveshare.Display18;
 
 namespace FEZ_Bit {
     class Program {
@@ -130,6 +132,64 @@ namespace FEZ_Bit {
                 bot.Beep();
             }
 
+        }
+        static void TestTpBot() {
+            var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
+            var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
+            var lineDetectLeft = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP13);
+            var lineDetectRight = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP14);
+            var voiceSensor = AdcController.FromName(FEZBit.Adc.Controller1.Id).OpenChannel(FEZBit.Adc.Controller1.EdgeP1);
+            var p2remove = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP1);
+            var distanceTrigger = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP16);
+            var distanceEcho = GpioController.GetDefault().OpenPin(FEZBit.GpioPin.EdgeP15);
+            p2remove.SetDriveMode(GpioPinDriveMode.Input);
+
+            var bot = new TpBotController(
+                I2cController.FromName(FEZBit.I2cBus.Edge),
+                buzzerChannel,
+                lineDetectLeft, lineDetectRight, distanceTrigger, distanceEcho
+                );
+
+
+            new Thread(() => {
+                while (true) {
+                    bot.SetHeadlight(100, 0, 0);
+                    Thread.Sleep(200);
+                    bot.SetHeadlight(0, 0, 100);
+                    Thread.Sleep(300);
+                }
+            }).Start();
+            /*new Thread(() => {
+                while (true) {
+                    bot.Beep();
+                    Thread.Sleep(2_000);
+                }
+            }).Start();
+            */
+            while (true) {
+                bot.SetMotorSpeed(0.9, 0.9);
+                var l = bot.ReadLineSensor(true);
+                var r = bot.ReadLineSensor(false);
+                //var v = bot.ReadVoiceLevel();
+                var d = bot.ReadDistance();
+                if (d < 20) {
+                    bot.SetMotorSpeed(-0.9, -0.9);
+                    Thread.Sleep(200);
+                    bot.SetMotorSpeed(-0.9, 0.9);
+                    Thread.Sleep(200);
+                    bot.SetMotorSpeed(0, 0);
+                    Thread.Sleep(1000);
+
+
+                    bot.Beep();
+                    Thread.Sleep(100);
+                    bot.Beep();
+                    Thread.Sleep(100);
+                    bot.Beep();
+                    Thread.Sleep(100);
+                }
+                Thread.Sleep(10);
+            }
         }
         static void TestTinyBit() {
             var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
@@ -312,6 +372,34 @@ namespace FEZ_Bit {
                 Thread.Sleep(250);
             }
         }
+        static void TestWaveshareDisplay() {
+            var spi = SpiController.FromName(FEZBit.SpiBus.Edge);
+            var gpio = GpioController.GetDefault();
+
+            var display = new WaveShare18Display(
+                gpio.OpenPin(FEZBit.GpioPin.EdgeP8),
+                gpio.OpenPin(FEZBit.GpioPin.EdgeP12),
+                gpio.OpenPin(FEZBit.GpioPin.EdgeP16),
+                spi,
+                gpio.OpenPin(FEZBit.GpioPin.EdgeP1));
+
+            display.EnableBacklight(true);
+
+            // Create bitmap buffer
+            screen = Graphics.FromImage(new Bitmap(SCREEN_WIDTH, SCREEN_HEIGHT));
+
+            font12 = Resource.GetFont(Resource.FontResources.droid_reg12);
+            var i = 0;
+            while (true) {
+                screen.Clear();
+                screen.DrawRectangle(new Pen(new SolidBrush(Color.White)), 10, 10, SCREEN_WIDTH - 20, SCREEN_HEIGHT - 20);
+                screen.DrawString("FEZ Bit", font12, new SolidBrush(Color.Red), 55, 30);
+                screen.DrawString("SITCore", font12, new SolidBrush(Color.Green), 50, 50);
+                screen.DrawString(i++.ToString(), font12, new SolidBrush(Color.Blue), 25, 70);
+                screen.Flush();
+                Thread.Sleep(200);
+            }
+        }
         static void Main() {
             new Thread(Blinker).Start();
 
@@ -326,12 +414,13 @@ namespace FEZ_Bit {
             wifics.SetDriveMode(GpioPinDriveMode.Output);
             wifics.Write(GpioPinValue.High);
 
-
-            InitDisplay();
+            //InitDisplay();
+            TestWaveshareDisplay();
             //TestTouchPads();
             //TestYahboomPiano();
             //TestMaqueen();
-            TestTinyBit();
+            //TestTinyBit();
+            TestTpBot();
             //TestCuteBot();
             //TestScrollBit();
             //InitBot();
