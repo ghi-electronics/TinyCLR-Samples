@@ -58,6 +58,7 @@
     <Compile Include="SuperBit.cs" />
     <Compile Include="TinyBit.cs" />
     <Compile Include="TpBot.cs" />
+    <Compile Include="WaveShare18Display.cs" />
     <Compile Include="YahboomPiano.cs" />
   </ItemGroup>
   <ItemGroup>
