@@ -108,8 +108,9 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
 
             this.frontSensorEnable.SetDriveMode(GpioPinDriveMode.Output);
             this.frontSensorEnable.Write(GpioPinValue.High);
-           
-            this.ws2812 = new WS2812Controller(colorLedPin, 3);
+            var sg = new SignalGenerator(colorLedPin);
+
+            this.ws2812 = new WS2812Controller(sg, 3);
         }
         public void SetMotorSpeed(double left, double right) {
 

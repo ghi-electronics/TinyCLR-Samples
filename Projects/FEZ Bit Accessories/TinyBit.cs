@@ -80,7 +80,8 @@ namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
             this.leftLineSensor.SetDriveMode(GpioPinDriveMode.Input);
             this.rightLineSensor = rightLineSensor;
             this.rightLineSensor.SetDriveMode(GpioPinDriveMode.Input);
-            this.ws2812 = new WS2812Controller(GpioController.GetDefault().OpenPin(colorLedPin), 2);
+            var sg = new SignalGenerator(GpioController.GetDefault().OpenPin(colorLedPin));
+            this.ws2812 = new WS2812Controller(sg, 2);
             this.distanceEcho = distanceEcho;
             this.distanceTrigger = distanceTrigger;
 

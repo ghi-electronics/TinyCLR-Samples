@@ -88,7 +88,7 @@ namespace FEZ_Bit {
             st7735.SetDrawWindow(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
             st7735.Enable();
             // Create flush event
-            Graphics.OnFlushEvent += Graphics_OnFlushEvent; ;
+            Graphics.OnFlushEvent += Graphics_OnFlushEvent ;
 
             // Create bitmap buffer
             screen = Graphics.FromImage(new Bitmap(SCREEN_WIDTH, SCREEN_HEIGHT));
@@ -102,6 +102,9 @@ namespace FEZ_Bit {
             screen.Flush();
 
         }
+
+        
+
         static void TestCuteBot() {
             var buzzerController = PwmController.FromName(FEZBit.PwmChannel.Controller3.Id);
             var buzzerChannel = buzzerController.OpenChannel(FEZBit.PwmChannel.Controller3.EdgeP0Channel);
@@ -147,8 +150,7 @@ namespace FEZ_Bit {
             var bot = new TpBotController(
                 I2cController.FromName(FEZBit.I2cBus.Edge),
                 buzzerChannel,
-                lineDetectLeft, lineDetectRight, distanceTrigger, distanceEcho
-                );
+                lineDetectLeft, lineDetectRight);//, distanceTrigger, distanceEcho);
 
 
             new Thread(() => {
@@ -171,7 +173,7 @@ namespace FEZ_Bit {
                 var l = bot.ReadLineSensor(true);
                 var r = bot.ReadLineSensor(false);
                 //var v = bot.ReadVoiceLevel();
-                var d = bot.ReadDistance();
+                /*var d = bot.ReadDistance();
                 if (d < 20) {
                     bot.SetMotorSpeed(-0.9, -0.9);
                     Thread.Sleep(200);
@@ -187,7 +189,7 @@ namespace FEZ_Bit {
                     Thread.Sleep(100);
                     bot.Beep();
                     Thread.Sleep(100);
-                }
+                }*/
                 Thread.Sleep(10);
             }
         }
@@ -415,12 +417,12 @@ namespace FEZ_Bit {
             wifics.Write(GpioPinValue.High);
 
             //InitDisplay();
-            TestWaveshareDisplay();
+            //TestWaveshareDisplay();
             //TestTouchPads();
             //TestYahboomPiano();
             //TestMaqueen();
-            //TestTinyBit();
-            TestTpBot();
+            TestTinyBit();
+            //TestTpBot();
             //TestCuteBot();
             //TestScrollBit();
             //InitBot();
@@ -476,6 +478,8 @@ namespace FEZ_Bit {
             }
             Thread.Sleep(-1);
         }
-        private static void Graphics_OnFlushEvent(IntPtr hdc, byte[] data) => st7735.DrawBuffer(data);
+
+        private static void Graphics_OnFlushEvent(Graphics sender, byte[] data, int x, int y, int width, int height, int originalWidth)
+            => st7735.DrawBuffer(data); 
     }
 }

@@ -21,7 +21,7 @@ using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Pwm;
 using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
-
+using GHIElectronics.TinyCLR.Devices.Signals;
 
 namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
     class CuteBotController {
@@ -38,7 +38,8 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
             this.leftLineSensor.SetDriveMode(GpioPinDriveMode.Input);
             this.rightLineSensor = rightLineSensor;
             this.rightLineSensor.SetDriveMode(GpioPinDriveMode.Input);
-            this.ws2812 = new WS2812Controller(colorLedPin, 2);
+            var sg = new SignalGenerator(colorLedPin);
+            this.ws2812 = new WS2812Controller(sg, 2);
         }
         public void SetMotorSpeed(double left, double right) {
             this.b4[0] = 0x01;

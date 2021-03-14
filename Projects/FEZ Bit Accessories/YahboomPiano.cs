@@ -14,6 +14,7 @@ using System.Threading;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Pwm;
+using GHIElectronics.TinyCLR.Devices.Signals;
 using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
 
 namespace GHIElectronics.TinyCLR.Yahboom.Piano {
@@ -27,7 +28,8 @@ namespace GHIElectronics.TinyCLR.Yahboom.Piano {
         public YahboomPianoController(I2cController i2cController, PwmChannel buzzer, int colorLedPin) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x50, 100_000));
             this.buzzer = buzzer;
-            this.ws2812 = new WS2812Controller(GpioController.GetDefault().OpenPin(colorLedPin), 2);
+            var sg = new SignalGenerator(GpioController.GetDefault().OpenPin(colorLedPin));
+            this.ws2812 = new WS2812Controller(sg, 2);
         }
         public void Beep() {
             this.buzzer.Controller.SetDesiredFrequency(4000);

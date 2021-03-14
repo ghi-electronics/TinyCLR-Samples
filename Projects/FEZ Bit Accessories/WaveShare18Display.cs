@@ -48,6 +48,7 @@ namespace GHIElectronics.TinyCLR.Waveshare.Display18 {
             else
                 this.backlight.Write(GpioPinValue.Low);
         }
-        private void Graphics_OnFlushEvent(IntPtr hdc, byte[] data) => this.st7735.DrawBuffer(data);
+        private void Graphics_OnFlushEvent(Graphics sender, byte[] data, int x, int y, int width, int height, int originalWidth) => this.st7735.DrawBuffer(data);
+      
     }
 }

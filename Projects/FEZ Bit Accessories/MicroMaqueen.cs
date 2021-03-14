@@ -23,7 +23,7 @@ using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Pwm;
 using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
-
+using GHIElectronics.TinyCLR.Devices.Signals;
 
 namespace GHIElectronics.TinyCLR.Dfrobot.MicroMaqueen {
     class MaqueenController {
@@ -45,7 +45,8 @@ namespace GHIElectronics.TinyCLR.Dfrobot.MicroMaqueen {
             this.leftHeadlight.SetDriveMode(GpioPinDriveMode.Output);
             this.rightHeadlight = rightHeadlight;
             this.rightHeadlight.SetDriveMode(GpioPinDriveMode.Output);
-            this.ws2812 = new WS2812Controller(colorLedPin, 2);
+            var sg = new SignalGenerator(colorLedPin);
+            this.ws2812 = new WS2812Controller(sg, 2);
         }
         public void SetMotorSpeed(double left, double right) {
             this.b3[0] = 0x00;
