@@ -16,7 +16,7 @@ namespace Demos {
         private Canvas canvas; // can be StackPanel
 
         private const string Instruction1 = "This test will Erase/Write/Read:";
-        private const string Instruction2 = " - 8 frist sectors";
+        private const string Instruction2 = " - 8 first sectors";
         private const string Instruction3 = " - 8 last sectors";
         private const string Instruction4 = "All exist data on these sectors will be erased!";
         private const string Instruction5 = "Press Test button when you are ready.";
