@@ -178,56 +178,7 @@ namespace Demos {
 
         private void ThreadTest() {
 
-            this.isRunning = true;
-
-
-            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
-
-            try {
-
-                var ov9655 = new Ov9655Controller(i2cController);
-
-                var id = ov9655.ReadId();
-
-                byte[] data = null;
-                UnmanagedBuffer unmangedBuffer = null;
-
-                if (Memory.UnmanagedMemory.FreeBytes != 0) {
-                    unmangedBuffer = new UnmanagedBuffer(640 * 480 * 2);
-                    data = unmangedBuffer.Bytes;
-                }
-                else {
-                    data = new byte[640 * 480 * 2];
-                }
-
-                ov9655.SetResolution(Ov9655Controller.Resolution.Vga);
-                var displayController = Display.DisplayController;
-
-                while (this.isRunning) {
-                    try {
-                        ov9655.Capture(data, 500);
-
-                        displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, data, 0);
-                    }
-                    catch {
-
-                    }
-
-                    Thread.Sleep(10);
-
-                }
-
-                if (unmangedBuffer != null) {
-                    unmangedBuffer.Dispose();
-                }
-            }
-            catch {
-
-            }
-
-
-            this.isRunning = false;
-
+            // No camera on FEZ Portal
             return;
 
         }
