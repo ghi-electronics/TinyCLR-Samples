@@ -328,8 +328,8 @@ namespace Demos {
             this.startSdRamTest = true;
             new Thread(this.ThreadBlinkLed).Start();
 
-            var externalRam1 = new UnmanagedBuffer(16 * 1024 * 1024);
-            var externalRam2 = new UnmanagedBuffer(14 * 1024 * 1024);
+            UnmanagedBuffer externalRam1 = null; ;
+            UnmanagedBuffer externalRam2 = null;
 
             byte[] buf1 = null;
             byte[] buf2 = null;
@@ -342,6 +342,10 @@ namespace Demos {
                 buf2 = new byte[14 * 1024 * 1024];
             }
             else {
+
+                externalRam1 = new UnmanagedBuffer(16 * 1024 * 1024);
+                externalRam2 = new UnmanagedBuffer(14 * 1024 * 1024);
+
                 buf1 = externalRam1.Bytes;
                 buf2 = externalRam2.Bytes;
 
@@ -991,30 +995,31 @@ try_again:
 
             try {
 
-                var ov9655 = new Ov9655Controller(i2cController);
+                Ov9655Controller ov9655 = null;
+                var retries = 2; // some camera may failed to initialize after reset first time
 
-                var id = ov9655.ReadId();
+                for (var i = 0; i < retries; i++) {
+                    try {
+                        ov9655 = new Ov9655Controller(i2cController);
+                        ov9655.SetResolution(Ov9655Controller.Resolution.Vga);
+                        i = retries;
+                    }
+                    catch {
 
-                byte[] data = null;
-                UnmanagedBuffer unmangedBuffer = null;
-
-                if (Memory.UnmanagedMemory.FreeBytes != 0) {
-                    unmangedBuffer = new UnmanagedBuffer(640 * 480 * 2);
-                    data = unmangedBuffer.Bytes;
+                    }
                 }
-                else {
-                    data = new byte[640 * 480 * 2];
-                }
 
-                ov9655.SetResolution(Ov9655Controller.Resolution.Vga);
+                if (ov9655 == null)
+                    return false;
+
                 var displayController = Display.DisplayController;
 
                 while (ldrButton.Read() == GpioPinValue.High && appButton.Read() == GpioPinValue.High && modeButton.Read() == GpioPinValue.High && this.isRunning) {
 
                     try {
-                        ov9655.Capture(data, 500);
+                        ov9655.Capture();
 
-                        displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, data, 0);
+                        displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, ov9655.Buffer, 0);
                     }
                     catch {
 
@@ -1024,9 +1029,7 @@ try_again:
 
                 }
 
-                if (unmangedBuffer != null) {
-                    unmangedBuffer.Dispose();
-                }
+            
             }
             catch {
                 this.UpdateStatusText("Failed. Trying to connect to camera...", true);

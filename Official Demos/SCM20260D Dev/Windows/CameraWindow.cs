@@ -76,7 +76,7 @@ namespace Demos {
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);           
+            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
 
             this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
@@ -118,7 +118,7 @@ namespace Demos {
             this.isRunning = false;
 
             this.ClearScreen();
-            this.CreateWindow(true);          
+            this.CreateWindow(true);
         }
 
         private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
@@ -180,57 +180,40 @@ namespace Demos {
 
             this.isRunning = true;
 
-
             var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
-            try {
+            Ov9655Controller ov9655 = null;
+            var retries = 2; // some camera may failed to initialize after reset first time
 
-                var ov9655 = new Ov9655Controller(i2cController);
-
-                read_id:
+            for (var i = 0; i < retries; i++) {
                 try {
-                    var id = ov9655.ReadId();
+                    ov9655 = new Ov9655Controller(i2cController);
+                    ov9655.SetResolution(Ov9655Controller.Resolution.Vga);
+                    i = retries;
                 }
                 catch {
-                    goto read_id;
-                }
 
-                byte[] data = null;
-                UnmanagedBuffer unmangedBuffer = null;
-
-                if (Memory.UnmanagedMemory.FreeBytes != 0) {
-                    unmangedBuffer = new UnmanagedBuffer(640 * 480 * 2);
-                    data = unmangedBuffer.Bytes;
-                }
-                else {
-                    data = new byte[640 * 480 * 2];
-                }
-
-                ov9655.SetResolution(Ov9655Controller.Resolution.Vga);
-                var displayController = Display.DisplayController;
-
-                while (this.isRunning) {
-                    try {
-                        ov9655.Capture(data, 500);
-
-                        displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, data, 0);
-                    }
-                    catch {
-
-                    }
-
-                    Thread.Sleep(10);
-
-                }
-
-                if (unmangedBuffer != null) {
-                    unmangedBuffer.Dispose();
                 }
             }
-            catch {
+
+            if (ov9655 == null)
+                return;
+
+            var displayController = Display.DisplayController;
+
+            while (this.isRunning) {
+                try {
+                    ov9655.Capture();
+
+                    displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, ov9655.Buffer, 0);
+                }
+                catch {
+
+                }
+
+                Thread.Sleep(10);
 
             }
-
 
             this.isRunning = false;
 
