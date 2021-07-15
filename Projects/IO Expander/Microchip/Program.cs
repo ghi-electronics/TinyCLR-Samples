@@ -56,8 +56,8 @@ namespace Microchip
             // now you can use an expanded GPIO pin wherever a standard GpioPin is required; without need to extend the sealed GpioPin class
             var exChipSelect = externalGpioController.OpenPin(ExternalGpioPin.GpB0);
             exChipSelect.SetDriveMode(GpioPinDriveMode.Output);
-            var s = SpiController.GetDefault();
-            s.GetDevice(new SpiConnectionSettings{ ChipSelectLine = exLed });
+            var s = SpiController.FromName(SC13048.SpiBus.Spi1);
+            s.GetDevice(new SpiConnectionSettings{ ChipSelectType = SpiChipSelectType.Gpio, ChipSelectLine = exLed });
 
 
             // finally use default GPIO controller to blink the internal LED and ensure things are running as expected :-)
