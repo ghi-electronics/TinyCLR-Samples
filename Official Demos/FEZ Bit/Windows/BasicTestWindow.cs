@@ -243,7 +243,6 @@ namespace Demos {
             this.isRunning = false;
         }
 
-
         private bool DoTestLeds() {
             var gpioController = GpioController.GetDefault();
 
