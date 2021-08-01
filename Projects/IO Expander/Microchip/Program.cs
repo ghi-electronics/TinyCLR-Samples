@@ -4,9 +4,9 @@ using System.Threading;
 
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Spi;
-using GHIElectronics.TinyCLR.Drivers.Microchip.Mcp23xxx.Device;
 using GHIElectronics.TinyCLR.Pins;
 
+using GHIElectronics.TinyCLR.Drivers.Microchip.Mcp23xxx.Device;
 using static GHIElectronics.TinyCLR.Drivers.Microchip.Mcp23xxx.Mcp23Xxx;
 
 // ReSharper disable InconsistentNaming
@@ -15,7 +15,7 @@ using static GHIElectronics.TinyCLR.Drivers.Microchip.Mcp23xxx.Mcp23Xxx;
 
 namespace Microchip
 {
-    static class Program
+    internal static class Program
     {
         private static Timer _outTimer;
 
