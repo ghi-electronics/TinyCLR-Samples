@@ -9,7 +9,7 @@ namespace Demos {
     public class SystemWindow : ApplicationWindow {
         private Canvas canvas;
 
-        const string DemoVersion = "071520"; // Jul-15-2020
+        const string DemoVersion = "091421"; // Sep-14-2021 - Last changed
 
         public SystemWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
 
