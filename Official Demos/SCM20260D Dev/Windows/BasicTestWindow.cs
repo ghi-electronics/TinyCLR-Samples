@@ -502,7 +502,7 @@ _return:
             networkInterfaceSetting.DnsAddresses = new IPAddress[] { new IPAddress(new byte[] { 75, 75, 75, 75 }), new IPAddress(new byte[] { 75, 75, 75, 76 }) };
 
             networkInterfaceSetting.MacAddress = new byte[] { 0x00, 0x04, 0x00, 0x00, 0x00, 0x00 };
-            networkInterfaceSetting.DhcpEnable = !true;
+            networkInterfaceSetting.DhcpEnable = true;
             networkInterfaceSetting.DynamicDnsEnable = true;
 
             networkController.SetInterfaceSettings(networkInterfaceSetting);
@@ -903,8 +903,8 @@ try_again:
             var message = new CanMessage() {
                 ArbitrationId = 0x1234,
                 ExtendedId = true,
-                FdCan = true,
-                BitRateSwitch = true,
+                //FdCan = true,
+                //BitRateSwitch = true,
                 Data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 },
                 Length = 8
 

@@ -619,8 +619,8 @@ try_again:
             var message = new CanMessage() {
                 ArbitrationId = 0x1234,
                 ExtendedId = true,
-                FdCan = true,
-                BitRateSwitch = true,
+                FdCan = !true,
+                BitRateSwitch = !true,
                 Data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 },
                 Length = 8
             };
