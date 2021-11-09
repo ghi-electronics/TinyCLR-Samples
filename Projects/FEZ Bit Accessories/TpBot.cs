@@ -19,7 +19,7 @@ using System.Threading;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Pwm;
-using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
+using GHIElectronics.TinyCLR.Drivers.Worldsemi.WS2812;
 
 
 namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {

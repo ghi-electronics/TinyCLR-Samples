@@ -15,7 +15,7 @@ using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Pwm;
 using GHIElectronics.TinyCLR.Devices.Signals;
-using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
+using GHIElectronics.TinyCLR.Drivers.Worldsemi.WS2812;
 
 namespace GHIElectronics.TinyCLR.Yahboom.Piano {
     class YahboomPianoController {
@@ -28,8 +28,8 @@ namespace GHIElectronics.TinyCLR.Yahboom.Piano {
         public YahboomPianoController(I2cController i2cController, PwmChannel buzzer, int colorLedPin) {
             this.i2c = i2cController.GetDevice(new I2cConnectionSettings(0x50, 100_000));
             this.buzzer = buzzer;
-            var sg = new SignalGenerator(GpioController.GetDefault().OpenPin(colorLedPin));
-            this.ws2812 = new WS2812Controller(sg, 2);
+            //var sg = new SignalGenerator(GpioController.GetDefault().OpenPin(colorLedPin));
+            this.ws2812 = new WS2812Controller(GpioController.GetDefault().OpenPin(colorLedPin), 2, WS2812Controller.DataFormat.rgb888);
         }
         public void Beep() {
             this.buzzer.Controller.SetDesiredFrequency(4000);
@@ -47,7 +47,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.Piano {
             return r;
         }
         public void SetColorLeds(int index, int red, int green, int blue) {
-            this.ws2812.SetColor(index, red, green, blue);
+            this.ws2812.SetColor(index, (byte)red, (byte)green, (byte)blue);
             this.ws2812.Flush();
         }
     }

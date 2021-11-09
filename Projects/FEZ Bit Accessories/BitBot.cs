@@ -25,7 +25,7 @@ using GHIElectronics.TinyCLR.Devices.Adc;
 using GHIElectronics.TinyCLR.Devices.Signals;
 using GHIElectronics.TinyCLR.Devices.Pwm;
 using GHIElectronics.TinyCLR.Drivers.Nxp.PCA9685;
-using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
+using GHIElectronics.TinyCLR.Drivers.Worldsemi.WS2812;
 
 
 namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
@@ -38,7 +38,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
         private AdcChannel leftLineSensor, rightLineSensor;
         private WS2812Controller ws2812;
         public void SetColorLeds(int index, int red, int green, int blue) {
-            this.ws2812.SetColor(index, red, green, blue);
+            this.ws2812.SetColor(index, (byte)red, (byte)green, (byte)blue);
             this.ws2812.Flush();
         }
         public int ReadDistance() {
@@ -108,9 +108,8 @@ namespace GHIElectronics.TinyCLR.Yahboom.BitBot {
 
             this.frontSensorEnable.SetDriveMode(GpioPinDriveMode.Output);
             this.frontSensorEnable.Write(GpioPinValue.High);
-            var sg = new SignalGenerator(colorLedPin);
 
-            this.ws2812 = new WS2812Controller(sg, 3);
+            this.ws2812 = new WS2812Controller(colorLedPin, 3, WS2812Controller.DataFormat.rgb888);
         }
         public void SetMotorSpeed(double left, double right) {
 

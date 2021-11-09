@@ -1,4 +1,4 @@
-namespace GHIElectronics.TinyCLR.Pins {
+/*namespace GHIElectronics.TinyCLR.Pins {
     /// <summary>Board definition for the FEZ Bit.</summary>
     public static class FEZBit {
         /// <summary>GPIO pin definitions.</summary>
@@ -135,3 +135,4 @@ namespace GHIElectronics.TinyCLR.Pins {
         }
     }
 }
+*/
