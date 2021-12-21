@@ -19,7 +19,7 @@ using System.Threading;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Adc;
 using GHIElectronics.TinyCLR.Devices.Gpio;
-using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
+using GHIElectronics.TinyCLR.Drivers.Worldsemi.WS2812;
 using GHIElectronics.TinyCLR.Devices.Pwm;
 using GHIElectronics.TinyCLR.Devices.Signals;
 
@@ -80,8 +80,9 @@ namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
             this.leftLineSensor.SetDriveMode(GpioPinDriveMode.Input);
             this.rightLineSensor = rightLineSensor;
             this.rightLineSensor.SetDriveMode(GpioPinDriveMode.Input);
-            var sg = new SignalGenerator(GpioController.GetDefault().OpenPin(colorLedPin));
-            this.ws2812 = new WS2812Controller(sg, 2);
+            //var sg = new SignalGenerator(GpioController.GetDefault().OpenPin(colorLedPin));
+            
+            this.ws2812 = new WS2812Controller(GpioController.GetDefault().OpenPin( colorLedPin), 2, WS2812Controller.DataFormat.rgb888);
             this.distanceEcho = distanceEcho;
             this.distanceTrigger = distanceTrigger;
 
@@ -109,7 +110,7 @@ namespace GHIElectronics.TinyCLR.Yahboom.TinyBit {
         }
         public double ReadVoiceLevel() => this.voiceSensor.ReadRatio();
         public void SetColorLeds(int index, int red, int green, int blue) {
-            this.ws2812.SetColor(index, red, green, blue);
+            this.ws2812.SetColor(index, (byte)red, (byte)green, (byte)blue);
             this.ws2812.Flush();
         }
     }

@@ -97,17 +97,17 @@
     <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drawing.2.1.0\lib\net452\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812.2.1.0\lib\net452\GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812.dll</HintPath>
-    </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.2.1.0\lib\net452\GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.Worldsemi.WS2812, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Worldsemi.WS2812.2.1.0\lib\net452\GHIElectronics.TinyCLR.Drivers.Worldsemi.WS2812.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Native, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Native.2.1.0\lib\net452\GHIElectronics.TinyCLR.Native.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Pins, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.1.0\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+      <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.1.1\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

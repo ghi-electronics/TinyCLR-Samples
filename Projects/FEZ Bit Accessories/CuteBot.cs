@@ -20,7 +20,7 @@ using System.Threading;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.Pwm;
-using GHIElectronics.TinyCLR.Drivers.Neopixel.WS2812;
+using GHIElectronics.TinyCLR.Drivers.Worldsemi.WS2812;
 using GHIElectronics.TinyCLR.Devices.Signals;
 
 namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
@@ -38,8 +38,7 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
             this.leftLineSensor.SetDriveMode(GpioPinDriveMode.Input);
             this.rightLineSensor = rightLineSensor;
             this.rightLineSensor.SetDriveMode(GpioPinDriveMode.Input);
-            var sg = new SignalGenerator(colorLedPin);
-            this.ws2812 = new WS2812Controller(sg, 2);
+            this.ws2812 = new WS2812Controller(colorLedPin, 2, WS2812Controller.DataFormat.rgb888);
         }
         public void SetMotorSpeed(double left, double right) {
             this.b4[0] = 0x01;
@@ -91,7 +90,7 @@ namespace GHIElectronics.TinyCLR.Elecfreaks.TinyBit {
                 return this.rightLineSensor.Read() == GpioPinValue.High;
         }
         public void SetColorLeds(int index, int red, int green, int blue) {
-            this.ws2812.SetColor(index, red, green, blue);
+            this.ws2812.SetColor(index, (byte) red, (byte)green, (byte)blue);
             this.ws2812.Flush();
         }
     }
