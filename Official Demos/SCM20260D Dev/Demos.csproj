@@ -187,8 +187,8 @@
     <Reference Include="GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.2.1.0\lib\net452\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.2.1.0\lib\net452\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.2.1.1\lib\net452\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655.2.1.0\lib\net452\GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655.dll</HintPath>
@@ -203,10 +203,10 @@
       <HintPath>packages\GHIElectronics.TinyCLR.Networking.2.1.0\lib\net452\GHIElectronics.TinyCLR.Networking.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Pins, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.1.0\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+      <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.1.1\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.UI.2.1.0\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.UI.2.1.2\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
