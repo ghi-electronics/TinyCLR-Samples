@@ -141,10 +141,10 @@
       <HintPath>packages\GHIElectronics.TinyCLR.Native.2.1.0\lib\net452\GHIElectronics.TinyCLR.Native.dll</HintPath>
     </Reference>
     <Reference Include="GHIElectronics.TinyCLR.Pins, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.1.0\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+      <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.1.1\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.UI.2.1.0\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.UI.2.1.2\lib\net452\GHIElectronics.TinyCLR.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

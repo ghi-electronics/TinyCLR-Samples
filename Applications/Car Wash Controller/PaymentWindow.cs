@@ -13,8 +13,7 @@ namespace CarWashExample {
     public sealed class PaymentWindow {
         private Canvas canvas;
         private Font font;
-        private Font fontB;
-        private MessageBox messageBox;
+        private Font fontB;        
 
         public UIElement Elements { get; }
 
@@ -24,29 +23,10 @@ namespace CarWashExample {
             this.fontB = Resources.GetFont(Resources.FontResources.NinaB);
             OnScreenKeyboard.Font = this.fontB;
 
-            this.messageBox = new MessageBox(400, 160, "Yes", "No", this.fontB) {
-                Title = "Confirmation",
-                Message = "Are you sure?",
-                Font = fontB
-            };
-
-            this.messageBox.ButtonLeftClick += this.MessageBox_ButtonLeftClick;
-            this.messageBox.ButtonRightClick += this.MessageBox_ButtonRightClick;
 
             this.Elements = this.CreatePage();
 
-        }
-
-        private void MessageBox_ButtonLeftClick(object sender, RoutedEventArgs e) {
-            this.messageBox.Visibility = Visibility.Hidden;
-            Program.WpfWindow.Child = Program.LoadingPage.Elements;
-            Program.LoadingPage.Active();
-        }
-
-        private void MessageBox_ButtonRightClick(object sender, RoutedEventArgs e) {
-            this.messageBox.Visibility = Visibility.Hidden;
-            Program.WpfWindow.Invalidate();
-        }
+        }    
 
         private UIElement CreatePage() {
             this.canvas.Children.Clear();
@@ -152,13 +132,6 @@ namespace CarWashExample {
 
             this.canvas.Children.Add(goButton);
 
-            Canvas.SetLeft(this.messageBox, 50);
-            Canvas.SetTop(this.messageBox, 50);
-
-            this.messageBox.Visibility = Visibility.Hidden;
-
-            this.canvas.Children.Add(this.messageBox);
-
             backButton.Click += this.BackButton_Click;
             goButton.Click += this.GoButton_Click;
 
@@ -168,31 +141,27 @@ namespace CarWashExample {
 
 
         private void GoButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                //if (messageBox.IsVisible == false)
-                //{
-                //    messageBox.Visibility = Visibility.Visible;
-                //    messageBox.Invalidate();
-                //}
-                //else
-                //{
-                //    messageBox.Visibility = Visibility.Hidden;
-                //    Program.WpfWindow.Child = Program.LoadingPage.Elements;
-                //    Program.LoadingPage.Active();
-                //}
+            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {               
 
-                this.messageBox.Visibility = Visibility.Visible;
-                this.messageBox.Invalidate();
+                var msgBox = new MessageBox(this.fontB);
+
+                msgBox.Show("Are you sure?", "Confirm", MessageBox.MessageBoxButtons.YesNo);
+
+                msgBox.ButtonClick += (a, b) => {
+
+                    if (b.DialogResult == MessageBox.DialogResult.Yes) {
+                        Program.WpfWindow.Child = Program.LoadingPage.Elements;
+                        Program.LoadingPage.Active();
+                    }
+
+                };
 
                 Program.WpfWindow.Invalidate();
             }
 
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e) {
-            this.messageBox.Visibility = Visibility.Hidden;
-            this.messageBox.Invalidate();
-
+        private void BackButton_Click(object sender, RoutedEventArgs e) {    
             Program.WpfWindow.Child = Program.SelectServicePage.Elements;
             Program.WpfWindow.Invalidate();
         }
