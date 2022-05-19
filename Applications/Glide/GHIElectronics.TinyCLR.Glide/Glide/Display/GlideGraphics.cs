@@ -373,5 +373,38 @@ namespace GHIElectronics.TinyCLR.UI.Glide
 
         //public void StretchImage(int xDst, int yDst, int widthDst, int heightDst, Bitmap bitmap, int xSrc, int ySrc, int widthSrc, int heightSrc, ushort opacity);
         //public void TileImage(int xDst, int yDst, Bitmap bitmap, int width, int height, ushort opacity);
+
+        public const ushort OpacityOpaque = 0xFF;
+        public const ushort OpacityTransparent = 0;
+
+        public const int SRCCOPY = 0x00000001;
+        public const int PATINVERT = 0x00000002;
+        public const int DSTINVERT = 0x00000003;
+        public const int BLACKNESS = 0x00000004;
+        public const int WHITENESS = 0x00000005;
+        public const int DSTGRAY = 0x00000006;
+        public const int DSTLTGRAY = 0x00000007;
+        public const int DSTDKGRAY = 0x00000008;
+        public const int SINGLEPIXEL = 0x00000009;
+        public const int RANDOM = 0x0000000a;
+
+        //
+        // These have to be kept in sync with the CLR_GFX_Bitmap::c_DrawText_ flags.
+        //
+        public const uint DT_None = 0x00000000;
+        public const uint DT_WordWrap = 0x00000001;
+        public const uint DT_TruncateAtBottom = 0x00000004;
+        [Obsolete("Use DT_TrimmingWordEllipsis or DT_TrimmingCharacterEllipsis to specify the type of trimming needed.", false)]
+        public const uint DT_Ellipsis = 0x00000008;
+        public const uint DT_IgnoreHeight = 0x00000010;
+        public const uint DT_AlignmentLeft = 0x00000000;
+        public const uint DT_AlignmentCenter = 0x00000002;
+        public const uint DT_AlignmentRight = 0x00000020;
+        public const uint DT_AlignmentMask = 0x00000022;
+
+        public const uint DT_TrimmingNone = 0x00000000;
+        public const uint DT_TrimmingWordEllipsis = 0x00000008;
+        public const uint DT_TrimmingCharacterEllipsis = 0x00000040;
+        public const uint DT_TrimmingMask = 0x00000048;
     }
 }

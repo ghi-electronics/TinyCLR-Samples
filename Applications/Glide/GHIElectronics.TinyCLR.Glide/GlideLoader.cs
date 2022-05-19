@@ -16,6 +16,7 @@ using GHIElectronics.TinyCLR.UI.Media;
 using GHIElectronics.TinyCLR.Glide.Display;
 using GHIElectronics.TinyCLR.Data.Xml;
 using GHIElectronics.TinyCLR.Glide.Controls;
+using GHIElectronics.TinyCLR.UI.Glide;
 
 namespace GHIElectronics.TinyCLR.Glide
 {
@@ -520,15 +521,14 @@ namespace GHIElectronics.TinyCLR.Glide
         static TextAlignment FromAlignment(uint Alignment)
         {
             var format = new TextAlignment();
-            switch (Alignment)
-            {
-                case Graphics.DT_AlignmentCenter:
-                    format = TextAlignment.Center; 
+            switch (Alignment) {
+                case GlideGraphics.DT_AlignmentCenter:
+                    format = TextAlignment.Center;
                     break;
-                case Graphics.DT_AlignmentLeft:
+                case GlideGraphics.DT_AlignmentLeft:
                     format = TextAlignment.Left;
                     break;
-                case Graphics.DT_AlignmentRight:
+                case GlideGraphics.DT_AlignmentRight:
                     format = TextAlignment.Right;
                     break;
                 default: throw new ArgumentException();

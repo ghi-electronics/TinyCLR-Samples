@@ -246,7 +246,7 @@ namespace GHIElectronics.TinyCLR.UI.Controls
             var y = e.Touches[0].Y;
             //e.GetPosition(this.Parent, 0, out int x, out int y);
             // Global coordinates to local coordinates
-            Point localPoint = new Point(x - Rect.X, y - Rect.Y);
+            GHIElectronics.TinyCLR.UI.Glide.Geom.Point localPoint = new GHIElectronics.TinyCLR.UI.Glide.Geom.Point(x - Rect.X, y - Rect.Y);
 
             if (_knob.Contains(localPoint))
             {
@@ -294,7 +294,7 @@ namespace GHIElectronics.TinyCLR.UI.Controls
             var x = e.Touches[0].X;
             var y = e.Touches[0].Y;
             //e.GetPosition(this.Parent, 0, out int x, out int y);
-            Point localPoint = new Point(x - Rect.X, y - Rect.Y);
+            GHIElectronics.TinyCLR.UI.Glide.Geom.Point localPoint = new GHIElectronics.TinyCLR.UI.Glide.Geom.Point(x - Rect.X, y - Rect.Y);
 
             if (_knob.Contains(localPoint))
             {
