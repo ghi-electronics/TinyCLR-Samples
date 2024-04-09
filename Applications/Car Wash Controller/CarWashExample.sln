@@ -1,9 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29418.71
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarWashExample", "CarWashExample.csproj", "{7805FAD1-847C-4CEB-96D7-45C04DF4E7E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHIElectronics.TinyCLR.UI", "..\..\..\TinyCLR-Libraries\GHIElectronics.TinyCLR.UI\GHIElectronics.TinyCLR.UI.csproj", "{2BD3FB57-7D27-4DAF-A0DC-A23F5793E12A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHIElectronics.TinyCLR.Devices.Display", "..\..\..\TinyCLR-Libraries\GHIElectronics.TinyCLR.Devices.Display\GHIElectronics.TinyCLR.Devices.Display.csproj", "{2E1DCA92-5601-4038-A1F0-01A604FB0B65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHIElectronics.TinyCLR.Drawing", "..\..\..\TinyCLR-Libraries\GHIElectronics.TinyCLR.Drawing\GHIElectronics.TinyCLR.Drawing.csproj", "{52A54E94-2FD8-4EEE-822C-C8C7F27AF423}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHIElectronics.TinyCLR.Native", "..\..\..\TinyCLR-Libraries\GHIElectronics.TinyCLR.Native\GHIElectronics.TinyCLR.Native.csproj", "{B602474A-AEB0-491C-832B-7EAF0B4511C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +25,22 @@ Global
 		{7805FAD1-847C-4CEB-96D7-45C04DF4E7E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7805FAD1-847C-4CEB-96D7-45C04DF4E7E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7805FAD1-847C-4CEB-96D7-45C04DF4E7E0}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{2BD3FB57-7D27-4DAF-A0DC-A23F5793E12A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BD3FB57-7D27-4DAF-A0DC-A23F5793E12A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BD3FB57-7D27-4DAF-A0DC-A23F5793E12A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BD3FB57-7D27-4DAF-A0DC-A23F5793E12A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E1DCA92-5601-4038-A1F0-01A604FB0B65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E1DCA92-5601-4038-A1F0-01A604FB0B65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E1DCA92-5601-4038-A1F0-01A604FB0B65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E1DCA92-5601-4038-A1F0-01A604FB0B65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52A54E94-2FD8-4EEE-822C-C8C7F27AF423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52A54E94-2FD8-4EEE-822C-C8C7F27AF423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52A54E94-2FD8-4EEE-822C-C8C7F27AF423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52A54E94-2FD8-4EEE-822C-C8C7F27AF423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B602474A-AEB0-491C-832B-7EAF0B4511C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B602474A-AEB0-491C-832B-7EAF0B4511C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B602474A-AEB0-491C-832B-7EAF0B4511C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B602474A-AEB0-491C-832B-7EAF0B4511C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading;
 using CarWashExample.Properties;
 using GHIElectronics.TinyCLR.Pins;
+using GHIElectronics.TinyCLR.Devices.Rtc;
 
 namespace CarWashExample
 {
@@ -28,7 +29,7 @@ namespace CarWashExample
         const int TOUCH_IRQ = 9 * 16 + 14;
         const int BACKLIGHT = 0 * 16 + 15;
 
-         const int LED1 = 7 * 16 + 6;
+         const int LED1 = SC20260.GpioPin.PB0;
         const int LDR1 = 1 * 16 + 7;
 
 
@@ -43,6 +44,7 @@ namespace CarWashExample
         static void Main()
         {
             var controller = GpioController.GetDefault();
+            
 
             led1 = controller.OpenPin(LED1);
 
@@ -58,9 +60,11 @@ namespace CarWashExample
             {
                 led1.Write(led1.Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
                 if (cnt % 10 == 0)
-                    Debug.WriteLine("Waiting for pressing LDR1: " + (cnt / 10) + " seconds.");
+                    Debug.WriteLine("Waiting for pressing LDR1: " + (cnt / 10) + " seconds. ");
                 Thread.Sleep(101);
                 cnt++;
+
+                
 
             }
             DoTestWPF();
@@ -85,6 +89,8 @@ namespace CarWashExample
                 // 480x272
                 Width = SCREEN_WIDTH,
                 Height = SCREEN_HEIGHT,
+                Orientation = DisplayOrientation.Degrees0
+                ,
                 DataFormat = GHIElectronics.TinyCLR.Devices.Display.DisplayDataFormat.Rgb565,
                 PixelClockRate = 10000000,
                 PixelPolarity = false,
@@ -118,7 +124,11 @@ namespace CarWashExample
 
             var interrupt = GpioController.GetDefault().OpenPin(TOUCH_IRQ);
 
-            touch = new FT5xx6Controller(i2cDevice, interrupt);            
+            touch = new FT5xx6Controller(i2cDevice, interrupt) {
+                Width = 480,
+                Height = 272,
+                Orientation = FT5xx6Controller.TouchOrientation.Degrees0,
+            };         
             touch.TouchDown += Touch_TouchDown;
             touch.TouchUp += Touch_TouchUp;
 
@@ -139,6 +149,8 @@ namespace CarWashExample
             WpfWindow.Visibility = Visibility.Visible;
 
             app.Run(WpfWindow);
+
+           
         }
 
        

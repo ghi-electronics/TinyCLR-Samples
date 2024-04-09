@@ -1,4 +1,4 @@
-﻿using GHIElectronics.TinyCLR.UI;
+using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 using GHIElectronics.TinyCLR.UI.Threading;

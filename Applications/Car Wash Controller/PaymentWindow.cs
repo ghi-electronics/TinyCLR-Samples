@@ -8,12 +8,13 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using CarWashExample.Properties;
+using GHIElectronics.TinyCLR.Devices.Gpio;
 
 namespace CarWashExample {
     public sealed class PaymentWindow {
         private Canvas canvas;
         private Font font;
-        private Font fontB;        
+        private Font fontB;
 
         public UIElement Elements { get; }
 
@@ -26,7 +27,7 @@ namespace CarWashExample {
 
             this.Elements = this.CreatePage();
 
-        }    
+        }
 
         private UIElement CreatePage() {
             this.canvas.Children.Clear();
@@ -61,7 +62,7 @@ namespace CarWashExample {
 
             var creditCardTextBox = new TextBox() {
                 Text = "#########",
-                Font = fontB,
+                Font = this.fontB,
                 Width = 120,
                 Height = 25,
 
@@ -74,7 +75,7 @@ namespace CarWashExample {
 
             var exprireTexBox = new TextBox() {
                 Text = "01/01/2020",
-                Font = fontB,
+                Font = this.fontB,
                 Width = 120,
                 Height = 25,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -89,7 +90,7 @@ namespace CarWashExample {
 
             var pinTexBox = new TextBox() {
                 Text = "0000",
-                Font = fontB,
+                Font = this.fontB,
                 Width = 120,
                 Height = 25,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -135,33 +136,40 @@ namespace CarWashExample {
             backButton.Click += this.BackButton_Click;
             goButton.Click += this.GoButton_Click;
 
+            this.msgBox = new MessageBox(this.fontB);
+
+            this.msgBox.ButtonClick += this.MsgBox_ButtonClick;
+
             return this.canvas;
         }
 
+        private void MsgBox_ButtonClick(object sender, MessageBox.MessageBoxRoutedEventArgs e) {
 
+            if (e.DialogResult == MessageBox.DialogResult.Yes) {
+                this.msgBox.Close();
 
+                Program.WpfWindow.Child = Program.LoadingPage.Elements;
+                Program.LoadingPage.Active();
+
+            }
+            else {
+                this.msgBox.Close();
+            }
+        }
+
+        MessageBox msgBox;
         private void GoButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {               
+            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
 
-                var msgBox = new MessageBox(this.fontB);
-
-                msgBox.Show("Are you sure?", "Confirm", MessageBox.MessageBoxButtons.YesNo);
-
-                msgBox.ButtonClick += (a, b) => {
-
-                    if (b.DialogResult == MessageBox.DialogResult.Yes) {
-                        Program.WpfWindow.Child = Program.LoadingPage.Elements;
-                        Program.LoadingPage.Active();
-                    }
-
-                };
+                this.msgBox.Show(this.Elements, "Are you sure?", "Confirm", MessageBox.MessageBoxButtons.YesNo);
+                
 
                 Program.WpfWindow.Invalidate();
             }
 
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e) {    
+        private void BackButton_Click(object sender, RoutedEventArgs e) {
             Program.WpfWindow.Child = Program.SelectServicePage.Elements;
             Program.WpfWindow.Invalidate();
         }
