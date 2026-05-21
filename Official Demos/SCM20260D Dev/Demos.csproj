@@ -89,10 +89,6 @@
     <None Include="Resources\droid_reg11.tinyfnt" />
     <None Include="Resources\droid_reg12.tinyfnt" />
     <None Include="Resources\droid_reg14.tinyfnt" />
-    <None Include="Resources\droid_reg18.tinyfnt" />
-    <None Include="Resources\droid_reg24.tinyfnt" />
-    <None Include="Resources\droid_reg32.tinyfnt" />
-    <None Include="Resources\droid_reg48.tinyfnt" />
     <None Include="Resources\Generaltest.gif" />
     <None Include="Resources\Piezo.gif" />
     <None Include="Resources\Pwm.gif" />
