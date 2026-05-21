@@ -141,7 +141,7 @@ namespace Demos {
 
             this.isRunning = true;
 
-            var data = Encoding.UTF8.GetBytes("This is for sd  \n");
+            var data = Encoding.UTF8.GetBytes("This is for sd \n");
             var dataWrite = new byte[BlockSize];
             var dataRead = new byte[BlockSize];
 
