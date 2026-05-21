@@ -1,156 +1,97 @@
-using System;
-using System.Collections;
-using System.Drawing;
-using System.Net;
-using System.Text;
-using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Devices.Gpio;
-using GHIElectronics.TinyCLR.Devices.Network;
-using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
+using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
-using GHIElectronics.TinyCLR.UI.Shapes;
-using GHIElectronics.TinyCLR.UI.Threading;
+using SystemDrawing = System.Drawing;
 
 namespace Demos {
-    public class NetworkWindow : ApplicationWindow {
-
-        private Canvas canvas; // can be StackPanel
-
-        private const string Instruction1 = "Wifi: supports Winc15xx:";
-        private const string Instruction2 = "- http://docs.ghielectronics.com";
-        private const string Instruction3 = "/software/tinyclr/tutorials/wifi.html";
-        private const string Instruction4 = " ";
-        private const string Instruction5 = "Ethernet: support ENC28J60: ";
-        private const string Instruction6 = "- http://docs.ghielectronics.com";
-        private const string Instruction7 = "/software/tinyclr/tutorials";
-        private const string Instruction8 = "/ethernet.html";
-
-        private Font font;
+    internal class NetworkWindow : ApplicationWindow {
+        // SystemDrawing.Color is used for the section-header tint; UI.Media
+        // .Colors covers the body text. The two namespaces both define Color,
+        // so we qualify the System.Drawing one to keep the names unambiguous.
+        private Canvas canvas;
+        private SystemDrawing.Font font;
         private TextFlow textFlow;
 
+        private const string WifiHeader = "Wifi: supports Winc15xx:";
+        private const string WifiUrl1 = "- http://docs.ghielectronics.com";
+        private const string WifiUrl2 = "/software/tinyclr/tutorials/wifi.html";
+        private const string EthHeader = "Ethernet: support ENC28J60: ";
+        private const string EthUrl1 = "- http://docs.ghielectronics.com";
+        private const string EthUrl2 = "/software/tinyclr/tutorials";
+        private const string EthUrl3 = "/ethernet.html";
 
-        public NetworkWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-
+        public NetworkWindow(Resources.BitmapResources icon, string text, int width, int height) : base(icon, text, width, height) {
         }
 
         private void Initialize() {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
-
             this.textFlow = new TextFlow();
 
-            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0x00, 0x00, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+            this.AppendLine(WifiHeader, SystemDrawing.Color.FromArgb(0, 0, 0xFF));
+            this.AppendLine(WifiUrl1);
+            this.AppendLine(WifiUrl2);
+            this.AppendLine(" ");
+            this.AppendLine(EthHeader, SystemDrawing.Color.FromArgb(0, 0, 0xFF));
+            this.AppendLine(EthUrl1);
+            this.AppendLine(EthUrl2);
+            this.AppendLine(EthUrl3);
+        }
 
-            this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
+        private void AppendLine(string text) => this.AppendLine(text, SystemDrawing.Color.White);
 
-            this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+        private void AppendLine(string text, SystemDrawing.Color color) {
+            this.textFlow.TextRuns.Add(text, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0x00, 0x00, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
         }
 
         private void Deinitialize() {
-
-            if (this.BottomBar != null) {
-                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
-            }
+            if (this.BottomBar != null)
+                this.OnBottomBarButtonUpEvent -= this.OnHardwareButtonUp;
 
             this.textFlow.TextRuns.Clear();
             this.canvas.Children.Clear();
-
             this.font.Dispose();
-
             this.textFlow = null;
             this.canvas = null;
-
         }
 
         protected override void Active() {
-            // To initialize, reset your variable, design...
             this.Initialize();
-
             this.canvas = new Canvas();
-
             this.Child = this.canvas;
-
             this.ClearScreen();
             this.CreateWindow();
         }
 
-        protected override void Deactive() =>
-            // To stop or free, uinitialize variable resource
-            this.Deinitialize();
+        protected override void Deactive() => this.Deinitialize();
 
         private void ClearScreen() {
             this.canvas.Children.Clear();
 
-            // Enable TopBar
             if (this.TopBar != null) {
-                Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
+                Canvas.SetLeft(this.TopBar, 0);
+                Canvas.SetTop(this.TopBar, 0);
                 this.canvas.Children.Add(this.TopBar);
             }
 
-            // Enable BottomBar - If needed
             if (this.BottomBar != null) {
-                Canvas.SetLeft(this.BottomBar, 0); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
+                Canvas.SetLeft(this.BottomBar, 0);
+                Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
                 this.canvas.Children.Add(this.BottomBar);
-
-                // Regiter touch event for button back or next
-                // Regiter Button event
-                this.OnBottomBarButtonUpEvent += this.TemplateWindow_OnBottomBarButtonUpEvent;
-            }
-
-        }
-
-        private void TemplateWindow_OnBottomBarButtonUpEvent(object sender, RoutedEventArgs e) {
-            var buttonSource = (GHIElectronics.TinyCLR.UI.Input.ButtonEventArgs)e;
-
-            switch (buttonSource.Button) {
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Left:
-                    // close this window, back to previous window ???
-                    this.Close();
-                    break;
-
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
-                    //if (this.isRuning == false) {
-                    //    new Thread(this.ThreadTest).Start();
-                    //}
-                    this.Close();
-                    break;
-
-
+                this.OnBottomBarButtonUpEvent += this.OnHardwareButtonUp;
             }
         }
+
+        private void OnHardwareButtonUp(object sender, RoutedEventArgs e) =>
+            // Info-only window. Any button closes back to the main menu.
+            this.Close();
 
         private void CreateWindow() {
-            var startX = 5;
-            var startY = 20;
-
-            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
+            Canvas.SetLeft(this.textFlow, 5);
+            Canvas.SetTop(this.textFlow, 20);
             this.canvas.Children.Add(this.textFlow);
-        }
-
-        private void ThreadTest() {
-            return;
         }
     }
 }

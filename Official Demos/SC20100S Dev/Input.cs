@@ -1,17 +1,15 @@
 using System;
-using System.Collections;
-using System.Text;
-using System.Threading;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Pins;
+using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Threading;
 
 namespace Demos {
-    public class Input {
+    public static class Input {
         public static class Button {
-            static GpioPin buttonLeft;
-            static GpioPin buttonRight;
-            static GpioPin buttonCenter;
+            private static GpioPin buttonLeft;
+            private static GpioPin buttonRight;
+            private static GpioPin buttonCenter;
 
             public static void InitializeButtons() {
                 var gpioController = GpioController.GetDefault();
@@ -30,57 +28,37 @@ namespace Demos {
                 buttonLeft.ValueChangedEdge = GpioPinEdge.RisingEdge;
                 buttonRight.ValueChangedEdge = GpioPinEdge.RisingEdge;
 
-                buttonLeft.ValueChanged += ButtonLeft_ValueChanged;
-                buttonRight.ValueChanged += ButtonRight_ValueChanged;
+                buttonLeft.ValueChanged += (s, e) =>
+                    Program.MainApp.InputProvider.RaiseButton(HardwareButton.Left, true, DateTime.UtcNow);
+                buttonRight.ValueChanged += (s, e) =>
+                    Program.MainApp.InputProvider.RaiseButton(HardwareButton.Right, true, DateTime.UtcNow);
 
-                CreateClockTimer();
+                // Center button is read via timer poll rather than edge IRQ —
+                // ValueChanged doesn't have a built-in debounce property here
+                // and we want a clean rising-edge equivalent.
+                StartCenterButtonPoll();
             }
 
+            private static DispatcherTimer centerPollTimer;
+            private static bool centerPressed;
 
-            private static void ButtonRight_ValueChanged(GpioPin sender, GpioPinValueChangedEventArgs e) => Program.MainApp.InputProvider.RaiseButton(GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right, true, DateTime.UtcNow);
+            private static void StartCenterButtonPoll() {
+                centerPollTimer = new DispatcherTimer();
+                centerPollTimer.Tick += CenterPollTimer_Tick;
+                centerPollTimer.Interval = TimeSpan.FromMilliseconds(50);
+                centerPollTimer.Start();
+            }
 
-            private static void ButtonLeft_ValueChanged(GpioPin sender, GpioPinValueChangedEventArgs e) => Program.MainApp.InputProvider.RaiseButton(GHIElectronics.TinyCLR.UI.Input.HardwareButton.Left, true, DateTime.UtcNow);
-
-            private static void ButtonCenter_ValueChanged(GpioPin sender, GpioPinValueChangedEventArgs e) => Program.MainApp.InputProvider.RaiseButton(GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select, true, DateTime.UtcNow);
-
-            private static uint buttonLeftMask = 0;
-            private static uint buttonRightMask = 0;
-
-            public static bool IsButtonLeftPressed() => (buttonLeftMask & 1) > 0;
-            public static bool IsButtonRightPressed() => (buttonRightMask & 1) > 0;
-
-            public static void ClearButtonLeftState() => buttonLeftMask = 0;
-            public static void ClearButtonRightState() => buttonRightMask = 0;
-
-            static void ThreadTimer() {
-                while (true) {
-                    Thread.Sleep(50);
-
-                    if (buttonCenter == null) {
-                        continue;
-                    }
-
-                    if (buttonCenter.Read() == GpioPinValue.Low) {
-                        if (isButtonCenterPressed == false) {
-                            isButtonCenterPressed = true;
-                        }
-                    }
-
-                    if (buttonCenter.Read() == GpioPinValue.High) {
-                        if (isButtonCenterPressed == true) {
-
-                            isButtonCenterPressed = false;
-
-                            ButtonCenter_ValueChanged(buttonCenter, null);
-                        }
-                    }
-
+            private static void CenterPollTimer_Tick(object sender, EventArgs e) {
+                var pressedNow = buttonCenter.Read() == GpioPinValue.Low;
+                if (pressedNow && !centerPressed) {
+                    centerPressed = true;
+                }
+                else if (!pressedNow && centerPressed) {
+                    centerPressed = false;
+                    Program.MainApp.InputProvider.RaiseButton(HardwareButton.Select, true, DateTime.UtcNow);
                 }
             }
-
-            static private void CreateClockTimer() => new Thread(ThreadTimer).Start();
-
-            static bool isButtonCenterPressed = false;
         }
     }
 }

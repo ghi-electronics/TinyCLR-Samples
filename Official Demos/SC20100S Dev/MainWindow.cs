@@ -1,38 +1,28 @@
 using System;
 using System.Collections;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
-using System.Threading;
-using Demos.Properties;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
-using GHIElectronics.TinyCLR.UI.Media.Imaging;
-using GHIElectronics.TinyCLR.UI.Shapes;
 using GHIElectronics.TinyCLR.UI.Threading;
 
 namespace Demos {
-
-    public sealed class MainWindow : Window {
-
-        private UIElement topBar;
+    internal sealed class MainWindow : Window {
+        private readonly UIElement topBar;
         private readonly StackPanel mainStackPanel;
-        private StackPanel[] iconStackPanels;
+        private readonly StackPanel[] iconStackPanels;
 
-        private int selectWindowIndex = 0;
-        private int selectWindowIndexPrev = 0;
+        private int selectWindowIndex;
+        private int selectWindowIndexPrev;
 
-        const int IconColum = 3;
-        const int IconRow = 1;
+        const int IconColumns = 3;
+        const int IconRows = 1;
 
-        private ArrayList applicationWindows;
-        private ArrayList showListLeft;
-        private ArrayList showListRight;
-
-        private ArrayList showListLeftPrev;
-        private ArrayList showListRightPrev;
+        private readonly ArrayList applicationWindows = new ArrayList();
+        private readonly ArrayList showListLeft = new ArrayList();
+        private readonly ArrayList showListRight = new ArrayList();
+        private readonly ArrayList showListLeftPrev = new ArrayList();
+        private readonly ArrayList showListRightPrev = new ArrayList();
 
         public MainWindow(int width, int height) : base() {
             this.Width = width;
@@ -43,38 +33,21 @@ namespace Demos {
 
             this.Background = new LinearGradientBrush(Colors.Blue, Colors.Teal, 0, 0, width, height);
 
-            this.CreateTopBar();
-            this.CreateIcons();
+            var topbar = new TopBar(this.Width, "Demo App", true);
+            this.topBar = topbar.Child;
+
+            this.iconStackPanels = new StackPanel[IconRows];
+            for (var r = 0; r < IconRows; r++)
+                this.iconStackPanels[r] = new StackPanel(Orientation.Horizontal);
 
             this.mainStackPanel.IsVisibleChanged += this.MainStackPanel_IsVisibleChanged;
             this.mainStackPanel.AddHandler(Buttons.ButtonUpEvent, new RoutedEventHandler(this.OnButtonUp), true);
-
-            this.applicationWindows = new ArrayList();
-            this.showListLeft = new ArrayList();
-            this.showListRight = new ArrayList();
-
-            this.showListLeftPrev = new ArrayList();
-            this.showListRightPrev = new ArrayList();
         }
 
         private void MainStackPanel_IsVisibleChanged(object sender, PropertyChangedEventArgs e) {
             var isVisible = (bool)e.NewValue;
-
             if (isVisible)
                 Buttons.Focus(this.mainStackPanel);
-        }
-
-        private void CreateTopBar() {
-            var topbar = new TopBar(this.Width, "Demo App", true);
-            this.topBar = topbar.Child;
-        }
-
-        private void CreateIcons() {
-            this.iconStackPanels = new StackPanel[IconRow];
-
-            for (var r = 0; r < IconRow; r++) {
-                this.iconStackPanels[r] = new StackPanel(Orientation.Horizontal);
-            }
         }
 
         private void UpdateScreen() {
@@ -83,66 +56,42 @@ namespace Demos {
 
             for (var i = 0; i < this.applicationWindows.Count; i++) {
                 var a = (ApplicationWindow)this.applicationWindows[i];
-                if (a != null) {
-                    if (a.Id == this.selectWindowIndex) {
-                        a.Icon.Select = true;
-                    }
-                    else {
-                        a.Icon.Select = false;
-                    }
-                }
+                if (a != null)
+                    a.Icon.Select = (a.Id == this.selectWindowIndex);
             }
-
-            var r = 0;
 
             this.showListLeftPrev.Clear();
-
-            foreach (var e in this.showListLeft) {
-                this.showListLeftPrev.Add(e);
-            }
-
+            foreach (var e in this.showListLeft) this.showListLeftPrev.Add(e);
             this.showListLeft.Clear();
 
+            this.showListRightPrev.Clear();
+            foreach (var e in this.showListRight) this.showListRightPrev.Add(e);
+            this.showListRight.Clear();
+
+            const int r = 0;
             this.iconStackPanels[r].Children.Clear();
             this.iconStackPanels[r].SetMargin(0, (this.Height - this.topBar.Height - ((ApplicationWindow)this.applicationWindows[0]).Icon.Height) / 2, 0, 0);
 
-            var left = IconColum / 2;
-            var right = IconColum / 2;
-
+            var left = IconColumns / 2;
+            var right = IconColumns / 2;
             var end = this.applicationWindows.Count - 1;
 
             for (var i = 0; i < left; i++) {
-                if (this.selectWindowIndex > 0) {
+                if (this.selectWindowIndex > 0)
                     this.showListLeft.Add(this.selectWindowIndex - 1 - i);
-
-                }
-                else {
+                else
                     this.showListLeft.Add(end - i);
-                }
             }
-
-            this.showListRightPrev.Clear();
-
-            foreach (var e in this.showListRight) {
-                this.showListRightPrev.Add(e);
-            }
-
-            this.showListRight.Clear();
 
             for (var i = 0; i < right; i++) {
-                if (this.selectWindowIndex < end) {
+                if (this.selectWindowIndex < end)
                     this.showListRight.Add(this.selectWindowIndex + 1 + i);
-
-                }
-                else {
+                else
                     this.showListRight.Add(i);
-                }
             }
-
 
             for (var i = left - 1; i >= 0; i--) {
                 var a = (ApplicationWindow)this.applicationWindows[(int)this.showListLeft[i]];
-
                 this.iconStackPanels[r].Children.Add(a.Icon);
             }
 
@@ -150,261 +99,196 @@ namespace Demos {
 
             for (var i = 0; i < right; i++) {
                 var a = (ApplicationWindow)this.applicationWindows[(int)this.showListRight[i]];
-
                 this.iconStackPanels[r].Children.Add(a.Icon);
             }
 
+            for (var row = 0; row < IconRows; row++)
+                this.mainStackPanel.Children.Add(this.iconStackPanels[row]);
 
-            for (r = 0; r < IconRow; r++) {
-                this.mainStackPanel.Children.Add(this.iconStackPanels[r]);
-            }
-
+            this.RefreshIconCaches();
             this.Invalidate();
         }
 
+        // Keeps only the icons that are currently visible (selected + side
+        // slots + previously-visible icons still needed by the slide-out
+        // animation) loaded in RAM; releases everyone else. Each decoded
+        // 32x32 RGB565 icon costs ~2 KB of native heap, so on a 12-window
+        // demo this drops the resident image set from ~24 KB to ~10 KB.
+        private void RefreshIconCaches() {
+            for (var i = 0; i < this.applicationWindows.Count; i++) {
+                var icon = ((ApplicationWindow)this.applicationWindows[i]).Icon;
+                if (this.IsIconVisible(i)) icon.EnsureLoaded();
+                else                       icon.Unload();
+            }
+        }
+
+        private bool IsIconVisible(int index) {
+            if (index == this.selectWindowIndex) return true;
+            if (index == this.selectWindowIndexPrev) return true;
+            if (this.showListLeft.Contains(index)) return true;
+            if (this.showListRight.Contains(index)) return true;
+            if (this.showListLeftPrev.Contains(index)) return true;
+            if (this.showListRightPrev.Contains(index)) return true;
+            return false;
+        }
+
         public void RegisterWindow(ApplicationWindow aw) {
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-
             aw.Parent = this;
             aw.Id = this.applicationWindows.Count;
-            aw.Icon.Width = this.Width / IconColum;
+            aw.Icon.Width = this.Width / IconColumns;
             aw.Icon.Height = aw.Icon.Width + (3 * aw.Icon.Font.Height) / 2;
 
             this.applicationWindows.Add(aw);
 
-
-            if (this.applicationWindows.Count >= IconColum)
+            if (this.applicationWindows.Count >= IconColumns)
                 this.UpdateScreen();
-
         }
 
         private void OnButtonUp(object sender, RoutedEventArgs e) {
-            var buttonSource = (GHIElectronics.TinyCLR.UI.Input.ButtonEventArgs)e;
+            var buttonSource = (ButtonEventArgs)e;
 
             this.selectWindowIndexPrev = this.selectWindowIndex;
 
             switch (buttonSource.Button) {
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Left:
-                    if (this.selectWindowIndex == this.applicationWindows.Count - 1) {
+                case HardwareButton.Left:
+                    if (this.selectWindowIndex == this.applicationWindows.Count - 1)
                         this.selectWindowIndex = 0;
-                    }
-                    else {
+                    else
                         this.selectWindowIndex++;
-                    }
-
                     this.animationStep = -MaxStep;
-
-
                     break;
 
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
-                    if (this.selectWindowIndex == 0) {
+                case HardwareButton.Right:
+                    if (this.selectWindowIndex == 0)
                         this.selectWindowIndex = this.applicationWindows.Count - 1;
-                    }
-                    else {
+                    else
                         this.selectWindowIndex--;
-                    }
-
                     this.animationStep = MaxStep;
-
                     break;
 
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
+                case HardwareButton.Select:
                     this.animationStep = 0;
-
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-
                     var applicationWindow = (ApplicationWindow)this.applicationWindows[this.selectWindowIndex];
-
                     var nextWindow = applicationWindow.Open();
-
                     if (nextWindow != null)
                         this.Child = nextWindow;
-
                     break;
-
             }
 
             Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(1000), _ => { this.UpdateScreen(); return null; }, null);
-
         }
 
-        public void Open() {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+        public void Open() => this.Child = this.mainStackPanel;
 
-            this.Child = this.mainStackPanel;
-        }
+        // --- Carousel animation ---
+        // When the selection moves left/right, the previously-selected icon
+        // shrinks into the corner and the neighbour scales up to fill the
+        // centre slot. animationStep goes ±MaxStep on direction change and
+        // decays toward 0 over a few frames driven by the dispatcher timer.
 
-        public static bool DrawIcon;
+        public static int MaxStep = 5;
+        public static bool StartAnimation;
 
-        private DispatcherTimer animationTimer;
-
-        static public int MaxStep = 5;      // Number of frames in the animation
-
-        const int TimerInterval = 50;       // Number of MS between each frame
+        const int TimerInterval = 50;
         private int animationStep;
         private long lastTick;
+        private DispatcherTimer animationTimer;
 
-        private int[] widthDownSteps = new int[] { 53, 48, 43, 38, 33, 27 };    // Array of widths so we save time by pre-calculating them
-        private int[] heightDownSteps = new int[] { 53, 48, 43, 38, 33, 27 };
-
-        public static bool StartAnimation = false;
+        // Visual envelope of the previously-selected icon as it slides out
+        // and the incoming neighbour as it slides in. Indexed by `scale`
+        // (0 = full size at animation start; MaxStep = thumbnail size at end).
+        // Tuned for 32x32 source icons; if you change the icon size, scale
+        // these by the same ratio (the original 50x50 demo used 53 -> 27).
+        private readonly int[] widthDownSteps  = { 32, 30, 28, 25, 22, 18 };
+        private readonly int[] heightDownSteps = { 32, 30, 28, 25, 22, 18 };
 
         private void StartAnimationTimer() {
-
-            // Only start the timer if _animationStep is not 0
-            if (this.animationStep != 0) {
-                StartAnimation = true;
-                // The first time through we will create the timer
-                if (this.animationTimer == null) {
-                    this.animationTimer = new DispatcherTimer(this.Dispatcher) {
-                        Interval = new TimeSpan(0, 0, 0, 0, TimerInterval)
-                    };
-                    this.animationTimer.Tick += this.OnAnimationTimer;
-                }
-
-                // Keep track of when we started the timer to deal with missing
-                // frames because of a slow processor or being in the emulator
-                this.lastTick = DateTime.Now.Ticks;
-
-                // Start the timer
-                this.animationTimer.Start();
-            }
-            else {
+            if (this.animationStep == 0) {
                 StartAnimation = false;
+                return;
             }
+
+            StartAnimation = true;
+
+            if (this.animationTimer == null) {
+                this.animationTimer = new DispatcherTimer(this.Dispatcher) {
+                    Interval = TimeSpan.FromMilliseconds(TimerInterval),
+                };
+                this.animationTimer.Tick += this.OnAnimationTimer;
+            }
+
+            this.lastTick = DateTime.Now.Ticks;
+            this.animationTimer.Start();
         }
 
         private void OnAnimationTimer(object o, EventArgs e) {
-
-            // Stop the timer while we process this frame
             this.animationTimer.Stop();
 
-            // Figure out how much time has gone by since the timer was started
-            var ms = ((DateTime.Now.Ticks - this.lastTick) / 10000);
-
-            // Set the last tick to now
+            // Advance proportionally to wall-clock so a missed/slow frame
+            // doesn't stretch the animation out.
+            var ms = (DateTime.Now.Ticks - this.lastTick) / 10000;
             this.lastTick = DateTime.Now.Ticks;
 
-            // Figure out how many frames should have been displayed by now
             var increment = (int)(ms / TimerInterval);
+            if (increment < 1) increment = 1;
+            else if (increment > MaxStep) increment = MaxStep;
 
-            // If the timer is being serviced in less time than the minimum
-            // then we are ok to just process the frame
-            // Else If we have gone beyond the maxStep then just move the frame
-            // to that one
-            if (increment < 1)
-                increment = 1;
-            else if (increment > MaxStep)
-                increment = MaxStep;
+            if (this.animationStep < 0) this.animationStep += increment;
+            else if (this.animationStep > 0) this.animationStep -= increment;
 
-            // Increment _animationStep based on which direction we are going
-            if (this.animationStep < 0)
-                this.animationStep += increment;
-            else if (this.animationStep > 0)
-                this.animationStep -= increment;
-
-            // This will trigger another OnRender and kick the timer off again
-            // to take the next step in the animation
             this.Invalidate();
         }
-
-        public static bool LockIcon = false;
 
         public override void OnRender(DrawingContext dc) {
             base.OnRender(dc);
 
-            if (StartAnimation == true) {
+            if (StartAnimation) {
+                var scaleOffset = Math.Abs(this.animationStep);
 
-                var scaleOffset = System.Math.Abs(this.animationStep);
-
+                // Previously-selected icon shrinking down.
                 {
-                    var a = (ApplicationWindow)this.applicationWindows[this.selectWindowIndexPrev];
-                    var icon = a.Icon;
-
+                    var icon = ((ApplicationWindow)this.applicationWindows[this.selectWindowIndexPrev]).Icon;
                     var scale = MaxStep - scaleOffset;
-
                     var w = this.widthDownSteps[scale];
                     var h = this.heightDownSteps[scale];
 
-                    var x = this.Width / IconColum;//  startX + this.animationStep * 5;
+                    // Start the slide-out from where the centred static icon
+                    // actually was, not from the slot's left edge. Icon.cs
+                    // centres the selected icon by `(slotWidth - imgWidth)/2`,
+                    // so match that offset here.
+                    var slotWidth = this.Width / IconColumns;
+                    var x = slotWidth + (slotWidth - this.widthDownSteps[0]) / 2;
+                    var offsetX = (this.animationStep < 0) ? 7 : 13;
+                    if (this.animationStep < 0) x -= scale * offsetX;
+                    else                        x += scale * offsetX;
 
-
-                    var offsetY = 5;
-
-                    if (this.animationStep < 0) {
-                        var offsetX = 7;
-                        x -= (scale * offsetX);
-                    }
-                    else {
-                        var offsetX = 13;
-                        x += (scale * offsetX);
-                    }
-
-                    var y = this.Height - this.topBar.Height - icon.Height - (icon.Font.Height) / 2 + (scale * offsetY);
-
+                    var y = this.Height - this.topBar.Height - icon.Height - (icon.Font.Height) / 2 + (scale * 5);
                     dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
-
                 }
 
+                // Incoming icon scaling up — only the immediate neighbour in
+                // the direction of motion.
+                if (this.animationStep < 0 && this.showListRightPrev.Count > 0) {
+                    var icon = ((ApplicationWindow)this.applicationWindows[(int)this.showListRightPrev[0]]).Icon;
+                    var scale = scaleOffset;
+                    var w = this.widthDownSteps[scale];
+                    var h = this.heightDownSteps[scale];
 
-                if (this.animationStep < 0) {
-                    if (this.showListRightPrev.Count > 0) {
-                        var i = 0; // draw the one next to Seclect item only
-
-                        var a = (ApplicationWindow)this.applicationWindows[(int)this.showListRightPrev[i]];
-
-                        var icon = a.Icon;
-
-                        var scale = scaleOffset;
-
-                        var w = this.widthDownSteps[scale];
-                        var h = this.heightDownSteps[scale];
-
-                        var offsetX = (icon.Width + icon.Width / 4) / 5;
-
-                        var x = (this.Width / IconColum) + icon.Width + icon.Width / 4 - ((MaxStep - scale) * offsetX);
-
-                        var offsetY = 5;
-
-                        var y = this.topBar.Height + icon.Height - (2 * icon.Font.Height) - ((MaxStep - scale) * offsetY);
-
-                        dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
-
-                    }
-
-
+                    var offsetX = (icon.Width + icon.Width / 4) / 5;
+                    var x = (this.Width / IconColumns) + icon.Width + icon.Width / 4 - ((MaxStep - scale) * offsetX);
+                    var y = this.topBar.Height + icon.Height - (2 * icon.Font.Height) - ((MaxStep - scale) * 5);
+                    dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
                 }
+                else if (this.animationStep > 0 && this.showListLeftPrev.Count > 0) {
+                    var icon = ((ApplicationWindow)this.applicationWindows[(int)this.showListLeftPrev[0]]).Icon;
+                    var scale = scaleOffset;
+                    var w = this.widthDownSteps[scale];
+                    var h = this.heightDownSteps[scale];
 
-                if (this.animationStep > 0) {
-                    if (this.showListLeftPrev.Count > 0) {
-                        var i = 0; // draw the one next to Seclect item only
-
-                        var a = (ApplicationWindow)this.applicationWindows[(int)this.showListLeftPrev[i]];
-
-                        var icon = a.Icon;
-
-                        var scale = scaleOffset;
-
-                        var w = this.widthDownSteps[scale];
-                        var h = this.heightDownSteps[scale];
-
-                        var offsetX = (icon.Width / 2 + icon.Width / 4) / 5;
-
-                        var x = icon.Width / 4 + ((MaxStep - scale) * offsetX);
-
-                        var offsetY = 5;
-
-                        var y = this.topBar.Height + icon.Height - (2 * icon.Font.Height) - ((MaxStep - scale) * offsetY);
-
-                        dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
-                    }
-
+                    var offsetX = (icon.Width / 2 + icon.Width / 4) / 5;
+                    var x = icon.Width / 4 + ((MaxStep - scale) * offsetX);
+                    var y = this.topBar.Height + icon.Height - (2 * icon.Font.Height) - ((MaxStep - scale) * 5);
+                    dc.Scale9Image(x, y, w, h, icon.bitmapImage, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, icon.RadiusBorder, 100);
                 }
             }
 
