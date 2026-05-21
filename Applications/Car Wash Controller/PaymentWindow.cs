@@ -136,37 +136,21 @@ namespace CarWashExample {
             backButton.Click += this.BackButton_Click;
             goButton.Click += this.GoButton_Click;
 
-            this.msgBox = new MessageBox(this.fontB);
-
-            this.msgBox.ButtonClick += this.MsgBox_ButtonClick;
-
             return this.canvas;
         }
 
-        private void MsgBox_ButtonClick(object sender, MessageBox.MessageBoxRoutedEventArgs e) {
+        private void GoButton_Click(object sender, RoutedEventArgs e) {
+            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") != 0) return;
 
-            if (e.DialogResult == MessageBox.DialogResult.Yes) {
-                this.msgBox.Close();
+            var result = MessageBox.Show(this.Elements, "Are you sure?", "Confirm",
+                MessageBox.MessageBoxButtons.YesNo, this.fontB);
 
+            if (result == MessageBox.DialogResult.Yes) {
                 Program.WpfWindow.Child = Program.LoadingPage.Elements;
                 Program.LoadingPage.Active();
-
-            }
-            else {
-                this.msgBox.Close();
-            }
-        }
-
-        MessageBox msgBox;
-        private void GoButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-
-                this.msgBox.Show(this.Elements, "Are you sure?", "Confirm", MessageBox.MessageBoxButtons.YesNo);
-                
-
-                Program.WpfWindow.Invalidate();
             }
 
+            Program.WpfWindow.Invalidate();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e) {
