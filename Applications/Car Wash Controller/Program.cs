@@ -1,97 +1,84 @@
-#define SC20260
-
+using System;
+using System.Diagnostics;
+using System.Threading;
 using GHIElectronics.TinyCLR.Devices.Display;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Devices.I2c;
 using GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6;
-using GHIElectronics.TinyCLR.Drivers.Sitronix.ST7735;
-using GHIElectronics.TinyCLR.UI;
-using GHIElectronics.TinyCLR.UI.Controls;
-using GHIElectronics.TinyCLR.UI.Media;
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
-using System.Threading;
-using CarWashExample.Properties;
 using GHIElectronics.TinyCLR.Pins;
-using GHIElectronics.TinyCLR.Devices.Rtc;
+using GHIElectronics.TinyCLR.UI;
+using GHIElectronics.TinyCLR.UI.Input;
+using GHIElectronics.TinyCLR.UI.Media;
 
-namespace CarWashExample
-{
-    class Program : Application
-    {
+namespace CarWashExample {
+    internal class Program : Application {
+        private const int ScreenWidth = 480;
+        private const int ScreenHeight = 272;
 
-        const int SCREEN_WIDTH = 480;
-        const int SCREEN_HEIGHT = 272;
+        public Program(DisplayController d) : base(d) { }
 
-        const int TOUCH_IRQ = 9 * 16 + 14;
-        const int BACKLIGHT = 0 * 16 + 15;
+        private static Program app;
+        private static FT5xx6Controller touch;
 
-         const int LED1 = SC20260.GpioPin.PB0;
-        const int LDR1 = 1 * 16 + 7;
+        public static SelectServiceWindow SelectServicePage { get; private set; }
+        public static PaymentWindow PaymentPage { get; private set; }
+        public static LoadingPage LoadingPage { get; private set; }
+        public static CarWashPage CarWashPage { get; private set; }
+        public static EndPage EndPage { get; private set; }
 
+        public static Window WpfWindow { get; private set; }
 
-
-        public Program(DisplayController d) : base(d)
-        {
+        /// <summary>Swap the active page and request a repaint. All page navigation
+        /// goes through here so callers don't keep forgetting Invalidate.</summary>
+        public static void NavigateTo(UIElement page) {
+            WpfWindow.Child = page;
+            WpfWindow.Invalidate();
         }
 
-        static GpioPin led1;
-        static GpioPin ldr1;
+        static void Main() {
+            WaitForStartButton();
+            InitializeDisplayAndTouch();
+            RunApp();
+        }
 
-        static void Main()
-        {
-            var controller = GpioController.GetDefault();
-            
+        // The board comes up with the display blanked. Hold the LDR button on
+        // power-on (or after reset) to start the demo; the on-board LED
+        // blinks while we wait. Useful when debugging — gives time to attach
+        // the debugger before the UI thread runs.
+        private static void WaitForStartButton() {
+            var gpio = GpioController.GetDefault();
+            var led = gpio.OpenPin(SC20260.GpioPin.PB0);
+            var ldr = gpio.OpenPin(SC20260.GpioPin.PB7);
 
-            led1 = controller.OpenPin(LED1);
+            led.SetDriveMode(GpioPinDriveMode.Output);
+            ldr.SetDriveMode(GpioPinDriveMode.InputPullUp);
 
-            ldr1 = controller.OpenPin(LDR1);
-
-            led1.SetDriveMode(GpioPinDriveMode.Output);
-
-            ldr1.SetDriveMode(GpioPinDriveMode.InputPullUp);
-
-            var cnt = 0;
-
-            while (ldr1.Read() == GpioPinValue.High)
-            {
-                led1.Write(led1.Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
-                if (cnt % 10 == 0)
-                    Debug.WriteLine("Waiting for pressing LDR1: " + (cnt / 10) + " seconds. ");
-                Thread.Sleep(101);
-                cnt++;
-
-                
-
+            var seconds = 0;
+            while (ldr.Read() == GpioPinValue.High) {
+                led.Write(led.Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
+                if (seconds % 10 == 0)
+                    Debug.WriteLine("Waiting for LDR button: " + (seconds / 10) + "s");
+                Thread.Sleep(100);
+                seconds++;
             }
-            DoTestWPF();
+
+            led.Dispose();
+            ldr.Dispose();
         }
 
+        private static void InitializeDisplayAndTouch() {
+            var gpio = GpioController.GetDefault();
 
-        static Program app;
-        static FT5xx6Controller touch;
-
-        static void DoTestWPF()
-        {
-            var backlight = GpioController.GetDefault().OpenPin(BACKLIGHT);
-
+            var backlight = gpio.OpenPin(SC20260.GpioPin.PA15);
             backlight.SetDriveMode(GpioPinDriveMode.Output);
-
             backlight.Write(GpioPinValue.High);
 
-            var displayController = GHIElectronics.TinyCLR.Devices.Display.DisplayController.GetDefault();
-
-            var controllerSetting = new GHIElectronics.TinyCLR.Devices.Display.ParallelDisplayControllerSettings
-            {
-                // 480x272
-                Width = SCREEN_WIDTH,
-                Height = SCREEN_HEIGHT,
-                Orientation = DisplayOrientation.Degrees0
-                ,
-                DataFormat = GHIElectronics.TinyCLR.Devices.Display.DisplayDataFormat.Rgb565,
+            var displayController = DisplayController.GetDefault();
+            displayController.SetConfiguration(new ParallelDisplayControllerSettings {
+                Width = ScreenWidth,
+                Height = ScreenHeight,
+                Orientation = DisplayOrientation.Degrees0,
+                DataFormat = DisplayDataFormat.Rgb565,
                 PixelClockRate = 10000000,
                 PixelPolarity = false,
                 DataEnablePolarity = false,
@@ -104,79 +91,42 @@ namespace CarWashExample
                 VerticalBackPorch = 2,
                 VerticalSyncPulseWidth = 10,
                 VerticalSyncPolarity = false,
-            };
-
-            displayController.SetConfiguration(controllerSetting);
+            });
             displayController.Enable();
 
-            var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
-
-            var settings = new I2cConnectionSettings(0x38)
-            {// the slave's address
-
+            var i2cDevice = I2cController.FromName(SC20260.I2cBus.I2c1).GetDevice(new I2cConnectionSettings(0x38) {
                 BusSpeed = 100000,
                 AddressFormat = I2cAddressFormat.SevenBit,
-
-
-            };
-
-            var i2cDevice = i2cController.GetDevice(settings);
-
-            var interrupt = GpioController.GetDefault().OpenPin(TOUCH_IRQ);
+            });
+            var interrupt = gpio.OpenPin(SC20260.GpioPin.PJ14);
 
             touch = new FT5xx6Controller(i2cDevice, interrupt) {
-                Width = 480,
-                Height = 272,
+                Width = ScreenWidth,
+                Height = ScreenHeight,
                 Orientation = FT5xx6Controller.TouchOrientation.Degrees0,
-            };         
-            touch.TouchDown += Touch_TouchDown;
-            touch.TouchUp += Touch_TouchUp;
+            };
+            touch.TouchDown += (s, e) => app.InputProvider.RaiseTouch(e.X, e.Y, TouchMessages.Down, DateTime.Now);
+            touch.TouchUp   += (s, e) => app.InputProvider.RaiseTouch(e.X, e.Y, TouchMessages.Up,   DateTime.Now);
 
-            // Create WPF window
             app = new Program(displayController);
-
-            
-            SelectServicePage = new SelectServiceWindow();
-            PaymentePage = new PaymentWindow();
-            LoadingPage = new LoadingPage();
-            CarWashPage = new CarWashPage();
-            EndPage = new EndPage();
-            
-            WpfWindow = Program.CreateWindow(displayController);
-
-            WpfWindow.Child = SelectServicePage.Elements;
-
-            WpfWindow.Visibility = Visibility.Visible;
-
-            app.Run(WpfWindow);
-
-           
         }
 
-       
-        public static SelectServiceWindow SelectServicePage { get; set; }
-        public static PaymentWindow PaymentePage { get; set; }
-        public static LoadingPage LoadingPage { get; set; }
-        public static CarWashPage CarWashPage { get; set; }
-        public static EndPage EndPage { get; set; }
+        private static void RunApp() {
+            SelectServicePage = new SelectServiceWindow();
+            PaymentPage       = new PaymentWindow();
+            LoadingPage       = new LoadingPage();
+            CarWashPage       = new CarWashPage();
+            EndPage           = new EndPage();
 
-        public static Window WpfWindow { get; set; }
-
-        private static void Touch_TouchUp(FT5xx6Controller sender, TouchEventArgs e) => app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Up, System.DateTime.Now);
-
-        private static void Touch_TouchDown(FT5xx6Controller sender, TouchEventArgs e) => app.InputProvider.RaiseTouch(e.X, e.Y, GHIElectronics.TinyCLR.UI.Input.TouchMessages.Down, System.DateTime.Now);
-
-        private static Window CreateWindow(DisplayController disp)
-        {
-            var window = new Window
-            {
-                Height = (int)disp.ActiveConfiguration.Height,
-                Width = (int)disp.ActiveConfiguration.Width
+            WpfWindow = new Window {
+                Width = ScreenWidth,
+                Height = ScreenHeight,
+                Background = new LinearGradientBrush(Colors.Blue, Colors.Teal, 0, 0, ScreenWidth, ScreenHeight),
+                Child = SelectServicePage.Elements,
+                Visibility = Visibility.Visible,
             };
-            window.Background = new LinearGradientBrush(Colors.Blue, Colors.Teal, 0, 0,
-              window.Width, window.Height);
 
-            return window;
+            app.Run(WpfWindow);
         }
     }
 }

@@ -1,92 +1,66 @@
+using System;
+using CarWashExample.Properties;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
 using GHIElectronics.TinyCLR.UI.Threading;
-using System;
-using System.Collections;
-using System.Drawing;
-using System.Text;
-using System.Threading;
-using CarWashExample.Properties;
+using SystemDrawing = System.Drawing;
 
-namespace CarWashExample
-{
-    public sealed class LoadingPage
-    {
-        private Canvas canvas;        
-        private Font fontB;
-        private DispatcherTimer timer;
-        private ProgressBar progressBar;
+namespace CarWashExample {
+    internal sealed class LoadingPage {
+        private readonly Canvas canvas = new Canvas();
+        private readonly SystemDrawing.Font font = Resources.GetFont(Resources.FontResources.NinaB);
+        private readonly ProgressBar progressBar;
+        private readonly DispatcherTimer timer;
 
         public UIElement Elements { get; }
 
-        public LoadingPage()
-        {
-            this.canvas = new Canvas();
-            this.fontB = Resources.GetFont(Resources.FontResources.NinaB);
-
-            this.progressBar = new ProgressBar()
-            {
+        public LoadingPage() {
+            this.progressBar = new ProgressBar {
                 MaxValue = 100,
                 Value = 0,
                 Width = 200,
-                Height = 20
+                Height = 20,
             };
 
-            this.timer = new DispatcherTimer {
-                Tag = this.progressBar
-            };
-            this.timer.Tick += this.Counter;
-            this.timer.Interval = new TimeSpan(0, 0, 1);
+            this.timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            this.timer.Tick += this.OnTick;
 
             this.Elements = this.CreatePage();
         }
-        public void Active() => this.timer.Start();
 
+        public void Active() => this.timer.Start();
         public void Deactive() => this.timer.Stop();
 
-        private UIElement CreatePage()
-        {
-            this.canvas.Children.Clear();
-
-            var loadingText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Processing your payment...")
-            {
+        private UIElement CreatePage() {
+            var label = new Text(this.font, "Processing your payment...") {
                 ForeColor = Colors.White,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
             };
-
-            Canvas.SetLeft(loadingText, 140);
-            Canvas.SetTop(loadingText, 220);
-
-            this.canvas.Children.Add(loadingText);
+            Canvas.SetLeft(label, 140);
+            Canvas.SetTop(label, 220);
+            this.canvas.Children.Add(label);
 
             Canvas.SetLeft(this.progressBar, 140);
             Canvas.SetTop(this.progressBar, 240);
-
             this.canvas.Children.Add(this.progressBar);
 
             return this.canvas;
-
         }
 
-        void Counter(object sender, EventArgs e)
-        {
+        private void OnTick(object sender, EventArgs e) {
             this.progressBar.Value += 10;
             this.progressBar.Invalidate();
 
-            if (this.progressBar.Value == this.progressBar.MaxValue)
-            {
-                this.timer.Stop();
+            if (this.progressBar.Value < this.progressBar.MaxValue)
+                return;
 
-                this.progressBar.Value = 0;
+            this.timer.Stop();
+            this.progressBar.Value = 0;
 
-                Program.WpfWindow.Child = Program.CarWashPage.Elements;
-                Program.WpfWindow.Invalidate();
-
-                Program.CarWashPage.Active();
-            }
-
+            Program.NavigateTo(Program.CarWashPage.Elements);
+            Program.CarWashPage.Active();
         }
     }
 }

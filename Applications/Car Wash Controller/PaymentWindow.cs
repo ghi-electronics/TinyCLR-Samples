@@ -1,161 +1,86 @@
+using CarWashExample.Properties;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
-using System.Threading;
-using CarWashExample.Properties;
-using GHIElectronics.TinyCLR.Devices.Gpio;
+using SystemDrawing = System.Drawing;
 
 namespace CarWashExample {
-    public sealed class PaymentWindow {
-        private Canvas canvas;
-        private Font font;
-        private Font fontB;
+    internal sealed class PaymentWindow {
+        private readonly Canvas canvas = new Canvas();
+        private readonly SystemDrawing.Font fontNinaB = Resources.GetFont(Resources.FontResources.NinaB);
 
         public UIElement Elements { get; }
 
         public PaymentWindow() {
-            this.canvas = new Canvas();
-            this.font = Resources.GetFont(Resources.FontResources.small);
-            this.fontB = Resources.GetFont(Resources.FontResources.NinaB);
-            OnScreenKeyboard.Font = this.fontB;
-
-
+            // The on-screen keyboard is global state — keep it on a font that
+            // matches the rest of this page so the popup doesn't visually
+            // clash when the user taps into a TextBox.
+            OnScreenKeyboard.Font = this.fontNinaB;
             this.Elements = this.CreatePage();
-
         }
 
         private UIElement CreatePage() {
-            this.canvas.Children.Clear();
+            this.AddLabel("Input your credit card number :", 10,  20);
+            this.AddLabel("Expire date :",                  132, 50);
+            this.AddLabel("Pin :",                          187, 80);
 
-            var creditCardText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Input your credit card number :") {
-                ForeColor = Colors.White,
-            };
+            this.AddTextBox("#########", 250, 15);
+            this.AddTextBox("01/01/2020", 250, 45);
+            this.AddTextBox("0000",       250, 75);
 
-            Canvas.SetLeft(creditCardText, 10);
-            Canvas.SetTop(creditCardText, 20);
-
-            this.canvas.Children.Add(creditCardText);
-
-            var expireText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Expire date :") {
-                ForeColor = Colors.White,
-            };
-
-            Canvas.SetLeft(expireText, 132);
-            Canvas.SetTop(expireText, 50);
-
-            this.canvas.Children.Add(expireText);
-
-            var pinTex = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Pin :") {
-                ForeColor = Colors.White,
-            };
-
-            Canvas.SetLeft(pinTex, 187);
-            Canvas.SetTop(pinTex, 80);
-
-            this.canvas.Children.Add(pinTex);
-
-
-            var creditCardTextBox = new TextBox() {
-                Text = "#########",
-                Font = this.fontB,
-                Width = 120,
-                Height = 25,
-
-            };
-
-            Canvas.SetLeft(creditCardTextBox, 250);
-            Canvas.SetTop(creditCardTextBox, 15);
-
-            this.canvas.Children.Add(creditCardTextBox);
-
-            var exprireTexBox = new TextBox() {
-                Text = "01/01/2020",
-                Font = this.fontB,
-                Width = 120,
-                Height = 25,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-
-            };
-
-            Canvas.SetLeft(exprireTexBox, 250);
-            Canvas.SetTop(exprireTexBox, 45);
-
-            this.canvas.Children.Add(exprireTexBox);
-
-            var pinTexBox = new TextBox() {
-                Text = "0000",
-                Font = this.fontB,
-                Width = 120,
-                Height = 25,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-
-            };
-
-            Canvas.SetLeft(pinTexBox, 250);
-            Canvas.SetTop(pinTexBox, 75);
-
-            this.canvas.Children.Add(pinTexBox);
-
-            var backButton = new Button() {
-                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Back") {
-                    ForeColor = Colors.Black,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                },
-                Width = 100,
-                Height = 40,
-            };
-
-            var goButton = new Button() {
-                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Next") {
-                    ForeColor = Colors.Black,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                },
-                Width = 100,
-                Height = 40,
-            };
-
+            var backButton = MakeButton("Back");
+            backButton.Click += (s, e) => Program.NavigateTo(Program.SelectServicePage.Elements);
             Canvas.SetLeft(backButton, 10);
             Canvas.SetTop(backButton, 220);
-
             this.canvas.Children.Add(backButton);
 
+            var goButton = MakeButton("Next");
+            goButton.Click += this.OnGoClick;
             Canvas.SetLeft(goButton, 370);
             Canvas.SetTop(goButton, 220);
-
             this.canvas.Children.Add(goButton);
-
-            backButton.Click += this.BackButton_Click;
-            goButton.Click += this.GoButton_Click;
 
             return this.canvas;
         }
 
-        private void GoButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") != 0) return;
-
-            var result = MessageBox.Show(this.Elements, "Are you sure?", "Confirm",
-                MessageBox.MessageBoxButtons.YesNo, this.fontB);
-
-            if (result == MessageBox.DialogResult.Yes) {
-                Program.WpfWindow.Child = Program.LoadingPage.Elements;
-                Program.LoadingPage.Active();
-            }
-
-            Program.WpfWindow.Invalidate();
+        private void AddLabel(string text, int x, int y) {
+            var label = new Text(this.fontNinaB, text) { ForeColor = Colors.White };
+            Canvas.SetLeft(label, x);
+            Canvas.SetTop(label, y);
+            this.canvas.Children.Add(label);
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e) {
-            Program.WpfWindow.Child = Program.SelectServicePage.Elements;
-            Program.WpfWindow.Invalidate();
+        private void AddTextBox(string initialText, int x, int y) {
+            var textBox = new TextBox {
+                Text = initialText,
+                Font = this.fontNinaB,
+                Width = 120,
+                Height = 25,
+            };
+            Canvas.SetLeft(textBox, x);
+            Canvas.SetTop(textBox, y);
+            this.canvas.Children.Add(textBox);
+        }
+
+        private Button MakeButton(string label) => new Button {
+            Child = new Text(this.fontNinaB, label) {
+                ForeColor = Colors.Black,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+            },
+            Width = 100,
+            Height = 40,
+        };
+
+        private void OnGoClick(object sender, RoutedEventArgs e) {
+            var result = MessageBox.Show(this.Elements, "Are you sure?", "Confirm",
+                MessageBox.MessageBoxButtons.YesNo, this.fontNinaB);
+
+            if (result != MessageBox.DialogResult.Yes)
+                return;
+
+            Program.NavigateTo(Program.LoadingPage.Elements);
+            Program.LoadingPage.Active();
         }
     }
 }
