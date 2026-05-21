@@ -1,18 +1,14 @@
 using System;
-using System.Collections;
-using System.Drawing;
-using System.Text;
-using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
-using GHIElectronics.TinyCLR.UI.Media.Imaging;
+using GHIElectronics.TinyCLR.UI.Shapes;
 using GHIElectronics.TinyCLR.UI.Threading;
+using SystemDrawing = System.Drawing;
 
 namespace Demos {
     public class TopBar {
-
         private Text leftLabel;
         private Text rightLabel;
 
@@ -21,7 +17,7 @@ namespace Demos {
         private readonly bool enableClock;
         private readonly Button buttonClose;
 
-        private readonly Font font;
+        private readonly SystemDrawing.Font font;
 
         private readonly int width;
         private readonly int height;
@@ -31,7 +27,7 @@ namespace Demos {
         public delegate void OnCloseEventHandle(object sender, RoutedEventArgs e);
         public event OnCloseEventHandle OnClose;
 
-        private Canvas canvas;
+        private readonly Canvas canvas;
 
         public UIElement Child { get; private set; }
 
@@ -56,15 +52,13 @@ namespace Demos {
 
             this.enableClock = enableClock;
 
-            if (this.enableClock == false) { // then enable button
-
+            if (!this.enableClock) {
                 this.buttonClose = new Button() {
                     Child = closeText,
                     Width = this.height,
                     Height = this.height,
                 };
             }
-
 
             this.CreateBar();
             this.Child.IsVisibleChanged += this.Element_IsVisibleChanged;
@@ -73,18 +67,18 @@ namespace Demos {
         private void Element_IsVisibleChanged(object sender, PropertyChangedEventArgs e) => this.CreateClockTimer();
 
         private void CreateBar() {
-
-            var rect = new GHIElectronics.TinyCLR.UI.Shapes.Rectangle(this.width, this.height) {
-                Fill = new LinearGradientBrush(GHIElectronics.TinyCLR.UI.Media.Color.FromArgb(0xff, 0xc4, 0x83, 0x41), GHIElectronics.TinyCLR.UI.Media.Color.FromArgb(0xff, 0x66, 0x44, 0x22), 0, 0, this.width, this.height),
-                //Fill = new SolidColorBrush(GHIElectronics.TinyCLR.UI.Media.Color.FromArgb(0xff, 0xc4, 0x83, 0x41)),// Colors.Black,
-        };
+            var rect = new Rectangle(this.width, this.height) {
+                Fill = new LinearGradientBrush(
+                    Color.FromArgb(0xff, 0xc4, 0x83, 0x41),
+                    Color.FromArgb(0xff, 0x66, 0x44, 0x22),
+                    0, 0, this.width, this.height),
+            };
 
             this.canvas.Children.Add(rect);
 
-
             this.leftLabel = new Text {
                 ForeColor = Colors.White,
-                Font = font,
+                Font = this.font,
                 TextContent = this.LeftText,
             };
 
@@ -95,21 +89,18 @@ namespace Demos {
             if (this.enableClock) {
                 this.rightLabel = new Text {
                     ForeColor = Colors.White,
-                    Font = font,
+                    Font = this.font,
                     TextContent = "",
                 };
 
                 Canvas.SetRight(this.rightLabel, 0);
                 Canvas.SetTop(this.rightLabel, 2);
                 this.canvas.Children.Add(this.rightLabel);
-
             }
             else {
                 Canvas.SetRight(this.buttonClose, 0);
                 Canvas.SetTop(this.buttonClose, 0);
-
                 this.canvas.Children.Add(this.buttonClose);
-
                 this.buttonClose.Click += this.ButtonClose_Click;
             }
 
@@ -119,9 +110,8 @@ namespace Demos {
         private void CreateClockTimer() {
             if (this.enableClock && this.clockTimer == null) {
                 this.clockTimer = new DispatcherTimer();
-
                 this.clockTimer.Tick += this.ClockTimer_Tick;
-                this.clockTimer.Interval = new TimeSpan(0, 0, 1);
+                this.clockTimer.Interval = TimeSpan.FromSeconds(1);
                 this.clockTimer.Start();
             }
         }
@@ -132,10 +122,8 @@ namespace Demos {
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e) {
-            if (this.OnClose != null) {
-                if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                    this.OnClose?.Invoke(sender, e);
-                }
+            if (this.OnClose != null && e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
+                this.OnClose.Invoke(sender, e);
             }
         }
 

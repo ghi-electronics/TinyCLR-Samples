@@ -1,47 +1,32 @@
-using System;
-using System.Collections;
 using System.Drawing;
-using System.Text;
 using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.I2c;
-using GHIElectronics.TinyCLR.Devices.Rtc;
-using GHIElectronics.TinyCLR.Devices.Storage;
-using GHIElectronics.TinyCLR.Devices.Uart;
 using GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655;
-using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
+using SystemDrawing = System.Drawing;
 
 namespace Demos {
     public class CameraWindow : ApplicationWindow {
-        private Canvas canvas; // can be StackPanel
+        private Canvas canvas;
 
         private const string Instruction1 = " This will test Camera module: ";
         private const string Instruction2 = " - Connect Camera module to Camera Interface on the 20260Dev board.";
-        private const string Instruction3 = " ";
-        private const string Instruction4 = " ";
-        private const string Instruction5 = " ";
-        private const string Instruction6 = " Press Test button when you are ready.";
-        private const string Instruction7 = " ";
+        private const string Instruction3 = " Press Test button when you are ready.";
 
-        private const string Instruction8 = " ";
-
-        private Button testButton;
-
-        private Font font;
-
+        private readonly Button testButton;
+        private readonly Font font;
         private bool isRunning;
-
         private TextFlow textFlow;
 
-        public CameraWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        public CameraWindow(SystemDrawing.Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg11);
 
             this.testButton = new Button() {
-                Child = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Test") {
+                Child = new Text(this.font, "Test") {
                     ForeColor = Colors.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
@@ -51,179 +36,126 @@ namespace Demos {
             };
 
             this.testButton.Click += this.TestButton_Click;
-
         }
 
         private void Initialize() {
-
             this.textFlow = new TextFlow();
+            this.AppendInstruction(Instruction1);
+            this.AppendInstruction(Instruction2);
+            this.AppendInstruction(Instruction3);
+        }
 
-            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            var yellowColor = System.Drawing.Color.Yellow;
-
-            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(yellowColor.R, yellowColor.G, yellowColor.B));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+        private void AppendInstruction(string text) {
+            this.textFlow.TextRuns.Add(text, this.font, Colors.White);
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
         }
 
         private void Deinitialize() {
-
             this.textFlow.TextRuns.Clear();
             this.textFlow = null;
         }
 
         private void TestButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-
-                if (!this.isRunning) {
-                    this.ClearScreen();
-
-                    this.CreateWindow(false);
-
-                    this.textFlow.TextRuns.Clear();
-
-                    new Thread(this.ThreadTest).Start();
-                }
+            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0 && !this.isRunning) {
+                this.ClearScreen();
+                this.CreateWindow(false);
+                this.textFlow.TextRuns.Clear();
+                new Thread(this.ThreadTest).Start();
             }
         }
 
-
         protected override void Active() {
-            // To initialize, reset your variable, design...
             this.Initialize();
-
             this.canvas = new Canvas();
-
             this.Child = this.canvas;
-
             this.isRunning = false;
-
             this.ClearScreen();
             this.CreateWindow(true);
         }
 
-        private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
-            // This is Button Back Touch event
-            this.Close();
-
-        private void TemplateWindow_OnBottomBarButtonNextTouchUpEvent(object sender, RoutedEventArgs e) =>
-            // This is Button Next Touch event
-            this.Close();
+        private void OnButtonBack(object sender, RoutedEventArgs e) => this.Close();
+        private void OnButtonNext(object sender, RoutedEventArgs e) => this.Close();
 
         protected override void Deactive() {
             this.isRunning = false;
-
             Thread.Sleep(10);
-            // To stop or free, uinitialize variable resource
             this.canvas.Children.Clear();
-
             this.Deinitialize();
         }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();
 
-            // Enable TopBar
             if (this.TopBar != null) {
-                Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
+                Canvas.SetLeft(this.TopBar, 0);
+                Canvas.SetTop(this.TopBar, 0);
                 this.canvas.Children.Add(this.TopBar);
             }
 
-            // Enable BottomBar - If needed
             if (this.BottomBar != null) {
-                Canvas.SetLeft(this.BottomBar, 0); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
+                Canvas.SetLeft(this.BottomBar, 0);
+                Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
                 this.canvas.Children.Add(this.BottomBar);
 
-                // Regiter touch event for button back or next
-                this.OnBottomBarButtonBackTouchUpEvent += this.TemplateWindow_OnBottomBarButtonBackTouchUpEvent;
-                this.OnBottomBarButtonNextTouchUpEvent += this.TemplateWindow_OnBottomBarButtonNextTouchUpEvent;
+                // Register touch event for Back / Next.
+                this.OnBottomBarButtonBackTouchUpEvent += this.OnButtonBack;
+                this.OnBottomBarButtonNextTouchUpEvent += this.OnButtonNext;
             }
-
         }
 
-        private void CreateWindow(bool enablebutton) {
-            var startX = 5;
-            var startY = 40;
+        private void CreateWindow(bool enableButton) {
+            const int startX = 5;
+            const int startY = 40;
 
-            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
+            Canvas.SetLeft(this.textFlow, startX);
+            Canvas.SetTop(this.textFlow, startY);
             this.canvas.Children.Add(this.textFlow);
 
-            if (enablebutton) {
+            if (enableButton) {
                 var buttonY = this.Height - ((this.testButton.Height * 3) / 2);
-
-                Canvas.SetLeft(this.testButton, startX); Canvas.SetTop(this.testButton, buttonY);
+                Canvas.SetLeft(this.testButton, startX);
+                Canvas.SetTop(this.testButton, buttonY);
                 this.canvas.Children.Add(this.testButton);
             }
         }
 
-
         private void ThreadTest() {
-
             this.isRunning = true;
 
             var i2cController = I2cController.FromName(SC20260.I2cBus.I2c1);
 
             Ov9655Controller ov9655 = null;
-            var retries = 2; // some camera may failed to initialize after reset first time
+            const int retries = 2; // some camera may fail to initialize after reset the first time
 
             for (var i = 0; i < retries; i++) {
                 try {
                     ov9655 = new Ov9655Controller(i2cController);
                     ov9655.SetResolution(Ov9655Controller.Resolution.Vga);
-                    i = retries;
+                    break;
                 }
                 catch {
-
                 }
             }
 
-            if (ov9655 == null)
+            if (ov9655 == null) {
+                this.isRunning = false;
                 return;
+            }
 
             var displayController = Display.DisplayController;
 
             while (this.isRunning) {
                 try {
                     ov9655.Capture();
-
                     displayController.DrawBuffer(0, this.TopBar.ActualHeight, 0, 0, 480, 272 - this.TopBar.ActualHeight, 640, ov9655.Buffer, 0);
                 }
                 catch {
-
                 }
 
                 Thread.Sleep(10);
-
             }
 
             this.isRunning = false;
-
-            return;
-
         }
-
-        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
-
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
-
     }
 }

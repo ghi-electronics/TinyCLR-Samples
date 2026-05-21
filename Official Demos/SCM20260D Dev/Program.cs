@@ -1,28 +1,15 @@
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
-using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.Display;
-using GHIElectronics.TinyCLR.Devices.Gpio;
-using GHIElectronics.TinyCLR.Devices.I2c;
-using GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6;
-using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
-using GHIElectronics.TinyCLR.UI.Media;
 
 namespace Demos {
     class Program : Application {
         public static Program MainApp;
 
         public Program(DisplayController d) : base(d) {
-
         }
 
         static void Main() {
-           
             Display.InitializeDisplay();
             Input.Touch.InitializeTouch();
 
@@ -30,127 +17,104 @@ namespace Demos {
 
             var mainWindow = new MainWindow(Display.Width, Display.Height);
 
-            // Create System Window            
-            var iconImageSystem = Resources.GetBitmap(Resources.BitmapResources.settingImage);
-            var iconTextSystem = "System Information";
-            var systemWindow = new SystemWindow(iconImageSystem, iconTextSystem, Display.Width, Display.Height);
-
+            // System info.
+            var systemWindow = new SystemWindow(
+                Resources.GetBitmap(Resources.BitmapResources.settingImage),
+                "System Information", Display.Width, Display.Height);
             mainWindow.RegisterWindow(systemWindow);
 
-            //// Create Ethernet Window
-            //var iconImageEthernet = Resources.GetBitmap(Resources.BitmapResources.Ethernet); // Icon
-            //var iconTextEthernet = "Ethernet";
-            //var networkWindow = new EthernetWindow(iconImageEthernet, iconTextEthernet, Display.Width, Display.Height);
+            // WiFi (Winc15x0 on MikroBus 1).
+            var wifiWindow = new WifiWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Wifi),
+                "Wifi", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(wifiWindow);
 
-            //mainWindow.RegisterWindow(networkWindow); // Register to MainWindow
+            // microSD storage.
+            var sdWindow = new SdWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Sd),
+                "Sd Card", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(sdWindow);
 
-            // Create Wifi Window
-            var iconImageWifi = Resources.GetBitmap(Resources.BitmapResources.Wifi); // Icon
-            var iconTextWifi = "Wifi";
-            var wifiWindow = new WifiWindow(iconImageWifi, iconTextWifi, Display.Width, Display.Height);
+            // USB host mass-storage.
+            var usbWindow = new UsbWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Usb),
+                "Usb", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(usbWindow);
 
-            mainWindow.RegisterWindow(wifiWindow); // Register to MainWindow
+            // CAN-FD (CAN1).
+            var canFdWindow = new CanFdWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Canfd),
+                "CAN FD", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(canFdWindow);
 
-            // Create Sd Window
-            var iconImageSd = Resources.GetBitmap(Resources.BitmapResources.Sd); // Icon
-            var iconTextSd = "Sd Card";
-            var sdWindow = new SdWindow(iconImageSd, iconTextSd, Display.Width, Display.Height);
+            // Quad-SPI on-board flash.
+            var qspiWindow = new QspiWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Qspi),
+                "Quad Spi", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(qspiWindow);
 
-            mainWindow.RegisterWindow(sdWindow); // Register to MainWindow
+            // Piezo buzzer (PWM).
+            var buzzerWindow = new BuzzerWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Piezo),
+                "Buzzer", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(buzzerWindow);
 
-            // Create Usb Window
-            var iconImageUsb = Resources.GetBitmap(Resources.BitmapResources.Usb); // Icon
-            var iconTextUsb = "Usb";
-            var usbdWindow = new UsbWindow(iconImageUsb, iconTextUsb, Display.Width, Display.Height);
+            // Real-time clock.
+            var rtcWindow = new RtcWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Rtc),
+                "Rtc", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(rtcWindow);
 
-            mainWindow.RegisterWindow(usbdWindow); // Register to MainWindow
+            // UART5 echo test.
+            var uartWindow = new UartWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Uart),
+                "Uart", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(uartWindow);
 
-            // Create CanFd Window
-            var iconImageCanFd = Resources.GetBitmap(Resources.BitmapResources.Canfd); // Icon
-            var iconTextCanFd = "CAN FD";
-            var canFdWindow = new CanFdWindow(iconImageCanFd, iconTextCanFd, Display.Width, Display.Height);
+            // ADC.
+            var adcWindow = new AdcWindow(
+                Resources.GetBitmap(Resources.BitmapResources.analog),
+                "Adc", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(adcWindow);
 
-            mainWindow.RegisterWindow(canFdWindow); // Register to MainWindow
+            // PWM.
+            var pwmWindow = new PwmWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Pwm),
+                "Pwm", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(pwmWindow);
 
-            // Create QSpi Window
-            var iconImageQspi = Resources.GetBitmap(Resources.BitmapResources.Qspi); // Icon
-            var iconTextQspi = "Quad Spi";
-            var qspiWindow = new QspiWindow(iconImageQspi, iconTextQspi, Display.Width, Display.Height);
+            // DAC.
+            var dacWindow = new DacWindow(
+                Resources.GetBitmap(Resources.BitmapResources.analog),
+                "Dac", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(dacWindow);
 
-            mainWindow.RegisterWindow(qspiWindow); // Register to MainWindow
+            // Camera (Omnivision OV9655).
+            var cameraWindow = new CameraWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Camera),
+                "Camera", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(cameraWindow);
 
-            // Create Buzzer Window
-            var iconImageBuzzer = Resources.GetBitmap(Resources.BitmapResources.Piezo); // Icon
-            var iconTextBuzzer = "Buzzer";
-            var buzzerWindow = new BuzzerWindow(iconImageBuzzer, iconTextBuzzer, Display.Width, Display.Height);
+            // Display colour test.
+            var colorWindow = new ColorWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Color),
+                "Color", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(colorWindow);
 
-            mainWindow.RegisterWindow(buzzerWindow); // Register to MainWindow
+            // Basic LED / button / press test.
+            var basicTestWindow = new BasicTestWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Generaltest),
+                "Basic Test", Display.Width, Display.Height);
+            mainWindow.RegisterWindow(basicTestWindow);
 
-            // Create Buzzer Window
-            var iconImageRtc = Resources.GetBitmap(Resources.BitmapResources.Rtc); // Icon
-            var iconTextRtc = "Rtc";
-            var rtcWindow = new RtcWindow(iconImageRtc, iconTextRtc, Display.Width, Display.Height);
-
-            mainWindow.RegisterWindow(rtcWindow); // Register to MainWindow
-
-            // Create Uart Window
-            var iconImageUart = Resources.GetBitmap(Resources.BitmapResources.Uart); // Icon
-            var iconTextUart = "Uart";
-            var uartWindow = new UartWindow(iconImageUart, iconTextUart, Display.Width, Display.Height);
-
-            mainWindow.RegisterWindow(uartWindow); // Register to MainWindow
-           
-            // Create Adc Window
-            var iconImageAdc = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
-            var iconTextAdc = "Adc";
-            var adcWindow = new AdcWindow(iconImageAdc, iconTextAdc, Display.Width, Display.Height);
-
-            mainWindow.RegisterWindow(adcWindow); // Register to MainWindow
-
-            // Create Pwm Window
-            var iconImagePwm = Resources.GetBitmap(Resources.BitmapResources.Pwm); // Icon
-            var iconTextPwm = "Pwm";
-            var pwmWindow = new PwmWindow(iconImagePwm, iconTextPwm, Display.Width, Display.Height);
-
-            mainWindow.RegisterWindow(pwmWindow); // Register to MainWindow
-
-            // Create Dac Window
-            var iconImageDac = Resources.GetBitmap(Resources.BitmapResources.analog); // Icon
-            var iconTextDac = "Dac";
-            var dacWindow = new DacWindow(iconImageDac, iconTextDac, Display.Width, Display.Height);
-
-            mainWindow.RegisterWindow(dacWindow); // Register to MainWindow
-
-            // Create Camera Window
-            var iconImageCamera = Resources.GetBitmap(Resources.BitmapResources.Camera); // Icon
-            var iconTextCamera = "Camera";
-            var cameraWindow = new CameraWindow(iconImageCamera, iconTextCamera, Display.Width, Display.Height);
-
-            mainWindow.RegisterWindow(cameraWindow); // Register to MainWindow
-
-            // Create Camera Window
-            var iconImageColor = Resources.GetBitmap(Resources.BitmapResources.Color); // Icon
-            var iconTextColor = "Color";
-            var colorWindow = new ColorWindow(iconImageColor, iconTextColor, Display.Width, Display.Height);
-
-            mainWindow.RegisterWindow(colorWindow); // Register to MainWindow
-
-            // Create Camera Window
-            var iconImageBasicTest = Resources.GetBitmap(Resources.BitmapResources.Generaltest); // Icon
-            var iconTextBasicTest = "Basic Test";
-            var basicTestWindow = new BasicTestWindow(iconImageBasicTest, iconTextBasicTest, Display.Width, Display.Height);
-
-            mainWindow.RegisterWindow(basicTestWindow); // Register to MainWindow
-
-            // Empty template
-            var iconImageTemplate = Resources.GetBitmap(Resources.BitmapResources.Template); // Icon
-            var iconTextTemplate = "Template"; // Text
-            var templateWindow = new TemplateWindow(iconImageTemplate, iconTextTemplate, Display.Width, Display.Height) {
+            // Empty template — copy this when adding a new app.
+            var templateWindow = new TemplateWindow(
+                Resources.GetBitmap(Resources.BitmapResources.Template),
+                "Template", Display.Width, Display.Height) {
                 EnableButtonNext = true,
                 EnableButtonBack = true,
             };
-
-            mainWindow.RegisterWindow(templateWindow); // Register to MainWindow
+            mainWindow.RegisterWindow(templateWindow);
 
             MainApp.Run(mainWindow);
         }
