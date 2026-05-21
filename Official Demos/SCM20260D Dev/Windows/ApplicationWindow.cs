@@ -78,19 +78,11 @@ namespace Demos {
             return this.Child;
         }
 
-        private void ButtonBack_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                this.OnBottomBarButtonBackTouchUpEvent?.Invoke(sender, e);
-            }
-        }
+        private void ButtonBack_Click(object sender, RoutedEventArgs e) =>
+            this.OnBottomBarButtonBackTouchUpEvent?.Invoke(sender, e);
 
-        private void ButtonNext_Click(object sender, RoutedEventArgs e) {
-            // Was firing the event twice (once inside the TouchUp guard, once
-            // unconditionally below it). Fire exactly once on TouchUp.
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                this.OnBottomBarButtonNextTouchUpEvent?.Invoke(sender, e);
-            }
-        }
+        private void ButtonNext_Click(object sender, RoutedEventArgs e) =>
+            this.OnBottomBarButtonNextTouchUpEvent?.Invoke(sender, e);
 
         private void Child_IsVisibleChanged(object sender, PropertyChangedEventArgs e) {
             var isVisible = (bool)e.NewValue;

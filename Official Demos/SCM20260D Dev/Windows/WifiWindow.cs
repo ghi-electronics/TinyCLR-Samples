@@ -103,9 +103,6 @@ namespace Demos {
         }
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") != 0)
-                return;
-
             if (!this.isRunning && !this.isWifiConnected) {
                 this.status.TextContent = "Please wait...";
                 this.status.Invalidate();

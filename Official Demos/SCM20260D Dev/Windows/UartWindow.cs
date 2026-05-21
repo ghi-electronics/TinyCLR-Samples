@@ -65,7 +65,7 @@ namespace Demos {
         }
 
         private void TestButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0 && !this.isRunning) {
+            if (!this.isRunning) {
                 this.ClearScreen();
                 this.CreateWindow(false);
                 this.textFlow.TextRuns.Clear();

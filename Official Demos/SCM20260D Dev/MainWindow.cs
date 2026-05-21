@@ -88,11 +88,9 @@ namespace Demos {
         }
 
         private void Icon_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                var icon = (Icon)sender;
-                var applicationWindow = (ApplicationWindow)this.applicationWindows[icon.Id];
-                this.Child = applicationWindow.Open();
-            }
+            var icon = (Icon)sender;
+            var applicationWindow = (ApplicationWindow)this.applicationWindows[icon.Id];
+            this.Child = applicationWindow.Open();
         }
 
         public void Open() => this.Child = this.mainStackPanel;

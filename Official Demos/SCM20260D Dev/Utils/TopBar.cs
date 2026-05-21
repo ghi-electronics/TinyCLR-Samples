@@ -121,11 +121,8 @@ namespace Demos {
                 this.rightLabel.TextContent = DateTime.Now.ToString();
         }
 
-        private void ButtonClose_Click(object sender, RoutedEventArgs e) {
-            if (this.OnClose != null && e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                this.OnClose.Invoke(sender, e);
-            }
-        }
+        private void ButtonClose_Click(object sender, RoutedEventArgs e) =>
+            this.OnClose?.Invoke(sender, e);
 
         public void Dispose() {
             this.canvas.Children.Clear();

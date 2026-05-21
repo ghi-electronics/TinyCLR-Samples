@@ -72,10 +72,7 @@ namespace Demos {
             Height = 30,
         };
 
-        private void NextButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0)
-                this.doNext = true;
-        }
+        private void NextButton_Click(object sender, RoutedEventArgs e) => this.doNext = true;
 
         private void Initialize() {
             this.textFlow = new TextFlow();
@@ -103,7 +100,7 @@ namespace Demos {
         }
 
         private void TestButton_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0 && !this.isRunning) {
+            if (!this.isRunning) {
                 this.ClearScreen();
                 this.CreateWindow(false);
                 this.textFlow.TextRuns.Clear();
