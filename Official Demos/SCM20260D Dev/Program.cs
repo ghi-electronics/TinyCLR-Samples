@@ -1,5 +1,6 @@
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.Display;
+using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.UI;
 
 namespace Demos {
@@ -10,6 +11,12 @@ namespace Demos {
         }
 
         static void Main() {
+            // Enable 32MB heap for Camera and Graphics
+            if (!Memory.IsExtendedHeap()) {
+                Memory.ExtendHeap();
+                Power.Reset();
+            }
+
             Display.InitializeDisplay();
             Input.Touch.InitializeTouch();
 
