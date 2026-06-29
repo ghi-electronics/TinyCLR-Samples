@@ -4,81 +4,52 @@ using GHIElectronics.TinyCLR.Native;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
+using SystemDrawing = System.Drawing;
 
 namespace Demos {
     public class SystemWindow : ApplicationWindow {
         private Canvas canvas;
 
-        const string DemoVersion = "091421"; // Sep-14-2021 - Last changed
+        private const string DemoVersion = "052126"; // May-21-2026 — last changed
 
-        public SystemWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-
+        public SystemWindow(SystemDrawing.Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
         }
 
         private void CreateWindow() {
-            var startX = 20;
+            const int startX = 20;
+            const int offsetY = 30;
             var startY = 40;
-            var offsetY = 30;
+
             var font = Resources.GetFont(Resources.FontResources.droid_reg12);
 
             this.canvas.Children.Clear();
 
-            var devText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Device: " + GHIElectronics.TinyCLR.Native.DeviceInformation.DeviceName) {
-                ForeColor = Colors.White,
-            };
+            var deviceText      = MakeLine(font, "Device: " + DeviceInformation.DeviceName);
+            var clockText       = MakeLine(font, "Clock: " + (Power.GetSystemClock() == SystemClock.High ? "480MHz" : "240MHz"));
+            var ramText         = MakeLine(font, "Memory: 512KB Total");
+            var externalRamText = MakeLine(font, "External Memory: 32MB Total");
+            var osText          = MakeLine(font, "OS: TinyCLR OS v3.0.0");
+            var manufacturer    = MakeLine(font, "Manufacture: GHI Electronics, LLC");
+            var demoVersionText = MakeLine(font, "Demo version: " + DemoVersion);
 
-            var speed = Power.GetSystemClock() == SystemClock.High ? "Clock: 480MHz" : "Clock: 240MHz";
+            var lines = new[] { deviceText, clockText, ramText, externalRamText, osText, manufacturer, demoVersionText };
+            foreach (var line in lines) {
+                Canvas.SetLeft(line, startX);
+                Canvas.SetTop(line, startY);
+                this.canvas.Children.Add(line);
+                startY += offsetY;
+            }
 
-            var clockText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, speed) {
-                ForeColor = Colors.White,
-            };
-
-            var ramText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Memory: 512KB Total") {
-                ForeColor = Colors.White,
-            };
-
-            var ramExtText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "External Memory: 32MB Total") {
-                ForeColor = Colors.White,
-            };
-
-            var osText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "OS: TinyCLR OS v2.0.0") {
-                ForeColor = Colors.White,
-            };
-            var mText = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Manufacture: GHI Electronics, LLC") {
-                ForeColor = Colors.White,
-            };
-
-            var mVesion = new GHIElectronics.TinyCLR.UI.Controls.Text(font, "Demo version: " + DemoVersion) {
-                ForeColor = Colors.White,
-            };
-
-            Canvas.SetLeft(devText, startX); Canvas.SetTop(devText, startY); startY += offsetY;
-            Canvas.SetLeft(clockText, startX); Canvas.SetTop(clockText, startY); startY += offsetY;
-            Canvas.SetLeft(ramText, startX); Canvas.SetTop(ramText, startY); startY += offsetY;
-            Canvas.SetLeft(ramExtText, startX); Canvas.SetTop(ramExtText, startY); startY += offsetY;
-            Canvas.SetLeft(osText, startX); Canvas.SetTop(osText, startY); startY += offsetY;
-            Canvas.SetLeft(mText, startX); Canvas.SetTop(mText, startY); startY += offsetY;
-            Canvas.SetLeft(mVesion, startX); Canvas.SetTop(mVesion, startY); startY += offsetY;
-
-            this.canvas.Children.Add(devText);
-            this.canvas.Children.Add(clockText);
-            this.canvas.Children.Add(ramText);
-            this.canvas.Children.Add(ramExtText);
-            this.canvas.Children.Add(osText);
-            this.canvas.Children.Add(mText);
-            this.canvas.Children.Add(mVesion);
-
-            // Enable TopBar
-            Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
+            Canvas.SetLeft(this.TopBar, 0);
+            Canvas.SetTop(this.TopBar, 0);
             this.canvas.Children.Add(this.TopBar);
         }
 
+        private static Text MakeLine(Font font, string text) => new Text(font, text) { ForeColor = Colors.White };
+
         protected override void Active() {
-
             this.canvas = new Canvas();
-
             this.CreateWindow();
-
             this.Child = this.canvas;
         }
 

@@ -1,33 +1,24 @@
 using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
-using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
-using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
+using SystemDrawing = System.Drawing;
+
 namespace Demos.Utils {
-    public class BottomBar : IDisposable {
-        private Canvas canvas;
+    internal class BottomBar : IDisposable {
+        private readonly Canvas canvas;
+        private readonly SystemDrawing.Font font;
+        private readonly int buttonWidth;
+        private readonly int buttonHeight;
+        private readonly bool enableButtonBack;
+        private readonly bool enableButtonNext;
 
         public Button ButtonBack { get; }
         public Button ButtonNext { get; }
-
-        private Font font;
-
-        private int buttonWidth;
-        private int buttonHeight;
-
         public UIElement Child { get; private set; }
-
         public int Width { get; set; }
         public int Height { get; set; }
-
-        private readonly bool enableButtonBack;
-        private readonly bool enableButtonNext;
 
         public BottomBar(int width, bool enableButtonBack, bool enableButtonNext) {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
@@ -41,18 +32,15 @@ namespace Demos.Utils {
 
             this.canvas = new Canvas {
                 Width = this.Width,
-                Height = this.buttonHeight
+                Height = this.buttonHeight,
             };
 
             if (this.enableButtonBack) {
-                var backText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Back") {
+                var backText = new Text(this.font, "Back") {
                     ForeColor = Colors.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center,
                 };
-
-                GC.Collect();
-                Debug.WriteLine("" + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
 
                 this.ButtonBack = new Button() {
                     Child = backText,
@@ -62,17 +50,14 @@ namespace Demos.Utils {
 
                 Canvas.SetLeft(this.ButtonBack, 0);
                 Canvas.SetTop(this.ButtonBack, 0);
-
                 this.canvas.Children.Add(this.ButtonBack);
-
-
             }
 
             if (this.enableButtonNext) {
-                var nextText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.font, "Next") {
+                var nextText = new Text(this.font, "Next") {
                     ForeColor = Colors.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center,
                 };
 
                 this.ButtonNext = new Button() {
@@ -83,9 +68,7 @@ namespace Demos.Utils {
 
                 Canvas.SetRight(this.ButtonNext, 0);
                 Canvas.SetTop(this.ButtonNext, 0);
-
                 this.canvas.Children.Add(this.ButtonNext);
-
             }
 
             this.Child = this.canvas;
@@ -93,11 +76,12 @@ namespace Demos.Utils {
 
         public void Dispose() {
             this.canvas.Children.Clear();
-            if (this.enableButtonBack && this.ButtonBack != null)
-                this.ButtonBack.Dispose();
 
-            if (this.enableButtonNext && this.ButtonNext != null)
-                this.ButtonNext.Dispose();
+            if (this.enableButtonBack)
+                this.ButtonBack?.Dispose();
+
+            if (this.enableButtonNext)
+                this.ButtonNext?.Dispose();
 
             this.font.Dispose();
         }

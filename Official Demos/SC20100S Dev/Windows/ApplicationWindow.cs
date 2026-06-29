@@ -1,25 +1,21 @@
 using System;
-using System.Collections;
-using System.Diagnostics;
 using System.Drawing;
-using System.Text;
 using System.Threading;
 using Demos.Properties;
 using Demos.Utils;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Input;
-using GHIElectronics.TinyCLR.UI.Media.Imaging;
 
 namespace Demos {
-    public class ApplicationWindow {
+    internal class ApplicationWindow {
         public int Id { get => this.Icon.Id; set => this.Icon.Id = value; }
         public Icon Icon { get; set; }
         public MainWindow Parent { get; set; }
 
         public bool EnableClockOnTopBar { get; set; }
-        public bool EnableButtomBack { get; set; }
-        public bool EnableButtomNext { get; set; }
+        public bool EnableButtonBack { get; set; }
+        public bool EnableButtonNext { get; set; }
 
         private TopBar topBar;
         private BottomBar bottomBar;
@@ -35,91 +31,56 @@ namespace Demos {
         public event OnBottomBarTouchUpEventHandle OnBottomBarButtonBackTouchUpEvent;
         public event OnBottomBarTouchUpEventHandle OnBottomBarButtonNextTouchUpEvent;
 
-        private bool actived;
+        private bool active;
 
-        static BottomBar sBottomBar;
-        static TopBar sTopBar;
-
-        public ApplicationWindow(Bitmap icon, string title, int width, int height) {
-            this.Icon = new Icon(icon, title);
-
+        public ApplicationWindow(Resources.BitmapResources iconResource, string title, int width, int height) {
+            this.Icon = new Icon(iconResource, title);
             this.Width = width;
             this.Height = height;
-
-            if (sBottomBar == null)
-                sBottomBar = new BottomBar(this.Width, true, true);
-
-            if (sTopBar == null)
-                sTopBar = new TopBar(this.Width, "", true);
         }
 
         public UIElement TopBar => this.topBar?.Child;
         public UIElement BottomBar => this.bottomBar?.Child;
 
-        protected virtual void Active() {
-
-        }
-
-        protected virtual void Deactive() {
-
-        }
+        protected virtual void Active() { }
+        protected virtual void Deactive() { }
 
         public UIElement Open() {
-            if (!this.actived) {
+            if (this.active)
+                return this.Child;
 
-                // Avoid defregment if next screen allocate big memory
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+            this.topBar = new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
 
-                //Debug.WriteLine("" + GHIElectronics.TinyCLR.Native.Memory.ManagedMemory.FreeBytes / 1024);
+            if (this.EnableButtonBack || this.EnableButtonNext)
+                this.bottomBar = new BottomBar(this.Width, this.EnableButtonBack, this.EnableButtonNext);
 
-
-                this.topBar = sTopBar;// new TopBar(this.Width, this.Icon.IconText, this.EnableClockOnTopBar);
-                //this.topBar.OnClose += this.OnClose;
-
-                if (this.EnableButtomBack || this.EnableButtomNext) {
-                    this.bottomBar = sBottomBar;// new BottomBar(this.Width, this.EnableButtomBack, this.EnableButtomNext);
-                }
-
-                try {
-                    this.Active();
-                }
-                catch {
-                    return null;
-                }
-
-                if (this.EnableButtomBack || this.EnableButtomNext) {
-                    this.Child.AddHandler(Buttons.ButtonUpEvent, new RoutedEventHandler(this.OnButtonUp), true);
-                    this.Child.IsVisibleChanged += this.Child_IsVisibleChanged;
-
-                    if (this.EnableButtomBack) {
-                        this.bottomBar.ButtonBack.Click += this.ButtonBack_Click;
-                    }
-
-                    if (this.EnableButtomNext) {
-                        this.bottomBar.ButtonNext.Click += this.ButtonNext_Click;
-                    }
-                }
-
-                this.actived = true;
+            try {
+                this.Active();
+            }
+            catch {
+                return null;
             }
 
+            if (this.EnableButtonBack || this.EnableButtonNext) {
+                this.Child.AddHandler(Buttons.ButtonUpEvent, new RoutedEventHandler(this.OnButtonUp), true);
+                this.Child.IsVisibleChanged += this.Child_IsVisibleChanged;
 
+                if (this.EnableButtonBack)
+                    this.bottomBar.ButtonBack.Click += this.ButtonBack_Click;
 
+                if (this.EnableButtonNext)
+                    this.bottomBar.ButtonNext.Click += this.ButtonNext_Click;
+            }
+
+            this.active = true;
             return this.Child;
         }
 
-        private void ButtonBack_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                OnBottomBarButtonBackTouchUpEvent?.Invoke(sender, e);
-            }
-        }
+        private void ButtonBack_Click(object sender, RoutedEventArgs e) =>
+            this.OnBottomBarButtonBackTouchUpEvent?.Invoke(sender, e);
 
-        private void ButtonNext_Click(object sender, RoutedEventArgs e) {
-            if (e.RoutedEvent.Name.CompareTo("TouchUpEvent") == 0) {
-                OnBottomBarButtonNextTouchUpEvent?.Invoke(sender, e);
-            }
-        }
+        private void ButtonNext_Click(object sender, RoutedEventArgs e) =>
+            this.OnBottomBarButtonNextTouchUpEvent?.Invoke(sender, e);
 
         private void Child_IsVisibleChanged(object sender, PropertyChangedEventArgs e) {
             var isVisible = (bool)e.NewValue;
@@ -129,96 +90,64 @@ namespace Demos {
         }
 
         public void Close() {
-            if (this.actived) {
+            if (this.active) {
                 this.Deactive();
 
-                //if (this.topBar != null)
-                //    this.topBar.Dispose();
-
-                //if (this.bottomBar != null)
-                //    this.bottomBar.Dispose();
+                this.topBar?.Dispose();
+                this.bottomBar?.Dispose();
 
                 if (this.bottomBar != null) {
-                    this.bottomBar.ButtonBack.Click -= this.ButtonBack_Click;
-                    this.bottomBar.ButtonNext.Click -= this.ButtonNext_Click;
-
+                    if (this.EnableButtonBack)
+                        this.bottomBar.ButtonBack.Click -= this.ButtonBack_Click;
+                    if (this.EnableButtonNext)
+                        this.bottomBar.ButtonNext.Click -= this.ButtonNext_Click;
                 }
-                if (this.Child != null) {
+
+                if (this.Child != null)
                     this.Child.IsVisibleChanged -= this.Child_IsVisibleChanged;
-                }
 
-                this.actived = false;
+                this.topBar = null;
+                this.bottomBar = null;
+                this.active = false;
             }
 
-            if (this.Parent != null) {
-                this.Parent.Open();
-            }
+            this.Parent?.Open();
         }
 
-        private void OnButtonUp(object sender, RoutedEventArgs e) => OnBottomBarButtonUpEvent?.Invoke(sender, e);
+        private void OnButtonUp(object sender, RoutedEventArgs e) =>
+            this.OnBottomBarButtonUpEvent?.Invoke(sender, e);
 
-        private void OnClose(object sender, RoutedEventArgs e) => this.Close();
+        public void UpdateStatusText(TextFlow textFlow, string text, Font font, bool clearScreen) =>
+            this.UpdateStatusText(textFlow, text, font, clearScreen, Color.White);
 
-        public void SetEnableButtonNext(bool enable) {
-            //if (this.bottomBar.ButtonNext == null)
-            //    return;
+        public void UpdateStatusText(TextFlow textFlow, string text, Font font, bool clearScreen, Color color) {
+            if (textFlow == null) return;
 
-            //this.bottomBar.ButtonNext.Visibility = enable ? Visibility.Visible : Visibility.Collapsed;
-
-        }
-
-        public void UpdateStatusText(TextFlow textFlow, string text, Font font, bool clearscreen) => this.UpdateStatusText(textFlow, text, font, clearscreen, Color.White);
-
-        public void UpdateStatusText(TextFlow textFlow, string text, Font font, bool clearscreen, Color color) {
-
-            var timeout = 100;
-            var count = 0;
-
-            if (textFlow == null)
-                goto _return;
-
+            int expectedCount;
             lock (textFlow) {
-
-                count = textFlow.TextRuns.Count + 2;
+                expectedCount = textFlow.TextRuns.Count + 2;
             }
 
-            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(timeout), _ => {
-
-                if (textFlow == null)
-                    return null;
-
+            Application.Current.Dispatcher.Invoke(TimeSpan.FromMilliseconds(100), _ => {
+                if (textFlow == null) return null;
                 lock (textFlow) {
-                    if (clearscreen)
+                    if (clearScreen)
                         textFlow.TextRuns.Clear();
 
                     textFlow.TextRuns.Add(text, font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(color.R, color.G, color.B));
                     textFlow.TextRuns.Add(TextRun.EndOfLine);
-
                     return null;
                 }
-
             }, null);
 
-            if (textFlow == null)
-                goto _return;
-
+            // Wait for the dispatched mutation to land so the caller can chain
+            // updates without races against TextRuns.Count.
             lock (textFlow) {
-
-                if (clearscreen) {
-                    while (textFlow.TextRuns.Count < 2) {
-                        Thread.Sleep(1);
-                    }
-                }
-                else {
-                    while (textFlow.TextRuns.Count < count) {
-                        Thread.Sleep(1);
-                    }
+                var target = clearScreen ? 2 : expectedCount;
+                while (textFlow.TextRuns.Count < target) {
+                    Thread.Sleep(1);
                 }
             }
-_return:
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
         }
     }
 }

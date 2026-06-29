@@ -10,7 +10,7 @@
 
 namespace Demos.Properties
 {
-    
+
     internal partial class Resources
     {
         private static System.Resources.ResourceManager manager;
@@ -37,7 +37,6 @@ namespace Demos.Properties
         internal enum BitmapResources : short
         {
             Qspi = -32580,
-            Template = -21726,
             settingImage = -17023,
             Canfd = -16516,
             Ethernet = -16161,
@@ -47,23 +46,13 @@ namespace Demos.Properties
             Uart = 11521,
             Sd = 12737,
             Rtc = 14704,
-            Wifi = 17372,
             Color = 18291,
             Basictest = 21348,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short
         {
-            droid_reg10 = -27850,
-            droid_reg12 = -27848,
-            droid_reg11 = -27847,
-            droid_reg14 = -27846,
-            droid_reg18 = -27842,
-            droid_reg24 = -13442,
-            droid_reg09 = -7428,
             droid_reg08 = -7427,
-            droid_reg32 = 14655,
-            droid_reg48 = 24547,
         }
     }
 }

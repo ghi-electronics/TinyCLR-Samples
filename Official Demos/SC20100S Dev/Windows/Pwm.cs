@@ -1,230 +1,154 @@
-using System;
-using System.Collections;
-using System.Drawing;
-using System.Text;
 using System.Threading;
 using Demos.Properties;
 using GHIElectronics.TinyCLR.Devices.Gpio;
-using GHIElectronics.TinyCLR.Native;
+using GHIElectronics.TinyCLR.Devices.Pwm;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
+using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
+using SystemDrawing = System.Drawing;
 
 namespace Demos {
-    public class PwmWindow : ApplicationWindow {
-        private Canvas canvas; // can be StackPanel
-
-        private const string Instruction1 = "This will test Pwm on two leds: ";
-        private const string Instruction2 = "- Red led connect to PB0";
-        private const string Instruction3 = "- Green led connect to PH11 ";
-        private const string Instruction4 = " ";
-        private const string Instruction5 = "Press Test button when you ready.";
-        private const string Instruction6 = " ";
-        private const string Instruction7 = " ";
-
-        private const string Instruction8 = " ";
-
-        private const string StatusPass1 = "The test is passed if red led is";
-        private const string StatusPass2 = "changing brighness, and green is";
-        private const string StatusPass3 = "blinking.";
-
-        private Font font;
-
-        private bool isRuning;
-
+    internal class PwmWindow : ApplicationWindow {
+        private Canvas canvas;
+        private SystemDrawing.Font font;
         private TextFlow textFlow;
+        private bool isRunning;
 
-        public PwmWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
+        private const string Instruction1 = "This will test PWM on two leds:";
+        private const string Instruction2 = "- Red led connected to PB0";
+        private const string Instruction3 = "- Green led connected to PE11";
+        private const string Instruction4 = " ";
+        private const string Instruction5 = "Press Test when you are ready.";
 
+        private const string StatusPass1 = "The test passes if red is";
+        private const string StatusPass2 = "changing brightness and green";
+        private const string StatusPass3 = "is blinking.";
+
+        public PwmWindow(Resources.BitmapResources icon, string text, int width, int height) : base(icon, text, width, height) {
         }
 
         private void Initialize() {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
-
             this.textFlow = new TextFlow();
+            this.AppendInstruction(Instruction1);
+            this.AppendInstruction(Instruction2);
+            this.AppendInstruction(Instruction3);
+            this.AppendInstruction(Instruction4);
+            this.AppendInstruction(Instruction5);
+        }
 
-            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+        private void AppendInstruction(string text) {
+            this.textFlow.TextRuns.Add(text, this.font, Colors.White);
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction6, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction7, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction8, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
         }
 
         private void Deinitialize() {
-
-            if (this.BottomBar != null) {
-                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
-            }
+            if (this.BottomBar != null)
+                this.OnBottomBarButtonUpEvent -= this.OnHardwareButtonUp;
 
             this.textFlow.TextRuns.Clear();
             this.canvas.Children.Clear();
-
             this.font.Dispose();
-
             this.textFlow = null;
             this.canvas = null;
-
         }
 
         protected override void Active() {
-            // To initialize, reset your variable, design...
             this.Initialize();
-
             this.canvas = new Canvas();
-
             this.Child = this.canvas;
-
             this.ClearScreen();
             this.CreateWindow();
         }
 
-        private void TemplateWindow_OnBottomBarButtonBackTouchUpEvent(object sender, RoutedEventArgs e) =>
-            // This is Button Back Touch event
-            this.Close();
-
-        private void TemplateWindow_OnBottomBarButtonNextTouchUpEvent(object sender, RoutedEventArgs e) =>
-            // This is Button Next Touch event
-            this.Close();
-
         protected override void Deactive() {
-            this.isRuning = false;
-
-            Thread.Sleep(100); // Wait for test thread is stop => no update canvas
-
+            this.isRunning = false;
+            Thread.Sleep(100);
             this.Deinitialize();
         }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();
 
-            // Enable TopBar
             if (this.TopBar != null) {
-                Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
+                Canvas.SetLeft(this.TopBar, 0);
+                Canvas.SetTop(this.TopBar, 0);
                 this.canvas.Children.Add(this.TopBar);
             }
 
-            // Enable BottomBar - If needed
             if (this.BottomBar != null) {
-                Canvas.SetLeft(this.BottomBar, 0); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
+                Canvas.SetLeft(this.BottomBar, 0);
+                Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
                 this.canvas.Children.Add(this.BottomBar);
-
-                // Regiter touch event for button back or next
-                // Regiter Button event
-                this.OnBottomBarButtonUpEvent += this.TemplateWindow_OnBottomBarButtonUpEvent;
+                this.OnBottomBarButtonUpEvent += this.OnHardwareButtonUp;
             }
         }
 
-        private void TemplateWindow_OnBottomBarButtonUpEvent(object sender, RoutedEventArgs e) {
-            var buttonSource = (GHIElectronics.TinyCLR.UI.Input.ButtonEventArgs)e;
-
+        private void OnHardwareButtonUp(object sender, RoutedEventArgs e) {
+            var buttonSource = (ButtonEventArgs)e;
             switch (buttonSource.Button) {
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Left:
-                    // close this window, back to previous window ???
+                case HardwareButton.Left:
                     this.Close();
                     break;
-
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
-                    if (this.isRuning == false) {
-
-                        this.SetEnableButtonNext(false);
-
+                case HardwareButton.Right:
+                case HardwareButton.Select:
+                    if (!this.isRunning)
                         new Thread(this.ThreadTest).Start();
-                    }
                     break;
-
             }
         }
 
         private void CreateWindow() {
-            var startX = 5;
-            var startY = 20;
-
-            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
+            Canvas.SetLeft(this.textFlow, 5);
+            Canvas.SetTop(this.textFlow, 20);
             this.canvas.Children.Add(this.textFlow);
         }
 
-
         private void ThreadTest() {
-
-            this.isRuning = true;
-            //Because of https://github.com/ghi-electronics/TinyCLR-Libraries/issues/642
-            // the green led PE11 is gpio for now.
+            // Green LED on PE11 is toggled as plain GPIO rather than PWM —
+            // see TinyCLR-Libraries#642 (Timer.Pwm.Controller1 channel mapping
+            // for PE11 conflicts with the display SPI clock pin on this board).
+            this.isRunning = true;
 
             var gpioController = GpioController.GetDefault();
-
-            var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.Timer.Pwm.Controller3.Id);
-            //var pwmController1 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20100.PwmChannel.Controller1.Id);
-
+            var pwmController3 = PwmController.FromName(SC20100.Timer.Pwm.Controller3.Id);
             var pwmPinPB0 = pwmController3.OpenChannel(SC20100.Timer.Pwm.Controller3.PB0);
-            //var pwmPinPE11 = pwmController1.OpenChannel(SC20100.PwmChannel.Controller1.PE11);
-            var pwmPinPE11 = gpioController.OpenPin(SC20100.GpioPin.PE11);
+            var greenLed = gpioController.OpenPin(SC20100.GpioPin.PE11);
 
-            pwmPinPE11.SetDriveMode(GpioPinDriveMode.Output);
-
+            greenLed.SetDriveMode(GpioPinDriveMode.Output);
             pwmController3.SetDesiredFrequency(1000);
-            //pwmController1.SetDesiredFrequency(1000);
-
             pwmPinPB0.SetActiveDutyCyclePercentage(0.0);
-            //pwmPinPE11.SetActiveDutyCyclePercentage(0.0);
-
-            var value = 0.0;
-            var dir = 1;
 
             this.UpdateStatusText(StatusPass1, true);
             this.UpdateStatusText(StatusPass2, false);
             this.UpdateStatusText(StatusPass3, false);
 
-            while (this.isRuning) {
+            var value = 0.0;
+            var dir = 1;
+
+            while (this.isRunning) {
                 for (var i = 0; i < 10; i++) {
                     value += 0.1 * dir;
 
                     pwmPinPB0.Start();
-                    //pwmPinPE11.Start();
-                    pwmPinPE11.Write(pwmPinPE11.Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
+                    greenLed.Write(greenLed.Read() == GpioPinValue.Low ? GpioPinValue.High : GpioPinValue.Low);
 
                     Thread.Sleep(100);
 
                     pwmPinPB0.Stop();
-                    //pwmPinPE11.Stop();
-
                     pwmPinPB0.SetActiveDutyCyclePercentage(value);
-                    //pwmPinPE11.SetActiveDutyCyclePercentage(value);
                 }
 
-                dir = 0 - dir;
+                dir = -dir;
             }
 
             pwmPinPB0.Dispose();
-            pwmPinPE11.Dispose();
-
-            this.isRuning = false;
-
-            return;
+            greenLed.Dispose();
         }
 
-        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
-
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
+        private void UpdateStatusText(string text, bool clearScreen) =>
+            this.UpdateStatusText(this.textFlow, text, this.font, clearScreen, SystemDrawing.Color.White);
     }
 }

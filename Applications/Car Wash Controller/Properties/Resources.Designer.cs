@@ -10,7 +10,7 @@
 
 namespace CarWashExample.Properties
 {
-    
+
     internal partial class Resources
     {
         private static System.Resources.ResourceManager manager;
@@ -36,37 +36,17 @@ namespace CarWashExample.Properties
         [System.SerializableAttribute()]
         internal enum BitmapResources : short
         {
-            DropdownButton_Down = -31110,
             visa = -21004,
-            Button_Down = -18532,
-            Button_Up = -12892,
-            ProgressBar_Fill = -12135,
             paypal = -11989,
-            Modal = -11358,
-            RadioButton = 1102,
-            DropdownText_Up = 1846,
-            DropdownButton_Up = 4119,
             master = 10916,
-            DropdownText_Down = 13519,
-            ProgressBar = 15350,
-            CheckBox_Off = 23409,
-            CheckBox_On = 27788,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short
         {
-            droid_reg10 = -27850,
             droid_reg12 = -27848,
-            droid_reg11 = -27847,
             droid_reg14 = -27846,
-            droid_reg18 = -27842,
-            droid_reg24 = -13442,
-            droid_reg09 = -7428,
-            droid_reg08 = -7427,
             small = 13070,
-            droid_reg32 = 14655,
             NinaB = 18060,
-            droid_reg48 = 24547,
         }
     }
 }

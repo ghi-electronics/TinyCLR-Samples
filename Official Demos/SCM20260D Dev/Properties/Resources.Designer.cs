@@ -59,8 +59,6 @@ namespace Demos.Properties
             droid_reg12 = -27848,
             droid_reg11 = -27847,
             droid_reg14 = -27846,
-            droid_reg18 = -27842,
-            droid_reg24 = -13442,
             droid_reg09 = -7428,
             droid_reg08 = -7427,
         }

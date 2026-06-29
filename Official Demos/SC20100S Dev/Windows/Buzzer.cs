@@ -1,187 +1,136 @@
-using System;
-using System.Collections;
-using System.Drawing;
-using System.Text;
 using System.Threading;
 using Demos.Properties;
-using GHIElectronics.TinyCLR.Native;
+using GHIElectronics.TinyCLR.Devices.Pwm;
 using GHIElectronics.TinyCLR.Pins;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
+using GHIElectronics.TinyCLR.UI.Input;
 using GHIElectronics.TinyCLR.UI.Media;
+using SystemDrawing = System.Drawing;
 
 namespace Demos {
-    public class BuzzerWindow : ApplicationWindow {
-        private Canvas canvas; // can be StackPanel
+    internal class BuzzerWindow : ApplicationWindow {
+        private Canvas canvas;
+        private SystemDrawing.Font font;
+        private TextFlow textFlow;
+        private bool isRunning;
 
         private const string Instruction1 = "This test Buzzer:";
         private const string Instruction2 = " First sound at 500Hz";
-        private const string Instruction3 = " Second sound at 1000";
+        private const string Instruction3 = " Second sound at 1000Hz";
         private const string Instruction4 = " Third sound at 2000Hz";
-        private const string Instruction5 = "Press Test button when you ready.";
+        private const string Instruction5 = "Press Test button when you are ready.";
 
-        private Font font;
-        private TextFlow textFlow;
-        private bool isRuning;
-
-        public BuzzerWindow(Bitmap icon, string text, int width, int height) : base(icon, text, width, height) {
-
-
+        public BuzzerWindow(Resources.BitmapResources icon, string text, int width, int height) : base(icon, text, width, height) {
         }
 
         private void Initialize() {
             this.font = Resources.GetFont(Resources.FontResources.droid_reg08);
-
             this.textFlow = new TextFlow();
+            this.AppendInstruction(Instruction1);
+            this.AppendInstruction(Instruction2);
+            this.AppendInstruction(Instruction3);
+            this.AppendInstruction(Instruction4);
+            this.AppendInstruction(Instruction5);
+        }
 
-            this.textFlow.TextRuns.Add(Instruction1, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
+        private void AppendInstruction(string text) {
+            this.textFlow.TextRuns.Add(text, this.font, Colors.White);
             this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction2, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction3, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction4, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
-            this.textFlow.TextRuns.Add(Instruction5, this.font, GHIElectronics.TinyCLR.UI.Media.Color.FromRgb(0xFF, 0xFF, 0xFF));
-            this.textFlow.TextRuns.Add(TextRun.EndOfLine);
-
         }
 
         private void Deinitialize() {
-            if (this.BottomBar != null) {
-                this.OnBottomBarButtonUpEvent -= this.TemplateWindow_OnBottomBarButtonUpEvent;
-            }
+            if (this.BottomBar != null)
+                this.OnBottomBarButtonUpEvent -= this.OnHardwareButtonUp;
 
             this.textFlow.TextRuns.Clear();
             this.canvas.Children.Clear();
-
             this.font.Dispose();
-
             this.textFlow = null;
             this.canvas = null;
         }
 
         protected override void Active() {
-            // To initialize, reset your variable, design...
             this.Initialize();
-
             this.canvas = new Canvas();
-
             this.Child = this.canvas;
-
             this.ClearScreen();
             this.CreateWindow();
         }
 
-        protected override void Deactive() =>
-            // To stop or free, uinitialize variable resource
+        protected override void Deactive() {
+            this.isRunning = false;
+            Thread.Sleep(10);
             this.Deinitialize();
+        }
 
         private void ClearScreen() {
             this.canvas.Children.Clear();
 
-            // Enable TopBar
             if (this.TopBar != null) {
-                Canvas.SetLeft(this.TopBar, 0); Canvas.SetTop(this.TopBar, 0);
+                Canvas.SetLeft(this.TopBar, 0);
+                Canvas.SetTop(this.TopBar, 0);
                 this.canvas.Children.Add(this.TopBar);
             }
 
-            // Enable BottomBar - If needed
             if (this.BottomBar != null) {
-                Canvas.SetLeft(this.BottomBar, 0); Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
+                Canvas.SetLeft(this.BottomBar, 0);
+                Canvas.SetTop(this.BottomBar, this.Height - this.BottomBar.Height);
                 this.canvas.Children.Add(this.BottomBar);
-
-                // Regiter touch event for button back or next
-                // Regiter Button event
-                this.OnBottomBarButtonUpEvent += this.TemplateWindow_OnBottomBarButtonUpEvent;
+                this.OnBottomBarButtonUpEvent += this.OnHardwareButtonUp;
             }
-
         }
 
-        private void TemplateWindow_OnBottomBarButtonUpEvent(object sender, RoutedEventArgs e) {
-            var buttonSource = (GHIElectronics.TinyCLR.UI.Input.ButtonEventArgs)e;
+        private void OnHardwareButtonUp(object sender, RoutedEventArgs e) {
+            var buttonSource = (ButtonEventArgs)e;
 
             switch (buttonSource.Button) {
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Left:
-                    // close this window, back to previous window ???
+                case HardwareButton.Left:
                     this.Close();
                     break;
-
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Right:
-                case GHIElectronics.TinyCLR.UI.Input.HardwareButton.Select:
-                    if (this.isRuning == false) {
+                case HardwareButton.Right:
+                case HardwareButton.Select:
+                    if (!this.isRunning)
                         new Thread(this.ThreadTest).Start();
-                    }
                     break;
-
-
             }
         }
 
         private void CreateWindow() {
-            var startX = 5;
-            var startY = 20;
-
-            Canvas.SetLeft(this.textFlow, startX); Canvas.SetTop(this.textFlow, startY);
+            Canvas.SetLeft(this.textFlow, 5);
+            Canvas.SetTop(this.textFlow, 20);
             this.canvas.Children.Add(this.textFlow);
         }
 
-
         private void ThreadTest() {
+            this.isRunning = true;
 
-            this.isRuning = true;
-
-            using (var pwmController3 = GHIElectronics.TinyCLR.Devices.Pwm.PwmController.FromName(SC20260.Timer.Pwm.Controller3.Id)) {
-
-                var pwmPinPB1 = pwmController3.OpenChannel(SC20260.Timer.Pwm.Controller3.PB1);
-
-                pwmController3.SetDesiredFrequency(500);
+            using (var pwmController3 = PwmController.FromName(SC20100.Timer.Pwm.Controller3.Id)) {
+                var pwmPinPB1 = pwmController3.OpenChannel(SC20100.Timer.Pwm.Controller3.PB1);
                 pwmPinPB1.SetActiveDutyCyclePercentage(0.5);
 
-                this.UpdateStatusText("Generate Pwm 500Hz...", true);
-
-                pwmPinPB1.Start();
-
-                Thread.Sleep(1000);
-
-                pwmPinPB1.Stop();
-
-                this.UpdateStatusText("Generate Pwm 1000Hz...", false);
-
-                pwmController3.SetDesiredFrequency(1000);
-
-                pwmPinPB1.Start();
-
-                Thread.Sleep(1000);
-
-                this.UpdateStatusText("Generate Pwm 2000Hz...", false);
-
-                pwmController3.SetDesiredFrequency(2000);
-
-                pwmPinPB1.Start();
-
-                Thread.Sleep(1000);
-
-                pwmPinPB1.Stop();
+                this.PlayTone(pwmController3, pwmPinPB1, 500,  "Generate Pwm 500Hz...",  true);
+                this.PlayTone(pwmController3, pwmPinPB1, 1000, "Generate Pwm 1000Hz...", false);
+                this.PlayTone(pwmController3, pwmPinPB1, 2000, "Generate Pwm 2000Hz...", false);
 
                 pwmPinPB1.Dispose();
 
-                this.UpdateStatusText("Testing is success if you heard three", false);
-                this.UpdateStatusText("kind of sounds!", false);
+                this.UpdateStatusText("Test passes if you heard three", false);
+                this.UpdateStatusText("different tones!", false);
             }
 
-            this.isRuning = false;
-
-            return;
-
+            this.isRunning = false;
         }
 
-        private void UpdateStatusText(string text, bool clearscreen) => this.UpdateStatusText(text, clearscreen, System.Drawing.Color.White);
+        private void PlayTone(PwmController controller, PwmChannel channel, int frequency, string status, bool clearScreen) {
+            this.UpdateStatusText(status, clearScreen);
+            controller.SetDesiredFrequency(frequency);
+            channel.Start();
+            Thread.Sleep(1000);
+            channel.Stop();
+        }
 
-        private void UpdateStatusText(string text, bool clearscreen, System.Drawing.Color color) => this.UpdateStatusText(this.textFlow, text, this.font, clearscreen, color);
+        private void UpdateStatusText(string text, bool clearScreen) =>
+            this.UpdateStatusText(this.textFlow, text, this.font, clearScreen, SystemDrawing.Color.White);
     }
 }

@@ -1,29 +1,25 @@
-using System;
-using System.Collections;
-using System.Text;
-using System.Threading;
 using GHIElectronics.TinyCLR.Devices.Display;
 using GHIElectronics.TinyCLR.Devices.Gpio;
 using GHIElectronics.TinyCLR.Pins;
 
 namespace Demos {
-    static class Display {        
-        public static DisplayController DisplayController {get; set;}
+    static class Display {
+        public const int Width = 480;
+        public const int Height = 272;
+
+        public static DisplayController DisplayController { get; set; }
 
         public static void InitializeDisplay() {
             var backlight = GpioController.GetDefault().OpenPin(SC20260.GpioPin.PA15);
-
             backlight.SetDriveMode(GpioPinDriveMode.Output);
-
             backlight.Write(GpioPinValue.High);
 
-            DisplayController = GHIElectronics.TinyCLR.Devices.Display.DisplayController.GetDefault();
+            DisplayController = DisplayController.GetDefault();
 
-            var controllerSetting = new GHIElectronics.TinyCLR.Devices.Display.ParallelDisplayControllerSettings {
-                // 480x272
-                Width = 480,
-                Height = 272,
-                DataFormat = GHIElectronics.TinyCLR.Devices.Display.DisplayDataFormat.Rgb565,
+            var controllerSetting = new ParallelDisplayControllerSettings {
+                Width = Width,
+                Height = Height,
+                DataFormat = DisplayDataFormat.Rgb565,
                 PixelClockRate = 10000000,
                 PixelPolarity = false,
                 DataEnablePolarity = false,
@@ -41,8 +37,5 @@ namespace Demos {
             DisplayController.SetConfiguration(controllerSetting);
             DisplayController.Enable();
         }
-
-        public static int Width => 480;
-        public static int Height => 272;
     }
 }

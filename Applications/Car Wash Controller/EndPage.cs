@@ -1,163 +1,65 @@
+using CarWashExample.Properties;
 using GHIElectronics.TinyCLR.UI;
 using GHIElectronics.TinyCLR.UI.Controls;
 using GHIElectronics.TinyCLR.UI.Media;
-using System;
-using System.Collections;
-using System.Drawing;
-using System.Text;
-using System.Threading;
+using SystemDrawing = System.Drawing;
 
-using CarWashExample.Properties;
-
-namespace CarWashExample
-{
-    public sealed class EndPage
-    {
-        private Canvas canvas;        
-        private Font fontB;
+namespace CarWashExample {
+    internal sealed class EndPage {
+        private readonly Canvas canvas = new Canvas();
+        private readonly SystemDrawing.Font font = Resources.GetFont(Resources.FontResources.NinaB);
 
         public UIElement Elements { get; }
 
-        public EndPage()
-        {
-            this.canvas = new Canvas();
-            this.fontB = Resources.GetFont(Resources.FontResources.NinaB);
-            this.Elements = this.CreatePage();
-        }
-        public void Active()
-        {
-            // Initialize something
-        }
+        public EndPage() => this.Elements = this.CreatePage();
 
-        public void Deactive()
-        {
-            // Deinit something
-        }
+        public void Active() { }
+        public void Deactive() { }
 
-        private UIElement CreatePage()
-        {
-            this.canvas.Children.Clear();
+        private UIElement CreatePage() {
+            this.AddLabel("Will you:", 10, 10);
 
-            var willYouText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Will you:")
-            {
-                ForeColor = Colors.White,
-            };
-
-            Canvas.SetLeft(willYouText, 10);
-            Canvas.SetTop(willYouText, 10);
-
-            this.canvas.Children.Add(willYouText);
-
-
+            // CheckBox + three radio buttons stacked vertically with labels.
             var checkbox = new CheckBox();
-
-            Canvas.SetTop(checkbox, 50);
             Canvas.SetLeft(checkbox, 50);
-
+            Canvas.SetTop(checkbox, 50);
             this.canvas.Children.Add(checkbox);
+            this.AddLabel("Back to us.", 50 + checkbox.Width + 5, 50);
 
-            var backtousText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Back to us.")
-            {
-                ForeColor = Colors.White,
-            };
+            this.AddRadioOption("radio1", "Sell your vehicle.",   50, 100);
+            this.AddRadioOption("radio2", "Donate your vehicle.", 50, 150);
+            this.AddRadioOption("radio3", "Not sure yet.",        50, 200);
 
-            Canvas.SetLeft(backtousText, 50 + checkbox.Width + 5);
-            Canvas.SetTop(backtousText, 50);
-
-            this.canvas.Children.Add(backtousText);
-
-            var radioButton = new RadioButton()
-            {
-                Name = "radio1",
-
-            };
-
-            Canvas.SetTop(radioButton, 100);
-            Canvas.SetLeft(radioButton, 50);
-
-            this.canvas.Children.Add(radioButton);
-
-            var sellyourverhicleText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Sell your vehicle.")
-            {
-                ForeColor = Colors.White,
-            };
-
-            Canvas.SetLeft(sellyourverhicleText, 50 + radioButton.Width + 5);
-            Canvas.SetTop(sellyourverhicleText, 100);
-
-            this.canvas.Children.Add(sellyourverhicleText);
-
-            var radioButton2 = new RadioButton()
-            {
-                Name = "radio2",
-
-            };
-
-            Canvas.SetTop(radioButton2, 150);
-            Canvas.SetLeft(radioButton2, 50);
-
-            this.canvas.Children.Add(radioButton2);
-
-            var donateyourverhicleText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Donate your vehicle.")
-            {
-                ForeColor = Colors.White,
-            };
-
-            Canvas.SetLeft(donateyourverhicleText, 50 + radioButton2.Width + 5);
-            Canvas.SetTop(donateyourverhicleText, 150);
-
-            this.canvas.Children.Add(donateyourverhicleText);
-
-            var radioButton3 = new RadioButton()
-            {
-                Name = "radio3",
-
-            };
-
-            Canvas.SetTop(radioButton3, 200);
-            Canvas.SetLeft(radioButton3, 50);
-
-            this.canvas.Children.Add(radioButton3);
-
-            var notsureText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Not sure yet.")
-            {
-                ForeColor = Colors.White,
-            };
-
-            Canvas.SetLeft(notsureText, 50 + radioButton3.Width + 5);
-            Canvas.SetTop(notsureText, 200);
-
-            this.canvas.Children.Add(notsureText);
-
-            var doneText = new GHIElectronics.TinyCLR.UI.Controls.Text(this.fontB, "Done!")
-            {
-                ForeColor = Colors.Black,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-
-            };
-
-            var doneButton = new Button()
-            {
-                Child = doneText,
+            var doneButton = new Button {
+                Child = new Text(this.font, "Done!") {
+                    ForeColor = Colors.Black,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
                 Width = 100,
                 Height = 40,
             };
-
+            doneButton.Click += (s, e) => Program.NavigateTo(Program.SelectServicePage.Elements);
             Canvas.SetLeft(doneButton, 370);
             Canvas.SetTop(doneButton, 220);
-
             this.canvas.Children.Add(doneButton);
-
-            doneButton.Click += this.DoneButton_Click;
 
             return this.canvas;
         }
 
-        private void DoneButton_Click(object sender, RoutedEventArgs e)
-        {
-            Program.WpfWindow.Child = Program.SelectServicePage.Elements;
-            Program.WpfWindow.Invalidate();
+        private void AddLabel(string text, int x, int y) {
+            var label = new Text(this.font, text) { ForeColor = Colors.White };
+            Canvas.SetLeft(label, x);
+            Canvas.SetTop(label, y);
+            this.canvas.Children.Add(label);
+        }
+
+        private void AddRadioOption(string name, string text, int x, int y) {
+            var radio = new RadioButton { Name = name };
+            Canvas.SetLeft(radio, x);
+            Canvas.SetTop(radio, y);
+            this.canvas.Children.Add(radio);
+            this.AddLabel(text, x + radio.Width + 5, y);
         }
     }
 }

@@ -1,6 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\GHIElectronics.TinyCLR.Core.2.2.0.6000\build\net48\GHIElectronics.TinyCLR.Core.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Core.2.2.0.6000\build\net48\GHIElectronics.TinyCLR.Core.props')" />  
+  <Import Project="packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Devices.Network.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Network.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Devices.Network.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Network.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Devices.Storage.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Storage.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Devices.Storage.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Storage.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.IO.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.IO.props" Condition="Exists('packages\GHIElectronics.TinyCLR.IO.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.IO.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Networking.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Networking.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Networking.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Networking.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Native.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Native.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Core.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Core.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Core.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,9 +20,10 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <ProjectTypeGuids>{A1948822-69DD-4150-919B-F3F42EFB71CC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <NoStdLib>true</NoStdLib>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,26 +45,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Input.cs" />
-    <Compile Include="Utils\BottomBar.cs" />
-    <Compile Include="Windows\Adc.cs" />
-    <Compile Include="Windows\ApplicationWindow.cs" />
     <Compile Include="Display.cs" />
-    <Compile Include="Windows\Buzzer.cs" />
-    <Compile Include="Windows\CameraWindow.cs" />
-    <Compile Include="Windows\CanfdWindow.cs" />
-    <Compile Include="Windows\ColorWindow.cs" />
-    <Compile Include="Windows\Dac.cs" />
-    <Compile Include="Windows\BasicTestWindow.cs" />
-    <Compile Include="Windows\Pwm.cs" />
-    <Compile Include="Windows\QspiWindow.cs" />
-    <Compile Include="Windows\RtcWindow.cs" />
-    <Compile Include="Windows\Sd.cs" />
-    <Compile Include="Windows\UartWindow.cs" />
-    <Compile Include="Windows\Usb.cs" />
-    <Compile Include="Windows\WifiWindow.cs" />
-    <Compile Include="Windows\EthernetWindow.cs" />
-    <Compile Include="Utils\Icon.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="MainWindow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,23 +55,51 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Windows\SystemWindow.cs" />
+    <Compile Include="Utils\BottomBar.cs" />
+    <Compile Include="Utils\Icon.cs" />
     <Compile Include="Utils\TopBar.cs" />
+    <Compile Include="Windows\Adc.cs" />
+    <Compile Include="Windows\ApplicationWindow.cs" />
+    <Compile Include="Windows\BasicTestWindow.cs" />
+    <Compile Include="Windows\Buzzer.cs" />
+    <Compile Include="Windows\CameraWindow.cs" />
+    <Compile Include="Windows\CanfdWindow.cs" />
+    <Compile Include="Windows\ColorWindow.cs" />
+    <Compile Include="Windows\Dac.cs" />
+    <Compile Include="Windows\EthernetWindow.cs" />
+    <Compile Include="Windows\Pwm.cs" />
+    <Compile Include="Windows\QspiWindow.cs" />
+    <Compile Include="Windows\RtcWindow.cs" />
+    <Compile Include="Windows\Sd.cs" />
+    <Compile Include="Windows\SystemWindow.cs" />
     <Compile Include="Windows\TemplateWindow.cs" />
+    <Compile Include="Windows\UartWindow.cs" />
+    <Compile Include="Windows\Usb.cs" />
+    <Compile Include="Windows\WifiWindow.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Resources\analog.gif" />
+    <None Include="Resources\Camera.gif" />
+    <None Include="Resources\Canfd.gif" />
+    <None Include="Resources\Color.gif" />
     <None Include="Resources\droid_reg08.tinyfnt" />
     <None Include="Resources\droid_reg09.tinyfnt" />
     <None Include="Resources\droid_reg10.tinyfnt" />
     <None Include="Resources\droid_reg11.tinyfnt" />
     <None Include="Resources\droid_reg12.tinyfnt" />
     <None Include="Resources\droid_reg14.tinyfnt" />
-    <None Include="Resources\droid_reg18.tinyfnt" />
-    <None Include="Resources\droid_reg24.tinyfnt" />
-    <None Include="Resources\droid_reg32.tinyfnt" />
-    <None Include="Resources\droid_reg48.tinyfnt" />
+    <None Include="Resources\Generaltest.gif" />
+    <None Include="Resources\Piezo.gif" />
+    <None Include="Resources\Pwm.gif" />
+    <None Include="Resources\Qspi.gif" />
+    <None Include="Resources\Rtc.gif" />
+    <None Include="Resources\Sd.gif" />
+    <None Include="Resources\settingImage.gif" />
+    <None Include="Resources\Template.gif" />
+    <None Include="Resources\Uart.gif" />
+    <None Include="Resources\Usb.gif" />
+    <None Include="Resources\Wifi.gif" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -90,157 +108,96 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Wifi.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\analog.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Canfd.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Color.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Piezo.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Pwm.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Qspi.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Rtc.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Sd.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\settingImage.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Template.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Uart.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Usb.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Generaltest.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Camera.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="GHIElectronics.TinyCLR.Cryptography, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Cryptography.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Cryptography.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Cryptography, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Cryptography.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Cryptography.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Adc, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Adc.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Adc.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Security.Cryptography, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Cryptography.3.0.0.1000-prerelease\lib\net48\System.Security.Cryptography.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Camera, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Camera.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Camera.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Adc, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Adc.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Adc.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Can, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Can.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Can.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Camera, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Camera.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Camera.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Dac, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Dac.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Dac.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Can, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Can.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Can.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Display, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Display.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Display.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Dac, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Dac.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Dac.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Gpio, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Gpio.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Display, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Display.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Display.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.I2c, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.I2c.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.I2c.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Gpio, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Gpio.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Network, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Network.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Network.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.I2c, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.I2c.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.I2c.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Pwm, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Pwm.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Pwm.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Network, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Network.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Network.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Rtc, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Rtc.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Rtc.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Pwm, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Pwm.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Pwm.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Spi, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Spi.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Spi.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Rtc, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Rtc.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Rtc.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Storage, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Storage.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Storage.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Spi, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Spi.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Spi.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Uart, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Uart.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Uart.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Storage, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Storage.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Usb, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Usb.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.Usb.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Uart, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Uart.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Uart.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.UsbHost, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.UsbHost.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Devices.UsbHost.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Usb, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Usb.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Usb.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Drawing.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.UsbHost, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.UsbHost.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.UsbHost.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drawing.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.IO, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.IO.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.IO.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Drivers.Omnivision.Ov9655.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Native, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Native.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Native.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.IO, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.IO.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.IO.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Networking, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Networking.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Networking.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Native, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Native.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Pins.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.Pins.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Networking, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Networking.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.UI, Version=2.2.0.6000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.UI.2.2.0.6000\lib\net48\GHIElectronics.TinyCLR.UI.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+    </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.UI, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.UI.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Device.Gpio, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\lib\net48\System.Device.Gpio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>    
-    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Core.2.2.0.6000\build\net48\GHIElectronics.TinyCLR.Core.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Core.2.2.0.6000\build\net48\GHIElectronics.TinyCLR.Core.props'))" />
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Core.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Core.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Core.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Core.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Native.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Native.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props'))" />
   </Target>
 </Project>
