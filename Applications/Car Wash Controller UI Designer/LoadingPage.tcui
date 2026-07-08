@@ -1,0 +1,7 @@
+<!-- Ported from LoadingPage.CreatePage(). Static layout only; the DispatcherTimer that advances the
+     progress bar (and navigates on completion) lives in LoadingPage.cs. -->
+<!-- Background paints on the device too (Panel.Background, WPF parity) — matches the designer. -->
+<Canvas Class="CarWashExample.LoadingPage" Width="480" Height="272" Background="linear:Blue,Teal">
+  <Text TextContent="Processing your payment..." Font="NinaB" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="140" Canvas.Top="220" />
+  <ProgressBar Name="ProgressBar" MaxValue="100" Value="0" Width="200" Height="20" Canvas.Left="140" Canvas.Top="240" />
+</Canvas>

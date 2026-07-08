@@ -1,0 +1,22 @@
+<!-- Ported from EndPage.CreatePage(). Fully static (no runtime content) — only the Done handler is in
+     code-behind. Checkbox/radios are 32px wide, so their labels sit at x = 50 + 32 + 5 = 87. -->
+<!-- Background paints on the device too (Panel.Background, WPF parity) — matches the designer. -->
+<Canvas Class="CarWashExample.EndPage" Width="480" Height="272" Background="linear:Blue,Teal">
+  <Text TextContent="Will you:" Font="NinaB" Foreground="White" Canvas.Left="10" Canvas.Top="10" />
+
+  <CheckBox Canvas.Left="50" Canvas.Top="50" />
+  <Text TextContent="Back to us." Font="NinaB" Foreground="White" Canvas.Left="87" Canvas.Top="50" />
+
+  <RadioButton Name="radio1" Canvas.Left="50" Canvas.Top="100" />
+  <Text TextContent="Sell your vehicle." Font="NinaB" Foreground="White" Canvas.Left="87" Canvas.Top="100" />
+
+  <RadioButton Name="radio2" Canvas.Left="50" Canvas.Top="150" />
+  <Text TextContent="Donate your vehicle." Font="NinaB" Foreground="White" Canvas.Left="87" Canvas.Top="150" />
+
+  <RadioButton Name="radio3" Canvas.Left="50" Canvas.Top="200" />
+  <Text TextContent="Not sure yet." Font="NinaB" Foreground="White" Canvas.Left="87" Canvas.Top="200" />
+
+  <Button Width="100" Height="40" Canvas.Left="370" Canvas.Top="220" Click="OnDoneClick">
+    <Text TextContent="Done!" Font="NinaB" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+</Canvas>

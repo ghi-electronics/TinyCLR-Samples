@@ -1,0 +1,37 @@
+<Canvas Class="CarWashExample.SelectServiceWindow" Width="480" Height="272" Background="linear:Blue,Teal">
+  <!-- Service-tier buttons (right column) + their prices. All four buttons share OnServiceButtonClick. -->
+  <Button Width="100" Height="40" Canvas.Left="300" Canvas.Top="15" Click="OnServiceButtonClick">
+    <Text TextContent="Premium" Font="droid_reg12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+  <Button Width="100" Height="40" Canvas.Left="300" Canvas.Top="75" Click="OnServiceButtonClick">
+    <Text TextContent="Standard" Font="droid_reg12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+  <Button Width="100" Height="40" Canvas.Left="300" Canvas.Top="135" Click="OnServiceButtonClick">
+    <Text TextContent="Basic" Font="droid_reg12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+  <Button Width="100" Height="40" Canvas.Left="300" Canvas.Top="195" Click="OnServiceButtonClick">
+    <Text TextContent="Free" Font="droid_reg12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+  <Text TextContent="5.99$" Font="droid_reg14" Foreground="White" Canvas.Left="420" Canvas.Top="25" />
+  <Text TextContent="3.99$" Font="droid_reg14" Foreground="White" Canvas.Left="420" Canvas.Top="85" />
+  <Text TextContent="2.99$" Font="droid_reg14" Foreground="White" Canvas.Left="420" Canvas.Top="145" />
+  <Text TextContent="0.00$" Font="droid_reg14" Foreground="White" Canvas.Left="420" Canvas.Top="205" />
+  <!-- Vertical divider (original used a Line; codegen has no Line, a 1px Rectangle is identical). -->
+  <Rectangle Width="1" Height="250" Fill="Yellow" Canvas.Left="280" Canvas.Top="10" />
+  <!-- Date is filled at runtime in code-behind. -->
+  <Text Name="DateText" TextContent="1 / 1 / 2020" Font="NinaB" Foreground="White" Canvas.Left="100" Canvas.Top="250" />
+  <Text TextContent="Select Vehicle Type:" Font="NinaB" Foreground="White" Canvas.Left="10" Canvas.Top="25" />
+  <!-- ComboBox: shows one selected value collapsed, drops down the list on tap. Items live here in the .tcui. -->
+  <ComboBox Name="VehicleList" Font="NinaB" Width="110" Height="24" SelectedIndex="0" Canvas.Left="160" Canvas.Top="24">
+    <Item>Truck</Item>
+    <Item>Van</Item>
+    <Item>SUV</Item>
+    <Item>Sedan</Item>
+    <Item>Motocycle</Item>
+    <Item>Other</Item>
+  </ComboBox>
+  <!-- Accepted-payment logos. -->
+  <Image Source="visa" Canvas.Left="20" Canvas.Top="175" />
+  <Image Source="master" Canvas.Left="100" Canvas.Top="175" />
+  <Image Source="paypal" Canvas.Left="180" Canvas.Top="175" />
+</Canvas>

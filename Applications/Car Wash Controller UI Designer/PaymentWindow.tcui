@@ -1,0 +1,20 @@
+<!-- Ported from PaymentWindow.CreatePage(). Static layout only; OnScreenKeyboard.Font and the
+     Back/Next handlers (with the confirm MessageBox) live in PaymentWindow.cs. -->
+<!-- Background paints on the device too (Panel.Background, WPF parity) — matches the designer. -->
+<Canvas Class="CarWashExample.PaymentWindow" Width="480" Height="272" Background="linear:Blue,Teal">
+
+  <Text TextContent="Input your credit card number :" Font="NinaB" Foreground="White" Canvas.Left="10"  Canvas.Top="20" />
+  <Text TextContent="Expire date :"                    Font="NinaB" Foreground="White" Canvas.Left="132" Canvas.Top="50" />
+  <Text TextContent="Pin :"                             Font="NinaB" Foreground="White" Canvas.Left="187" Canvas.Top="80" />
+
+  <TextBox Text="#########"  Font="NinaB" Width="120" Height="25" Canvas.Left="250" Canvas.Top="15" />
+  <TextBox Text="01/01/2020" Font="NinaB" Width="120" Height="25" Canvas.Left="250" Canvas.Top="45" />
+  <TextBox Text="0000"       Font="NinaB" Width="120" Height="25" Canvas.Left="250" Canvas.Top="75" />
+
+  <Button Width="100" Height="40" Canvas.Left="10" Canvas.Top="220" Click="OnBackClick">
+    <Text TextContent="Back" Font="NinaB" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+  <Button Width="100" Height="40" Canvas.Left="370" Canvas.Top="220" Click="OnGoClick">
+    <Text TextContent="Next" Font="NinaB" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+</Canvas>

@@ -1,0 +1,7 @@
+<!-- Ported from CarWashPage.CreatePage(). Static layout only; the DispatcherTimer that runs the wash
+     countdown (and navigates on completion) lives in CarWashPage.cs. -->
+<!-- Background paints on the device too (Panel.Background, WPF parity) — matches the designer. -->
+<Canvas Class="CarWashExample.CarWashPage" Width="480" Height="272" Background="linear:Blue,Teal">
+  <Text TextContent="Washing your car..." Font="NinaB" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="140" Canvas.Top="60" />
+  <ProgressBar Name="ProgressBar" MaxValue="100" Value="100" Width="300" Height="40" Canvas.Left="90" Canvas.Top="80" />
+</Canvas>
