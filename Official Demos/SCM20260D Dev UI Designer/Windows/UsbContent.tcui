@@ -1,0 +1,9 @@
+<!-- Ported from UsbWindow: the static layout only. The status TextFlow's text runs and the USB read/write
+     test are driven at runtime by UsbWindow (which hosts this fragment in the ApplicationWindow navigation).
+     TestButton sits at the bottom-left (Height - 30*3/2 = 227 for a 272-tall screen). -->
+<Canvas Class="Demos.UsbContent" Width="480" Height="272">
+  <TextFlow Name="StatusText" Canvas.Left="5" Canvas.Top="40" />
+  <Button Name="TestButton" Width="100" Height="30" Canvas.Left="5" Canvas.Top="227">
+    <Text TextContent="Test Usb" Font="droid_reg12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+</Canvas>

@@ -1,0 +1,14 @@
+<!-- Fragment (panel root => reusable control): the body of the System Information screen.
+     Ported from the hand-coded SystemWindow.CreateWindow(). The code-behind declares
+     `partial class SystemInfoContent : Canvas`, so this whole tree plugs straight into the demo's
+     ApplicationWindow navigation (SystemWindow hosts it and adds the TopBar chrome). The 7 lines match
+     the original: startX=20, startY=40, +30 per line. Runtime values are filled in the code-behind. -->
+<Canvas Class="Demos.SystemInfoContent" Width="480" Height="272">
+  <Text Name="DeviceText"       TextContent="Device: SC20260"                    Font="droid_reg12" Foreground="White" Canvas.Left="20" Canvas.Top="40" />
+  <Text Name="ClockText"        TextContent="Clock: 480MHz"                      Font="droid_reg12" Foreground="White" Canvas.Left="20" Canvas.Top="70" />
+  <Text Name="RamText"          TextContent="Memory: 512KB Total"                Font="droid_reg12" Foreground="White" Canvas.Left="20" Canvas.Top="100" />
+  <Text Name="ExternalRamText"  TextContent="External Memory: 32MB Total"        Font="droid_reg12" Foreground="White" Canvas.Left="20" Canvas.Top="130" />
+  <Text Name="OsText"           TextContent="OS: TinyCLR OS v3.0.0"              Font="droid_reg12" Foreground="White" Canvas.Left="20" Canvas.Top="160" />
+  <Text Name="ManufacturerText" TextContent="Manufacture: GHI Electronics, LLC" Font="droid_reg12" Foreground="White" Canvas.Left="20" Canvas.Top="190" />
+  <Text Name="DemoVersionText"  TextContent="Demo version: 052126"               Font="droid_reg12" Foreground="White" Canvas.Left="20" Canvas.Top="220" />
+</Canvas>

@@ -1,0 +1,14 @@
+<!-- Ported from BasicTestWindow: the static layout only. The status TextFlow's text runs and the full
+     production test sequence are driven at runtime by BasicTestWindow (which hosts this fragment in the
+     ApplicationWindow navigation). The Test and Next buttons share the bottom-left slot (Height - 30*3/2 =
+     227 for a 272-tall screen); only one is shown at a time via Visibility, as the original did by
+     adding/removing them. -->
+<Canvas Class="Demos.BasicTestContent" Width="480" Height="272">
+  <TextFlow Name="StatusText" Canvas.Left="5" Canvas.Top="40" />
+  <Button Name="TestButton" Width="100" Height="30" Canvas.Left="5" Canvas.Top="227">
+    <Text TextContent="Test" Font="droid_reg11" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+  <Button Name="NextButton" Width="100" Height="30" Canvas.Left="5" Canvas.Top="227">
+    <Text TextContent="Next" Font="droid_reg11" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+</Canvas>

@@ -1,0 +1,33 @@
+<!-- Ported from WifiWindow.CreateWindow(): the static layout only. The runtime values (IP/gateway/
+     subnet/DNS labels + status), the SSID/password entry, the Connect button wiring and the WINC15x0
+     bring-up are driven at runtime by WifiWindow (which hosts this fragment in the ApplicationWindow
+     navigation and adds the TopBar chrome). Positions match the original: right column at x=260 stepping
+     +30 from y=40; left column stepping +30 from y=40. The original vertical divider was a
+     Line(0,180) — codegen has no Line, so a 1px-wide Rectangle of the same height is identical. -->
+<Canvas Class="Demos.WifiContent" Width="480" Height="272">
+  <!-- Right column: network properties, filled at runtime by WifiWindow. -->
+  <Text Name="IpAddressLabel"  TextContent="IP Address : " Font="droid_reg12" Foreground="White" Canvas.Left="260" Canvas.Top="40" />
+  <Text Name="GatewayLabel"    TextContent="Gateway    : " Font="droid_reg12" Foreground="White" Canvas.Left="260" Canvas.Top="70" />
+  <Text Name="SubnetMaskLabel" TextContent="Subnet Mask: " Font="droid_reg12" Foreground="White" Canvas.Left="260" Canvas.Top="100" />
+  <Text Name="DnsLabel1"       TextContent="DNS1       : " Font="droid_reg12" Foreground="White" Canvas.Left="260" Canvas.Top="130" />
+  <Text Name="DnsLabel2"       TextContent="DNS2       : " Font="droid_reg12" Foreground="White" Canvas.Left="260" Canvas.Top="160" />
+
+  <!-- Vertical divider (original: Line(0,180) with a Yellow pen). -->
+  <Rectangle Width="1" Height="180" Fill="Yellow" Canvas.Left="250" Canvas.Top="40" />
+
+  <!-- Left column: connection form. -->
+  <Text TextContent="Connect wifi click to MikroBus 1" Font="droid_reg12" Foreground="White" Canvas.Left="5" Canvas.Top="40" />
+
+  <Text TextContent="SSID:" Font="droid_reg12" Foreground="White" Width="80" Canvas.Left="20" Canvas.Top="70" />
+  <TextBox Name="Ssid" Font="droid_reg12" Width="120" Height="25" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="100" Canvas.Top="70" />
+
+  <Text TextContent="Password:" Font="droid_reg12" Foreground="White" Width="80" Canvas.Left="20" Canvas.Top="100" />
+  <TextBox Name="Password" Font="droid_reg12" Width="120" Height="25" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="100" Canvas.Top="100" />
+
+  <Button Name="ConnectButton" Width="100" Height="30" Canvas.Left="120" Canvas.Top="130">
+    <Text TextContent="Connect" Font="droid_reg12" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Button>
+
+  <!-- Status line, filled at runtime (and repositioned by WifiWindow on the firmware-missing path). -->
+  <Text Name="Status" TextContent=" " Font="droid_reg12" Foreground="White" Canvas.Left="120" Canvas.Top="232" />
+</Canvas>
