@@ -3,6 +3,9 @@ bin/
 obj/
 packages/
 
+# TinyCLR UI Designer codegen output (regenerated from *.tcui on every build)
+*.tcui.g.cs
+
 # Visual Studio
 .vs/
 *.suo

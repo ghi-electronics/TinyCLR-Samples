@@ -31,7 +31,7 @@
     <ProjectGuid>{B2B3CDB7-2644-42B3-9EBC-D6642071A44F}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Demos</RootNamespace>
-    <AssemblyName>Demos</AssemblyName>
+    <AssemblyName>TinyCLR_OS</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -61,70 +61,36 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Display.cs" />
-    <Compile Include="Input.cs" />
-    <Compile Include="MainWindow.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Desktop.cs" />
+    <Compile Include="Apps\AdcApp.cs" />
+    <Compile Include="Apps\GaugesApp.cs" />
+    <Compile Include="Apps\FilesApp.cs" />
+    <Compile Include="Apps\TableApp.cs" />
+    <Compile Include="Apps\CalendarApp.cs" />
+    <Compile Include="Apps\SettingsApp.cs" />
+    <Compile Include="Apps\CameraApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Utils\BottomBar.cs" />
-    <Compile Include="Utils\Icon.cs" />
-    <Compile Include="Utils\TopBar.cs" />
-    <Compile Include="Windows\Adc.cs" />
-    <Compile Include="Windows\ApplicationWindow.cs" />
-    <Compile Include="Windows\BasicTestWindow.cs" />
-    <Compile Include="Windows\Buzzer.cs" />
-    <Compile Include="Windows\BuzzerContent.cs" />
-    <Compile Include="Windows\CameraWindow.cs" />
-    <Compile Include="Windows\CanfdWindow.cs" />
-    <Compile Include="Windows\ColorWindow.cs" />
-    <Compile Include="Windows\Dac.cs" />
-    <Compile Include="Windows\EthernetWindow.cs" />
-    <Compile Include="Windows\Pwm.cs" />
-    <Compile Include="Windows\QspiWindow.cs" />
-    <Compile Include="Windows\RtcWindow.cs" />
-    <Compile Include="Windows\Sd.cs" />
-    <Compile Include="Windows\SystemWindow.cs" />
-    <Compile Include="Windows\SystemInfoContent.cs" />
-    <Compile Include="Windows\TemplateWindow.cs" />
-    <Compile Include="Windows\UartWindow.cs" />
-    <Compile Include="Windows\Usb.cs" />
-    <Compile Include="Windows\WifiWindow.cs" />
-    <Compile Include="Windows\AdcContent.cs" />
-    <Compile Include="Windows\DacContent.cs" />
-    <Compile Include="Windows\PwmContent.cs" />
-    <Compile Include="Windows\RtcContent.cs" />
-    <Compile Include="Windows\UartContent.cs" />
-    <Compile Include="Windows\QspiContent.cs" />
-    <Compile Include="Windows\SdContent.cs" />
-    <Compile Include="Windows\UsbContent.cs" />
-    <Compile Include="Windows\CanFdContent.cs" />
-    <Compile Include="Windows\WifiContent.cs" />
-    <Compile Include="Windows\CameraContent.cs" />
-    <Compile Include="Windows\BasicTestContent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Windows\SystemInfoContent.tcui" />
-    <None Include="Windows\BuzzerContent.tcui" />
-    <None Include="Windows\AdcContent.tcui" />
-    <None Include="Windows\DacContent.tcui" />
-    <None Include="Windows\PwmContent.tcui" />
-    <None Include="Windows\RtcContent.tcui" />
-    <None Include="Windows\UartContent.tcui" />
-    <None Include="Windows\QspiContent.tcui" />
-    <None Include="Windows\SdContent.tcui" />
-    <None Include="Windows\UsbContent.tcui" />
-    <None Include="Windows\CanFdContent.tcui" />
-    <None Include="Windows\WifiContent.tcui" />
-    <None Include="Windows\CameraContent.tcui" />
-    <None Include="Windows\BasicTestContent.tcui" />
+    <None Include="Desktop.tcui" />
+    <None Include="Apps\AdcApp.tcui" />
+    <None Include="Apps\GaugesApp.tcui" />
+    <None Include="Apps\FilesApp.tcui" />
+    <None Include="Apps\TableApp.tcui" />
+    <None Include="Apps\CalendarApp.tcui" />
+    <None Include="Apps\SettingsApp.tcui" />
+    <None Include="Apps\CameraApp.tcui" />
     <None Include="packages.config" />
     <None Include="Resources\analog.gif" />
     <None Include="Resources\Camera.gif" />
+    <None Include="Resources\battery.gif" />
+    <None Include="Resources\wifi.gif" />
     <None Include="Resources\Canfd.gif" />
     <None Include="Resources\Color.gif" />
     <None Include="Resources\droid_reg08.tinyfnt" />
@@ -149,6 +115,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

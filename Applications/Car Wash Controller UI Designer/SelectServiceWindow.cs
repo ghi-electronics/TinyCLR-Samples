@@ -18,5 +18,7 @@ namespace CarWashExample {
 
         private void OnServiceButtonClick(object sender, RoutedEventArgs e) =>
             Program.NavigateTo(Program.PaymentPage.Elements);
+
+  
     }
 }

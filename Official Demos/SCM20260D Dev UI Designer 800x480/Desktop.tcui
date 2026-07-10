@@ -1,0 +1,80 @@
+<Window Class="Demos.Desktop" Width="800" Height="480" Background="image:background">
+  <Canvas Name="Root">
+    <!-- Top menu bar background + status cluster (battery + %, Wi-Fi icon, clock). Icons key out their magenta
+         backdrop (#FF00F2) like the dock icons. The clickable menu itself is the top-most Menu below. -->
+    <Canvas Width="800" Height="26" Canvas.Left="0" Canvas.Top="0" Background="#F5F5F7">
+      <Image Source="battery" Canvas.Left="630" Canvas.Top="6" />
+      <Text TextContent="100%" Font="droid_reg12" Foreground="#1D1D1F" Canvas.Left="662" Canvas.Top="5" />
+      <Image Source="wifi" Canvas.Left="704" Canvas.Top="5" />
+      <Text Name="StatusText" TextContent="00:00:00" Font="droid_reg12" Foreground="#1D1D1F" Width="66" Canvas.Left="734" Canvas.Top="5" />
+    </Canvas>
+    <!-- App window: a rounded card whose interior (an app fragment) is swapped by the Dock. -->
+    <Border Name="Content" Width="560" Height="356" Canvas.Left="120" Canvas.Top="46" CornerRadius="16" BorderThickness="1" BorderBrush="#C8C8CC" Background="#FBFBFD" />
+    <!-- Window chrome (drawn over the card top): the three macOS traffic-light dots on the left + the current
+         app's title, CENTRED. The title text is set per app by the shell (WindowTitle). -->
+    <Border Width="13" Height="13" CornerRadius="6" BorderThickness="0" Background="#FF5F57" Canvas.Left="138" Canvas.Top="58" />
+    <Border Width="13" Height="13" CornerRadius="6" BorderThickness="0" Background="#FEBC2E" Canvas.Left="158" Canvas.Top="58" />
+    <Border Width="13" Height="13" CornerRadius="6" BorderThickness="0" Background="#28C840" Canvas.Left="178" Canvas.Top="58" />
+    <Text Name="WindowTitle" TextContent="Analog Input" Font="droid_reg14" Foreground="#1D1D1F" TextAlignment="Center" Width="560" Canvas.Left="120" Canvas.Top="56" />
+    <!-- Dock: rounded, TRANSLUCENT panel (the #B0 alpha lets the wallpaper show through — macOS-dock look) -->
+    <Border Name="Dock" Width="447" Height="64" Canvas.Left="178" Canvas.Top="412" CornerRadius="18" Background="#B0F4F4F6">
+      <Canvas>
+        <Button Width="48" Height="48" Canvas.Left="12" Canvas.Top="8" Click="OnDockAdc">
+          <Image Source="analog" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="48" Height="48" Canvas.Left="74" Canvas.Top="8" Click="OnDockGauges">
+          <Image Source="Pwm" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="48" Height="48" Canvas.Left="136" Canvas.Top="8" Click="OnDockFiles">
+          <Image Source="Sd" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="48" Height="48" Canvas.Left="198" Canvas.Top="8" Click="OnDockTable">
+          <Image Source="Usb" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="48" Height="48" Canvas.Left="260" Canvas.Top="8" Click="OnDockCalendar">
+          <Image Source="Rtc" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="48" Height="48" Canvas.Left="322" Canvas.Top="8" Click="OnDockSettings">
+          <Image Source="settingImage" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="48" Height="48" Canvas.Left="384" Canvas.Top="8" Click="OnDockCamera">
+          <Image Source="Camera" TransparentColor="#FF00F2" />
+        </Button>
+      </Canvas>
+    </Border>
+    <!-- Real menu, top-most so its dropdowns overlay the content. It grows its hit-test bounds only while a
+         dropdown is open, so when closed it doesn't block touches to the card beneath it. -->
+    <Menu Name="MenuBar" Font="droid_reg12" ItemWidth="100" BarColor="#F5F5F7" DropColor="#FFFFFF" ForeColor="#1D1D1F" Canvas.Left="8" Canvas.Top="1">
+      <MenuItem Header="TinyCLR OS">
+        <MenuItem Header="About" />
+        <MenuItem Header="Preferences" />
+        <MenuItem Header="Sleep" />
+        <MenuItem Header="Restart" />
+        <MenuItem Header="Shut Down" />
+      </MenuItem>
+      <MenuItem Header="File">
+        <MenuItem Header="New" />
+        <MenuItem Header="Open" />
+        <MenuItem Header="Save" />
+        <MenuItem Header="Close" />
+      </MenuItem>
+      <MenuItem Header="View">
+        <MenuItem Header="Refresh" />
+        <MenuItem Header="Full Screen" />
+        <MenuItem Header="Zoom In" />
+        <MenuItem Header="Zoom Out" />
+      </MenuItem>
+      <MenuItem Header="Window">
+        <MenuItem Header="Minimize" />
+        <MenuItem Header="Zoom" />
+        <MenuItem Header="Tile Left" />
+        <MenuItem Header="Tile Right" />
+      </MenuItem>
+      <MenuItem Header="Help">
+        <MenuItem Header="TinyCLR Help" />
+        <MenuItem Header="Release Notes" />
+        <MenuItem Header="About" />
+      </MenuItem>
+    </Menu>
+  </Canvas>
+</Window>

@@ -1,0 +1,25 @@
+<!-- Files app fragment (560x356). Root is a DOCKPANEL (title docked Top, TreeView fills) — a layout
+     demo distinct from the Canvas-based apps. The TreeView is a fake SD/USB file browser. -->
+<DockPanel Class="Demos.FilesApp" Width="560" Height="356" LastChildFill="true">
+
+  <!-- Invisible 40px spacer docked Top, leaving room for the shell's window-chrome title (dots + centred title). -->
+  <Canvas DockPanel.Dock="Top" Height="40" />
+
+  <TreeView Name="FileTree" Font="droid_reg10" Margin="20,0,20,20">
+    <TreeNode Header="SD Card (A:)" IsExpanded="true">
+      <TreeNode Header="DCIM" IsExpanded="true">
+        <TreeNode Header="IMG_0001.JPG" />
+        <TreeNode Header="IMG_0002.JPG" />
+      </TreeNode>
+      <TreeNode Header="LOG">
+        <TreeNode Header="run_2026_07_08.csv" />
+      </TreeNode>
+      <TreeNode Header="config.json" />
+    </TreeNode>
+    <TreeNode Header="USB Drive (B:)" IsExpanded="true">
+      <TreeNode Header="firmware.bin" />
+      <TreeNode Header="readme.txt" />
+    </TreeNode>
+  </TreeView>
+
+</DockPanel>

@@ -76,10 +76,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- TinyCLR UI Designer codegen: converts every *.tcui into a sibling *.tcui.g.cs (InitializeComponent)
-       before CoreCompile. Bundled in Build\ so this project builds standalone (needs the panel-root
-       "fragment" support that generates a reusable control from a Canvas/Grid/StackPanel root). -->
-  <Import Project="$(MSBuildProjectDirectory)\Build\GHIElectronics.TinyCLR.UI.targets" Condition="Exists('$(MSBuildProjectDirectory)\Build\GHIElectronics.TinyCLR.UI.targets')" />
+  <!-- TinyCLR UI Designer codegen: the TinyCLR UI Designer extension installs this to
+       %LOCALAPPDATA%\GHIElectronics\TinyCLRUI\. Converts each *.tcui to a sibling *.tcui.g.cs
+       (InitializeComponent) before CoreCompile. Same wiring as a new project from the UI template,
+       so nothing extra needs to ship with this sample. -->
+  <Import Project="$(LOCALAPPDATA)\GHIElectronics\TinyCLRUI\GHIElectronics.TinyCLR.UI.targets" Condition="Exists('$(LOCALAPPDATA)\GHIElectronics\TinyCLRUI\GHIElectronics.TinyCLR.UI.targets')" />
   <ItemGroup>
     <None Include="SelectServiceWindow.tcui" />
     <None Include="PaymentWindow.tcui" />

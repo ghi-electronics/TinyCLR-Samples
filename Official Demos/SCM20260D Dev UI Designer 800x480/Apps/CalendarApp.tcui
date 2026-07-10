@@ -1,0 +1,12 @@
+<!-- Date & Time app fragment (560x356). Shown inside the Desktop shell's Content card.
+     A month Calendar (fake RTC date) on the left; a large clock + date line on the right. -->
+<Canvas Class="Demos.CalendarApp" Width="560" Height="356">
+
+  <!-- Title is drawn by the shell's window chrome; content sits below that band. -->
+  <Calendar Name="Cal" Font="droid_reg10" Year="2026" Month="7" SelectedDay="8" Width="330" Height="290" Canvas.Left="20" Canvas.Top="44" />
+
+  <Text Name="ClockText" TextContent="09:41" Font="droid_reg14" Foreground="#1D1D1F" Canvas.Left="390" Canvas.Top="120" />
+
+  <Text Name="DateText" TextContent="Wed, Jul 8 2026" Font="droid_reg12" Foreground="#5B5B60" Canvas.Left="390" Canvas.Top="160" />
+
+</Canvas>
