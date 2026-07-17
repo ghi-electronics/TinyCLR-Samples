@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props')" />
-  <Import Project="packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props')" />
-  <Import Project="packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Native.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Native.props')" />
-  <Import Project="packages\GHIElectronics.TinyCLR.Core.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Core.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Core.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Core.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.UI.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.UI.props" Condition="Exists('packages\GHIElectronics.TinyCLR.UI.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.UI.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Pins.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Pins.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Pins.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Pins.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Drawing.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Drawing.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Drawing.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Drawing.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Devices.I2c.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.I2c.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Devices.I2c.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.I2c.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Devices.Display.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.Display.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Devices.Display.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.Display.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Native.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Native.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Native.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Native.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.Core.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Core.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Core.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -72,32 +76,35 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Display, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Display.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Display.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Display, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Display.3.0.1.1000\lib\net48\GHIElectronics.TinyCLR.Devices.Display.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.Gpio, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.Gpio.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.Gpio, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.1.1000\lib\net48\GHIElectronics.TinyCLR.Devices.Gpio.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Devices.I2c, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.I2c.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Devices.I2c.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Devices.I2c, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.I2c.3.0.1.1000\lib\net48\GHIElectronics.TinyCLR.Devices.I2c.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Drawing.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Drawing, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drawing.3.0.1.1000\lib\net48\GHIElectronics.TinyCLR.Drawing.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.3.0.1.1000\lib\net48\GHIElectronics.TinyCLR.Drivers.FocalTech.FT5xx6.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Native, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Native.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Native, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Native.3.0.1.1000\lib\net48\GHIElectronics.TinyCLR.Native.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.Pins.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.Pins, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Pins.3.0.1.1000\lib\net48\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.UI, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.UI.3.0.0.1000-prerelease\lib\net48\GHIElectronics.TinyCLR.UI.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.UI, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.UI.3.0.1.1000\lib\net48\GHIElectronics.TinyCLR.UI.dll</HintPath>
     </Reference>
-    <Reference Include="System.Device.Gpio, Version=3.0.0.1000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\lib\net48\System.Device.Gpio.dll</HintPath>
+    <Reference Include="System.Device.Gpio, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.1.1000\lib\net48\System.Device.Gpio.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Device.I2c, Version=3.0.1.1000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.Devices.I2c.3.0.1.1000\lib\net48\System.Device.I2c.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -105,9 +112,13 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Core.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Core.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Core.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Core.props'))" />
-    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Native.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Native.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Native.props'))" />
-    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Pins.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props'))" />
-    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.0.1000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props')) " />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Core.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Core.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Core.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Core.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Native.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Native.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Native.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Native.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Devices.Display.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.Display.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Devices.Display.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.Display.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.Gpio.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Devices.I2c.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.I2c.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Devices.I2c.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Devices.I2c.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Drawing.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Drawing.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Drawing.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Drawing.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Pins.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Pins.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Pins.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.Pins.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.UI.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.UI.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.UI.3.0.1.1000\build\net48\GHIElectronics.TinyCLR.UI.props'))" />
   </Target>
 </Project>
