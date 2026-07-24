@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\GHIElectronics.TinyCLR.UI.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.UI.props" Condition="Exists('packages\GHIElectronics.TinyCLR.UI.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.UI.props')" />
+  <Import Project="packages\GHIElectronics.TinyCLR.UI.3.0.1.3000-prerelease\build\net48\GHIElectronics.TinyCLR.UI.props" Condition="Exists('packages\GHIElectronics.TinyCLR.UI.3.0.1.3000-prerelease\build\net48\GHIElectronics.TinyCLR.UI.props')" />
   <Import Project="packages\GHIElectronics.TinyCLR.Pins.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Pins.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props')" />
   <Import Project="packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.props')" />
   <Import Project="packages\GHIElectronics.TinyCLR.Devices.Network.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Network.props" Condition="Exists('packages\GHIElectronics.TinyCLR.Devices.Network.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Network.props')" />
@@ -191,8 +191,8 @@
     <Reference Include="GHIElectronics.TinyCLR.Pins, Version=3.0.1.2000, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Pins.3.0.1.2000-prerelease\lib\net48\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
-    <Reference Include="GHIElectronics.TinyCLR.UI, Version=3.0.1.2000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GHIElectronics.TinyCLR.UI.3.0.1.2000-prerelease\lib\net48\GHIElectronics.TinyCLR.UI.dll</HintPath>
+    <Reference Include="GHIElectronics.TinyCLR.UI, Version=3.0.1.3000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GHIElectronics.TinyCLR.UI.3.0.1.3000-prerelease\lib\net48\GHIElectronics.TinyCLR.UI.dll</HintPath>
     </Reference>
     <Reference Include="System.Device.Gpio, Version=3.0.1.2000, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\GHIElectronics.TinyCLR.Devices.Gpio.3.0.1.2000-prerelease\lib\net48\System.Device.Gpio.dll</HintPath>
@@ -246,6 +246,6 @@
     <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Devices.Network.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Network.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Devices.Network.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Devices.Network.props'))" />
     <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Drivers.Microchip.Winc15x0.props'))" />
     <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.Pins.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.Pins.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.Pins.props'))" />
-    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.UI.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.UI.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.UI.3.0.1.2000-prerelease\build\net48\GHIElectronics.TinyCLR.UI.props'))" />
+    <Error Condition="!Exists('packages\GHIElectronics.TinyCLR.UI.3.0.1.3000-prerelease\build\net48\GHIElectronics.TinyCLR.UI.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\GHIElectronics.TinyCLR.UI.3.0.1.3000-prerelease\build\net48\GHIElectronics.TinyCLR.UI.props'))" />
   </Target>
 </Project>

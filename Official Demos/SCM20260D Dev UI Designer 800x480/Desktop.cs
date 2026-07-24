@@ -21,7 +21,9 @@ namespace Demos {
             this.clock.Tick += this.OnTick;
             this.clock.Start();
 
-            this.ShowApp(() => new AdcApp(), "Analog Input"); // default app window
+            // The default app (AdcApp / "Analog Input") is declared in Desktop.tcui as <local:AdcApp/> inside
+            // Content, so the UI Designer previews it. InitializeComponent already created it and started its timer;
+            // the Dock swaps it for another app via ShowApp() below.
         }
 
         private void ShowApp(AppFactory create, string title) {

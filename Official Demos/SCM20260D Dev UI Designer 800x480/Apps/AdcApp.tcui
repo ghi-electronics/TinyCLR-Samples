@@ -1,5 +1,15 @@
-<!-- Title is drawn by the shell's window chrome (dots + centred title). Content sits below that ~34px band. -->
 <Canvas Class="Demos.AdcApp" Width="560" Height="356">
-  <Gauge Name="AdcGauge" Width="210" Height="210" MinValue="0" MaxValue="3300" Value="1650" SweepAngle="270" DialText="mV" Canvas.Left="20" Canvas.Top="44" Font="droid_reg08"/>
-  <Chart Name="TrendChart" Width="300" Height="235" Mode="AreaMode" ChartTitle="Signal" Font="droid_reg08" DivisionAxisY="5" Canvas.Left="250" Canvas.Top="55" />
+  <Gauge Name="AdcGauge" Width="210" Height="210" MinValue="0" MaxValue="3300" Value="160" SweepAngle="270" DialText="mV" Canvas.Left="21" Canvas.Top="76" Font="droid_reg08" />
+  <Chart Name="TrendChart" Width="300" Height="235" ChartTitle="Signal" Font="droid_reg10" DivisionAxisY="5" Canvas.Left="250" Canvas.Top="55" Mode="RectangleMode" PointColor="#FF0000" AreaColor="#00ff00" LabelColor="#0000ff">
+    <!-- Fake signal trend so the designer preview shows the same chart the device draws (the device also sets this
+         series in AdcApp.cs is no longer needed - the codegen emits these points). -->
+    <Point Name="1" Value="12" />
+    <Point Name="2" Value="18" />
+    <Point Name="3" Value="9" />
+    <Point Name="4" Value="22" />
+    <Point Name="5" Value="16" />
+    <Point Name="6" Value="28" />
+    <Point Name="7" Value="20" />
+    <Point Name="8" Value="25" />
+  </Chart>
 </Canvas>

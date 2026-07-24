@@ -1,4 +1,4 @@
-<Window Class="Demos.Desktop" Width="800" Height="480" Background="image:background">
+<Window Class="Demos.Desktop" xmlns:local="clr-namespace:Demos" Width="800" Height="480" Background="image:background">
   <Canvas Name="Root">
     <!-- Top menu bar background + status cluster (battery + %, Wi-Fi icon, clock). Icons key out their magenta
          backdrop (#FF00F2) like the dock icons. The clickable menu itself is the top-most Menu below. -->
@@ -8,8 +8,11 @@
       <Image Source="wifi" Canvas.Left="704" Canvas.Top="5" />
       <Text Name="StatusText" TextContent="00:00:00" Font="droid_reg12" Foreground="#1D1D1F" Width="66" Canvas.Left="734" Canvas.Top="5" />
     </Canvas>
-    <!-- App window: a rounded card whose interior (an app fragment) is swapped by the Dock. -->
-    <Border Name="Content" Width="560" Height="356" Canvas.Left="120" Canvas.Top="46" CornerRadius="16" BorderThickness="1" BorderBrush="#C8C8CC" Background="#FBFBFD" />
+    <!-- App window: a rounded card whose interior is the current app. AdcApp is the DEFAULT here (set in markup,
+         WPF-style, so the designer previews it); the Dock swaps _content.Child to other apps at runtime. -->
+    <Border Name="Content" Width="560" Height="356" Canvas.Left="120" Canvas.Top="46" CornerRadius="16" BorderThickness="1" BorderBrush="#C8C8CC" Background="#FBFBFD">
+      <local:AdcApp />
+    </Border>
     <!-- Window chrome (drawn over the card top): the three macOS traffic-light dots on the left + the current
          app's title, CENTRED. The title text is set per app by the shell (WindowTitle). -->
     <Border Width="13" Height="13" CornerRadius="6" BorderThickness="0" Background="#FF5F57" Canvas.Left="138" Canvas.Top="58" />
