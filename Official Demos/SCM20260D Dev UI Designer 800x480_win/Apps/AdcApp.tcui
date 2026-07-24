@@ -1,0 +1,5 @@
+<!-- Title is drawn by the shell's window chrome (dots + centred title). Content sits below that ~34px band. -->
+<Canvas Class="Demos.AdcApp" Width="560" Height="356">
+  <Gauge Name="AdcGauge" Width="210" Height="210" MinValue="0" MaxValue="3300" Value="1650" SweepAngle="270" DialText="mV" Canvas.Left="20" Canvas.Top="44" Font="droid_reg08"/>
+  <Chart Name="TrendChart" Width="300" Height="235" Mode="AreaMode" ChartTitle="Signal" Font="droid_reg08" DivisionAxisY="5" Canvas.Left="250" Canvas.Top="55" />
+</Canvas>

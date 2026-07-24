@@ -1,0 +1,41 @@
+<!-- Settings app fragment (560x356). Root is a vertical STACKPANEL with nested horizontal StackPanel
+     rows — a layout demo distinct from the Canvas-based apps. Showcases CheckBox, RadioButton (theme
+     group), Slider, ComboBox, ProgressBar. Slider uses the real Minimum/Maximum/Value (see Slider.cs). -->
+<StackPanel Class="Demos.SettingsApp" Width="560" Height="356" Orientation="Vertical">
+
+  <!-- 34px spacer for the shell's window-chrome title (dots + centred title) — the settings stack below it. -->
+  <Canvas Height="34" />
+
+  <!-- Wi-Fi toggle: a horizontal row -->
+  <StackPanel Orientation="Horizontal" Margin="20,6,0,0">
+    <CheckBox Name="WifiCheck" IsChecked="true" />
+    <Text TextContent="Enable Wi-Fi" Font="droid_reg12" Foreground="#1D1D1F" Margin="12,4,0,0" />
+  </StackPanel>
+
+  <!-- Theme: three radio buttons sharing one group, laid out in a horizontal row -->
+  <StackPanel Orientation="Horizontal" Margin="20,10,0,0">
+    <RadioButton Name="ThemeLight" GroupName="Theme" Checked="true" />
+    <Text TextContent="Light" Font="droid_reg12" Foreground="#1D1D1F" Margin="8,4,18,0" />
+    <RadioButton Name="ThemeDark" GroupName="Theme" />
+    <Text TextContent="Dark" Font="droid_reg12" Foreground="#1D1D1F" Margin="8,4,18,0" />
+    <RadioButton Name="ThemeAuto" GroupName="Theme" />
+    <Text TextContent="Auto" Font="droid_reg12" Foreground="#1D1D1F" Margin="8,4,0,0" />
+  </StackPanel>
+
+  <!-- Brightness slider -->
+  <Text TextContent="Brightness" Font="droid_reg12" Foreground="#1D1D1F" Margin="20,12,0,0" />
+  <Slider Name="Brightness" Width="320" Height="28" Maximum="100" Value="70" Margin="20,4,0,0" />
+
+  <!-- UART baud rate -->
+  <Text TextContent="UART baud" Font="droid_reg12" Foreground="#1D1D1F" Margin="20,10,0,0" />
+  <ComboBox Name="Baud" Font="droid_reg12" Width="150" Height="26" SelectedIndex="2" Margin="20,4,0,0">
+    <Item>9600</Item>
+    <Item>19200</Item>
+    <Item>115200</Item>
+  </ComboBox>
+
+  <!-- Storage usage -->
+  <Text TextContent="Storage used" Font="droid_reg12" Foreground="#1D1D1F" Margin="20,10,0,0" />
+  <ProgressBar Name="Storage" Width="500" Height="18" MaxValue="100" Value="42" Margin="20,4,0,0" />
+
+</StackPanel>

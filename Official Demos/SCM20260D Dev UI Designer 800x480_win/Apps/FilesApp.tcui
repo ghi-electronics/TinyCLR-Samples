@@ -1,0 +1,56 @@
+<DockPanel Class="Demos.FilesApp" Width="560" Height="356" LastChildFill="true">
+  <!-- Invisible 40px spacer docked Top, leaving room for the shell's window-chrome title. -->
+  <Canvas DockPanel.Dock="Top" Height="40" />
+  <!-- File grid (fills the remaining 560x316 area; coordinates are relative to it). -->
+  <Canvas>
+    <!-- Breadcrumb header + separator line, like an Explorer address bar. -->
+    <Text TextContent="SD Card (A:)  ›  This PC" Font="droid_reg10" Foreground="#5B5B60" Canvas.Left="24" Canvas.Top="6" />
+    <Border Width="512" Height="1" BorderThickness="0" Background="#E2E2E6" Canvas.Left="24" Canvas.Top="30" />
+    <!-- ===== Column 1 (icon x=36, label x=98) ===== -->
+    <!-- Documents (folder) @ y=48 -->
+    <Border Width="20" Height="10" CornerRadius="2" BorderThickness="0" Background="#EFA935" Canvas.Left="36" Canvas.Top="48" />
+    <Border Width="48" Height="34" CornerRadius="4" BorderThickness="0" Background="#FCC65A" Canvas.Left="36" Canvas.Top="54" />
+    <Text TextContent="Documents" Font="droid_reg10" Foreground="#1D1D1F" Width="190" Canvas.Left="98" Canvas.Top="60" />
+    <Text TextContent="File folder" Font="droid_reg09" Foreground="#8A8A8E" Width="190" Canvas.Left="98" Canvas.Top="78" />
+    <!-- Firmware (folder) @ y=112 -->
+    <Border Width="20" Height="10" CornerRadius="2" BorderThickness="0" Background="#EFA935" Canvas.Left="36" Canvas.Top="112" />
+    <Border Width="48" Height="34" CornerRadius="4" BorderThickness="0" Background="#FCC65A" Canvas.Left="36" Canvas.Top="118" />
+    <Text TextContent="Firmware" Font="droid_reg10" Foreground="#1D1D1F" Width="190" Canvas.Left="98" Canvas.Top="124" />
+    <Text TextContent="File folder" Font="droid_reg09" Foreground="#8A8A8E" Width="190" Canvas.Left="98" Canvas.Top="142" />
+    <!-- Backups (folder) @ y=176 -->
+    <Border Width="20" Height="10" CornerRadius="2" BorderThickness="0" Background="#EFA935" Canvas.Left="36" Canvas.Top="176" />
+    <Border Width="48" Height="34" CornerRadius="4" BorderThickness="0" Background="#FCC65A" Canvas.Left="36" Canvas.Top="182" />
+    <Text TextContent="Backups" Font="droid_reg10" Foreground="#1D1D1F" Width="190" Canvas.Left="98" Canvas.Top="188" />
+    <Text TextContent="File folder" Font="droid_reg09" Foreground="#8A8A8E" Width="190" Canvas.Left="98" Canvas.Top="206" />
+    <!-- readme.txt (file) @ y=240 -->
+    <Border Width="34" Height="44" CornerRadius="3" BorderThickness="1" BorderBrush="#C8C8CC" Background="#FFFFFF" Canvas.Left="43" Canvas.Top="240" />
+    <Border Width="10" Height="10" BorderThickness="0" Background="#D8E4F0" Canvas.Left="67" Canvas.Top="240" />
+    <Border Width="20" Height="2" BorderThickness="0" Background="#AFC4DE" Canvas.Left="49" Canvas.Top="260" />
+    <Border Width="20" Height="2" BorderThickness="0" Background="#AFC4DE" Canvas.Left="49" Canvas.Top="267" />
+    <Text TextContent="readme.txt" Font="droid_reg10" Foreground="#1D1D1F" Width="190" Canvas.Left="98" Canvas.Top="252" />
+    <Text TextContent="Text Document  ·  3 KB" Font="droid_reg09" Foreground="#8A8A8E" Width="190" Canvas.Left="98" Canvas.Top="270" />
+    <!-- ===== Column 2 (icon x=300, label x=362) ===== -->
+    <!-- Pictures (folder) @ y=48 -->
+    <Border Width="20" Height="10" CornerRadius="2" BorderThickness="0" Background="#EFA935" Canvas.Left="300" Canvas.Top="48" />
+    <Border Width="48" Height="34" CornerRadius="4" BorderThickness="0" Background="#FCC65A" Canvas.Left="300" Canvas.Top="54" />
+    <Text TextContent="Pictures" Font="droid_reg10" Foreground="#1D1D1F" Width="180" Canvas.Left="362" Canvas.Top="60" />
+    <Text TextContent="File folder" Font="droid_reg09" Foreground="#8A8A8E" Width="180" Canvas.Left="362" Canvas.Top="78" />
+    <!-- Data Logs (folder) @ y=112 -->
+    <Border Width="20" Height="10" CornerRadius="2" BorderThickness="0" Background="#EFA935" Canvas.Left="300" Canvas.Top="112" />
+    <Border Width="48" Height="34" CornerRadius="4" BorderThickness="0" Background="#FCC65A" Canvas.Left="300" Canvas.Top="118" />
+    <Text TextContent="Data Logs" Font="droid_reg10" Foreground="#1D1D1F" Width="180" Canvas.Left="362" Canvas.Top="124" />
+    <Text TextContent="File folder" Font="droid_reg09" Foreground="#8A8A8E" Width="180" Canvas.Left="362" Canvas.Top="142" />
+    <!-- Projects (folder) @ y=176 -->
+    <Border Width="20" Height="10" CornerRadius="2" BorderThickness="0" Background="#EFA935" Canvas.Left="300" Canvas.Top="176" />
+    <Border Width="48" Height="34" CornerRadius="4" BorderThickness="0" Background="#FCC65A" Canvas.Left="300" Canvas.Top="182" />
+    <Text TextContent="Projects" Font="droid_reg10" Foreground="#1D1D1F" Width="180" Canvas.Left="362" Canvas.Top="188" />
+    <Text TextContent="File folder" Font="droid_reg09" Foreground="#8A8A8E" Width="180" Canvas.Left="362" Canvas.Top="206" />
+    <!-- config.json (file) @ y=240 -->
+    <Border Width="34" Height="44" CornerRadius="3" BorderThickness="1" BorderBrush="#C8C8CC" Background="#FFFFFF" Canvas.Left="307" Canvas.Top="240" />
+    <Border Width="10" Height="10" BorderThickness="0" Background="#D8E4F0" Canvas.Left="331" Canvas.Top="240" />
+    <Border Width="20" Height="2" BorderThickness="0" Background="#AFC4DE" Canvas.Left="313" Canvas.Top="260" />
+    <Border Width="20" Height="2" BorderThickness="0" Background="#AFC4DE" Canvas.Left="313" Canvas.Top="267" />
+    <Text TextContent="config.json" Font="droid_reg10" Foreground="#1D1D1F" Width="180" Canvas.Left="362" Canvas.Top="252" />
+    <Text TextContent="JSON File  ·  1 KB" Font="droid_reg09" Foreground="#8A8A8E" Width="180" Canvas.Left="362" Canvas.Top="270" />
+  </Canvas>
+</DockPanel>

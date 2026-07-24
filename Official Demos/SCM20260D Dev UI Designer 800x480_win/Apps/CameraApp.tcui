@@ -1,0 +1,4 @@
+<!-- Live camera test (OV9655 over the DCMI camera interface). Frames + the fps status are blitted STRAIGHT to
+     the display by the worker thread in CameraApp.cs (the fast path, to show real speed) — no per-frame UI. The
+     title is drawn by the shell's window chrome; this fragment has no UI of its own. -->
+<Canvas Class="Demos.CameraApp" Width="560" Height="356" />

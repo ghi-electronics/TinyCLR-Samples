@@ -1,0 +1,26 @@
+<!-- Gauge Styles app fragment (560x356). Root is a GRID (3 columns x 3 rows) — a layout demo distinct
+     from the Canvas-based apps. Showcases Gauge.SweepAngle: 180 (half), 270 (classic), 360 (full). -->
+<Grid Class="Demos.GaugesApp" Width="560" Height="356">
+  <Grid.ColumnDefinitions>
+    <ColumnDefinition Width="*" />
+    <ColumnDefinition Width="*" />
+    <ColumnDefinition Width="*" />
+  </Grid.ColumnDefinitions>
+  <Grid.RowDefinitions>
+    <RowDefinition Height="40" />
+    <RowDefinition Height="*" />
+    <RowDefinition Height="34" />
+  </Grid.RowDefinitions>
+
+  <!-- Row 0 is left empty as a spacer for the shell's window-chrome title (dots + centred title). -->
+
+  <!-- Dial FACE is a pre-drawn image resource; EnableScale="false" so the control draws only the needle over it
+       (no ticks/numbers on top). SweepAngle matches each image so the needle tracks the printed scale. -->
+  <Gauge Grid.Row="1" Grid.Column="0" Name="Gauge180" Width="160" Height="160" HorizontalAlignment="Center" VerticalAlignment="Center" MinValue="0" MaxValue="100" Value="40" SweepAngle="180" BackgroundImage="gauge_180" EnableScale="false" NeedleCenterY="0.9" NeedleLength="0.7" />
+  <Gauge Grid.Row="1" Grid.Column="1" Name="Gauge270" Width="160" Height="160" HorizontalAlignment="Center" VerticalAlignment="Center" MinValue="0" MaxValue="100" Value="65" SweepAngle="270" BackgroundImage="gauge_270" EnableScale="false" NeedleCenterY="0.6" NeedleLength="0.5" />
+  <Gauge Grid.Row="1" Grid.Column="2" Name="Gauge360" Width="160" Height="160" HorizontalAlignment="Center" VerticalAlignment="Center" MinValue="0" MaxValue="100" Value="80" SweepAngle="360" BackgroundImage="gauge_360" EnableScale="false" NeedleLength="0.6" />
+
+  <Text Grid.Row="2" Grid.Column="0" TextContent="Half (180)" Font="droid_reg10" Foreground="#5B5B60" HorizontalAlignment="Center" />
+  <Text Grid.Row="2" Grid.Column="1" TextContent="Classic (270)" Font="droid_reg10" Foreground="#5B5B60" HorizontalAlignment="Center" />
+  <Text Grid.Row="2" Grid.Column="2" TextContent="Full (360)" Font="droid_reg10" Foreground="#5B5B60" HorizontalAlignment="Center" />
+</Grid>

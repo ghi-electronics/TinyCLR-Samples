@@ -1,0 +1,9 @@
+<!-- ADC Channels table app fragment (560x356). Shown inside the Desktop shell's Content card.
+     A DataGrid lists a set of fake ADC channels (name / pin / millivolts). Columns + rows are
+     populated in Apps\TableApp.cs. The grid ctor takes (Width, RowHeight, RowCount, Font). -->
+<Canvas Class="Demos.TableApp" Width="560" Height="356">
+
+  <!-- Title is drawn by the shell's window chrome; content sits below that band. -->
+  <DataGrid Name="ChannelGrid" Width="520" Height="270" RowHeight="30" RowCount="8" Font="droid_reg10" Canvas.Left="20" Canvas.Top="44" />
+
+</Canvas>

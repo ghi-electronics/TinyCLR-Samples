@@ -1,0 +1,77 @@
+<Window Class="Demos.Desktop" Width="800" Height="480" Background="image:background">
+  <Canvas Name="Root">
+    <!-- App window: a rounded card (Windows 11 subtle 8px radius) whose interior (an app fragment) is
+         swapped by the taskbar. Size/position kept from the source so the app fragments still fit. -->
+    <Border Name="Content" Width="560" Height="356" Canvas.Left="120" Canvas.Top="46" CornerRadius="8" BorderThickness="1" BorderBrush="#D0D0D5" Background="#FBFBFD" />
+
+    <!-- Windows 11 window chrome (drawn over the card top): the title on the LEFT, and the
+         minimize / maximize / close caption buttons on the RIGHT (static visuals). -->
+    <Text Name="WindowTitle" TextContent="Analog Input" Font="droid_reg12" Foreground="#1D1D1F" Canvas.Left="134" Canvas.Top="55" />
+    <Border Width="11" Height="2" BorderThickness="0" Background="#5B5B5B" Canvas.Left="602" Canvas.Top="62" />
+    <Border Width="11" Height="11" CornerRadius="1" BorderThickness="1" BorderBrush="#5B5B5B" Canvas.Left="630" Canvas.Top="57" />
+    <Text TextContent="X" Font="droid_reg12" Foreground="#5B5B5B" Canvas.Left="659" Canvas.Top="54" />
+
+    <!-- Windows 11 taskbar: a full-width, translucent (Mica) bar. The #EE alpha lets a hint of the
+         wallpaper show through. Holds the Start button + the centred app icons + the system tray. -->
+    <Border Name="Taskbar" Width="800" Height="48" Canvas.Left="0" Canvas.Top="432" BorderThickness="0" Background="#EEF3F3F3">
+      <Canvas>
+        <!-- Start button (Windows flag) -->
+        <Button Width="36" Height="36" Canvas.Left="236" Canvas.Top="6" Click="OnStart">
+          <Image Source="start" Stretch="Fill" Width="22" Height="22" />
+        </Button>
+        <!-- Pinned app icons, centred; scaled down from the 40px source icons to 28px -->
+        <Button Width="36" Height="36" Canvas.Left="278" Canvas.Top="6" Click="OnDockAdc">
+          <Image Source="analog" Stretch="Fill" Width="28" Height="28" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="36" Height="36" Canvas.Left="320" Canvas.Top="6" Click="OnDockGauges">
+          <Image Source="Pwm" Stretch="Fill" Width="28" Height="28" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="36" Height="36" Canvas.Left="362" Canvas.Top="6" Click="OnDockFiles">
+          <Image Source="Sd" Stretch="Fill" Width="28" Height="28" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="36" Height="36" Canvas.Left="404" Canvas.Top="6" Click="OnDockTable">
+          <Image Source="Usb" Stretch="Fill" Width="28" Height="28" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="36" Height="36" Canvas.Left="446" Canvas.Top="6" Click="OnDockCalendar">
+          <Image Source="Rtc" Stretch="Fill" Width="28" Height="28" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="36" Height="36" Canvas.Left="488" Canvas.Top="6" Click="OnDockSettings">
+          <Image Source="settingImage" Stretch="Fill" Width="28" Height="28" TransparentColor="#FF00F2" />
+        </Button>
+        <Button Width="36" Height="36" Canvas.Left="530" Canvas.Top="6" Click="OnDockCamera">
+          <Image Source="Camera" Stretch="Fill" Width="28" Height="28" TransparentColor="#FF00F2" />
+        </Button>
+        <!-- Windows 11 running/focused indicator: an accent pill under the active app's icon (moved in Desktop.cs). -->
+        <Border Name="TaskPill" Width="18" Height="3" CornerRadius="2" BorderThickness="0" Background="#005FB8" Canvas.Left="287" Canvas.Top="43" />
+        <!-- System tray (right): Wi-Fi + battery icons, then the clock over the date. -->
+        <Image Source="wifi" Canvas.Left="688" Canvas.Top="9" />
+        <Image Source="battery" Canvas.Left="716" Canvas.Top="10" />
+        <Text Name="StatusText" TextContent="00:00:00" Font="droid_reg09" Foreground="#1D1D1F" Width="50" TextAlignment="Right" Canvas.Left="746" Canvas.Top="6" />
+        <Text Name="DateText" TextContent="7/10/2026" Font="droid_reg09" Foreground="#1D1D1F" Width="50" TextAlignment="Right" Canvas.Left="746" Canvas.Top="24" />
+      </Canvas>
+    </Border>
+
+    <!-- Windows 11 Start flyout — hidden (Collapsed) until the Start button is tapped (see Desktop.cs). Placed
+         last so it draws on top; its app tiles reuse the taskbar handlers (which also close the flyout). -->
+    <Border Name="StartMenu" Width="380" Height="292" Canvas.Left="210" Canvas.Top="126" CornerRadius="8" BorderThickness="1" BorderBrush="#D0D0D5" Background="#F2F5F5F7">
+      <Canvas>
+        <Text TextContent="Pinned" Font="droid_reg12" Foreground="#1D1D1F" Canvas.Left="26" Canvas.Top="20" />
+        <Button Width="48" Height="48" Canvas.Left="34" Canvas.Top="52" Click="OnDockAdc"><Image Source="analog" TransparentColor="#FF00F2" /></Button>
+        <Text TextContent="Analog" Font="droid_reg09" Foreground="#1D1D1F" Width="60" TextAlignment="Center" Canvas.Left="28" Canvas.Top="104" />
+        <Button Width="48" Height="48" Canvas.Left="122" Canvas.Top="52" Click="OnDockGauges"><Image Source="Pwm" TransparentColor="#FF00F2" /></Button>
+        <Text TextContent="Gauges" Font="droid_reg09" Foreground="#1D1D1F" Width="60" TextAlignment="Center" Canvas.Left="116" Canvas.Top="104" />
+        <Button Width="48" Height="48" Canvas.Left="210" Canvas.Top="52" Click="OnDockFiles"><Image Source="Sd" TransparentColor="#FF00F2" /></Button>
+        <Text TextContent="Files" Font="droid_reg09" Foreground="#1D1D1F" Width="60" TextAlignment="Center" Canvas.Left="204" Canvas.Top="104" />
+        <Button Width="48" Height="48" Canvas.Left="298" Canvas.Top="52" Click="OnDockTable"><Image Source="Usb" TransparentColor="#FF00F2" /></Button>
+        <Text TextContent="Channels" Font="droid_reg09" Foreground="#1D1D1F" Width="60" TextAlignment="Center" Canvas.Left="292" Canvas.Top="104" />
+        <Button Width="48" Height="48" Canvas.Left="34" Canvas.Top="150" Click="OnDockCalendar"><Image Source="Rtc" TransparentColor="#FF00F2" /></Button>
+        <Text TextContent="Date" Font="droid_reg09" Foreground="#1D1D1F" Width="60" TextAlignment="Center" Canvas.Left="28" Canvas.Top="202" />
+        <Button Width="48" Height="48" Canvas.Left="122" Canvas.Top="150" Click="OnDockSettings"><Image Source="settingImage" TransparentColor="#FF00F2" /></Button>
+        <Text TextContent="Settings" Font="droid_reg09" Foreground="#1D1D1F" Width="60" TextAlignment="Center" Canvas.Left="116" Canvas.Top="202" />
+        <Button Width="48" Height="48" Canvas.Left="210" Canvas.Top="150" Click="OnDockCamera"><Image Source="Camera" TransparentColor="#FF00F2" /></Button>
+        <Text TextContent="Camera" Font="droid_reg09" Foreground="#1D1D1F" Width="60" TextAlignment="Center" Canvas.Left="204" Canvas.Top="202" />
+        <Text TextContent="TinyCLR User" Font="droid_reg09" Foreground="#4A4A4F" Canvas.Left="26" Canvas.Top="260" />
+      </Canvas>
+    </Border>
+  </Canvas>
+</Window>
